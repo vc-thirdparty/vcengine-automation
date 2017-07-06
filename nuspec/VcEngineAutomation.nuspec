@@ -21,7 +21,7 @@
   </metadata>
 
   <files>
-    <file src="..\src\VcEngineAutomation\bin\Release\VcEngineAutomation.dll" target="lib\net45" />
-    <file src="..\src\VcEngineAutomation\bin\Release\VcEngineAutomation.pdb" target="lib\net45" />
+    <file src="../src/VcEngineAutomation/bin/Release/VcEngineAutomation.dll" target="lib/net45" />
+    <file src="../src/VcEngineAutomation/bin/Release/VcEngineAutomation.pdb" target="lib/net45" />
   </files>
 </package>
