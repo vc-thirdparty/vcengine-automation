@@ -29,7 +29,6 @@ namespace VcEngineAutomation
         public bool IsR5 { get;  }
         public Window MainWindow { get; }
         public Ribbon Ribbon { get; }
-        // TEST!
         public string MainWindowName { get; }
         public ApplicationMenu ApplicationMenu { get; }
         public Options Options { get; }
