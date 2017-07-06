@@ -1,26 +1,27 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
+    <id>VcEngine.Automation</id>
     <version>$version$</version>
-    <title>Automation library for Visual Components Engine</title>
-    <description>Library to automate version 4.0.0+ of Visual Components Engine. This can be used for automated testing and other automation tasks.</description>
     <authors>Erik Ramfelt</authors>
     <owners>Erik Ramfelt</owners>
+    <description>Library to automate version 4.0.0+ of Visual Components Engine. This can be used for automated testing and other automation tasks.</description>
 
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <projectUrl>https://github.com/redsolo/vcengine-automation</projectUrl>
-      <!-- iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</ -->
     
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright 2017</copyright>
-    <tags>
-      <tag>automation</tag>
-    </tags>
+    <tags>Automation</tags>
 
     <dependencies>
       <dependency id="FlaUI.Core" version="1.2.0" />
       <dependency id="FlaUI.UIA3" version="1.2.0" />
     </dependencies>
   </metadata>
+
+  <files>
+    <file src="..\src\VcEngineAutomation\bin\Release\VcEngineAutomation.dll" target="lib\net45" />
+    <file src="..\src\VcEngineAutomation\bin\Release\VcEngineAutomation.pdb" target="lib\net45" />
+  </files>
 </package>
