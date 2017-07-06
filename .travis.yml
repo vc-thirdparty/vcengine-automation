@@ -1,2 +1,2 @@
 language: csharp
-solution: src\VcEngineAutomation.sln
+solution: src/VcEngineAutomation.sln
