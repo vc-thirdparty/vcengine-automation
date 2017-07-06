@@ -32,6 +32,30 @@ namespace VcEngineAutomationTester
             {
                 TestOutput();
             }
+            else if (args.Contains("test-misc"))
+            {
+                TestMisc();
+            } else if (args.Contains("test-all"))
+            {
+                var eng = VcEngine.Attach();
+                eng.World.Clear();
+                eng.World.LoadComponentByVcid("9d111ec4-5c75-4ff0-96fe-03dc3788a632");
+                eng.PropertiesPanel.Position = new Position(100,200,300);
+                eng.PropertiesPanel.SetProperty("Name", "new name");
+                eng.MoveFocusTo3DViewPort();
+                eng.Camera.FillView();
+                var output = eng.OutputPanel.Text;
+                eng.World.SelectAll();
+                eng.World.CopyAndPasteSelectedComponents();
+                eng.World.DeleteSelectedComponent();
+                eng.World.Clear();
+            }
+        }
+
+        private static void TestMisc()
+        {
+            var eng = VcEngine.Attach();
+            eng.World.RenameSelectedComponent("RenameSelectedComponent");
         }
 
         private static void TestOutput()
@@ -43,8 +67,7 @@ namespace VcEngineAutomationTester
         private static void TestLoadComponent()
         {
             var eng = VcEngine.Attach();
-            eng.ECataloguePanel.SearchTextBox.Enter("9d111ec4-5c75-4ff0-96fe-03dc3788a632");
-            eng.ECataloguePanel.DisplayedItems.First().DoubleClick();
+            eng.World.LoadComponentByVcid("9d111ec4-5c75-4ff0-96fe-03dc3788a632");
         }
 
         private static void TestComponentProperties()

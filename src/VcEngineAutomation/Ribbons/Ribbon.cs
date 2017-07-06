@@ -63,16 +63,5 @@ namespace VcEngineAutomation.Ribbons
         {
             return MainTab.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsTabItem();
         }
-
-        public void ClickImageInAboutDialog()
-        {
-            RibbonTab helpTab = HelpTab;
-            helpTab.ClickButton("About", "About");
-            mainWindow.WaitWhileBusy();
-            Window helpWindow = mainWindow.ModalWindows[0];
-            helpWindow.FindFirstDescendant(cf => cf.ByControlType(ControlType.Image)).LeftClick();
-            Helpers.WaitUntilInputIsProcessed();
-            helpWindow.Close();
-        }
     }
 }

@@ -54,8 +54,12 @@
     <Compile Include="Extensions\AutomationElementExtensions.cs" />
     <Compile Include="Extensions\WindowExtensions.cs" />
     <Compile Include="Models\Camera.cs" />
+    <Compile Include="Models\Component.cs" />
+    <Compile Include="Models\ComponentFeature.cs" />
+    <Compile Include="Models\ModuleTypes.cs" />
     <Compile Include="Models\Options.cs" />
     <Compile Include="Models\Visual3DToolbar.cs" />
+    <Compile Include="Models\World.cs" />
     <Compile Include="Panels\ApplicationMenu.cs" />
     <Compile Include="Panels\CommandPanel.cs" />
     <Compile Include="Panels\ECataloguePanel.cs" />

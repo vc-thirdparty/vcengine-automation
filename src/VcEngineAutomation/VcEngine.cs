@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using FlaUI.Core.Shapes;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
@@ -20,6 +21,8 @@ namespace VcEngineAutomation
 {
     public class VcEngine
     {
+        private readonly Lazy<AutomationElement> viewPort;
+
         private readonly DockedTabRetriever dockedTabRetriever;
         public Application Application { get; }
         public AutomationBase Automation { get; }
@@ -38,6 +41,8 @@ namespace VcEngineAutomation
         public PropertiesPanel DrawingPropertiesPanel => new PropertiesPanel(this, true);
         public ECataloguePanel ECataloguePanel { get; }
         public OutputPanel OutputPanel { get; }
+        public AutomationElement ViewPort => viewPort.Value;
+        public World World { get; }
 
         public VcEngine(Application application, AutomationBase automation)
         {
@@ -57,6 +62,8 @@ namespace VcEngineAutomation
             Console.WriteLine("Waiting for main ribbon");
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
+            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("viewportContentPane")));
+            World = new World(this);
             Ribbon = new Ribbon(this, MainWindow, mainTab);
             ApplicationMenu = new ApplicationMenu(this);
             Visual3DToolbar = new Visual3DToolbar(this);
@@ -123,6 +130,20 @@ namespace VcEngineAutomation
             }
         }
 
+        public void MoveFocusTo3DViewPort()
+        {
+            MoveMouseTo3DViewPort();
+            Mouse.Click(MouseButton.Middle);
+            WaitWhileBusy();
+        }
+        public void MoveMouseTo3DViewPort(Point moveOffset = null)
+        {
+            Mouse.MoveTo(viewPort.Value.GetCenter());
+            if (moveOffset != null)
+            {
+                Mouse.MoveBy((int)moveOffset.X, (int)moveOffset.Y);
+            }
+        }
         public void LoadLayout(string layoutFile, bool closeMandatoryUpdateWindow = true)
         {
             string fileToLoad = GetFileToLoad(layoutFile);
