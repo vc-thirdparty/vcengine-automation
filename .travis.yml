@@ -1,2 +1,6 @@
 language: csharp
 solution: src/VcEngineAutomation.sln
+
+script:
+  - xbuild /p:Configuration=Release src/VcEngineAutomation.sln
+  - mono nuget.exe pack ./nuspec/VcEngineAutomation.nuspec -Version $MAJOR_VERSION_NUMBER.$MINOR_VERSION_NUMBER.$TRAVIS_BUILD_NUMBER
