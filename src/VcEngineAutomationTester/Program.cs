@@ -24,6 +24,27 @@ namespace VcEngineAutomationTester
             {
                 TestComponentProperties();
             }
+            else if (args.Contains("test-loadcomponent"))
+            {
+                TestLoadComponent();
+            }
+            else if (args.Contains("test-output"))
+            {
+                TestOutput();
+            }
+        }
+
+        private static void TestOutput()
+        {
+            var eng = VcEngine.Attach();
+            var text = eng.OutputPanel.Text;
+        }
+
+        private static void TestLoadComponent()
+        {
+            var eng = VcEngine.Attach();
+            eng.ECataloguePanel.SearchTextBox.Enter("9d111ec4-5c75-4ff0-96fe-03dc3788a632");
+            eng.ECataloguePanel.DisplayedItems.First().DoubleClick();
         }
 
         private static void TestComponentProperties()

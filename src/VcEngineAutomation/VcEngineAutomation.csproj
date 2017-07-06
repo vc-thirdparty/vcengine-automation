@@ -58,6 +58,7 @@
     <Compile Include="Models\Visual3DToolbar.cs" />
     <Compile Include="Panels\ApplicationMenu.cs" />
     <Compile Include="Panels\CommandPanel.cs" />
+    <Compile Include="Panels\ECataloguePanel.cs" />
     <Compile Include="Panels\OutputPanel.cs" />
     <Compile Include="Panels\PropertiesPanel.cs" />
     <Compile Include="Panels\SimulationPanel.cs" />

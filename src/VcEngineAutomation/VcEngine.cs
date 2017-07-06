@@ -4,12 +4,11 @@ using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
 using FlaUI.Core.Tools;
+using FlaUI.UIA3;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Hosting;
-using FlaUI.UIA3;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
@@ -38,29 +37,35 @@ namespace VcEngineAutomation
         public Visual3DToolbar Visual3DToolbar { get; }
         public PropertiesPanel PropertiesPanel => new PropertiesPanel(this, false);
         public PropertiesPanel DrawingPropertiesPanel => new PropertiesPanel(this, true);
-
+        public ECataloguePanel ECataloguePanel { get; }
+        public OutputPanel OutputPanel { get; }
 
         public VcEngine(Application application, AutomationBase automation)
         {
-            MainWindowName = "Visual Components Professional 4.0";
-            Application = application;
-            Automation = automation;
-            Console.WriteLine("Waiting for application main window");
-            MainWindow = Retry.WhileException(() => Application.GetMainWindow(automation), TimeSpan.FromMinutes(2), TimeSpan.FromMilliseconds(200));
-            dockedTabRetriever = new DockedTabRetriever(MainWindow);
-            Console.WriteLine("Waiting for main ribbon");
-            Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
-            Ribbon = new Ribbon(this, MainWindow, mainTab);
-            ApplicationMenu = new ApplicationMenu(this);
-            Visual3DToolbar = new Visual3DToolbar(this);
-            Options = new Options(ApplicationMenu);
-            Camera = new Camera(this);
-
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(Process.GetProcessById(application.ProcessId).MainModule.FileName);
             IsR5 = fileVersionInfo.ProductVersion.StartsWith("4.0.2");
             IsR6 = fileVersionInfo.FileVersion.StartsWith("4.0.3");
             IsR7 = fileVersionInfo.FileVersion.StartsWith("4.0.4");
 
+            MainWindowName = fileVersionInfo.FileDescription;
+            Application = application;
+            Automation = automation;
+            Console.WriteLine("Waiting for application main window");
+
+            MainWindow = Retry.WhileException(() => Application.GetMainWindow(automation), TimeSpan.FromMinutes(2), TimeSpan.FromMilliseconds(200));
+            dockedTabRetriever = new DockedTabRetriever(MainWindow);
+
+            Console.WriteLine("Waiting for main ribbon");
+            Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
+
+            Ribbon = new Ribbon(this, MainWindow, mainTab);
+            ApplicationMenu = new ApplicationMenu(this);
+            Visual3DToolbar = new Visual3DToolbar(this);
+            Options = new Options(ApplicationMenu);
+            Camera = new Camera(this);
+            OutputPanel = new OutputPanel(this, () => IsR7 ? dockedTabRetriever.GetPane("VcOutput") : dockedTabRetriever.GetPane("Output", "VcOutputContentPane"));
+            ECataloguePanel = new ECataloguePanel(this, () => IsR7 ? dockedTabRetriever.GetPane("VcECatalogue") : dockedTabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
+            
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.Properties.IsEnabled.Value, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
 
