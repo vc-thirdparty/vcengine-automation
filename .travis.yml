@@ -4,14 +4,14 @@ solution: src/VcEngineAutomation.sln
 script:
   - msbuild /p:Configuration=Release src/VcEngineAutomation.sln
   - nuget pack ./nuspec/VcEngineAutomation.nuspec -Symbols
-  - nuget setApiKey $NUGET_API_KEY -Source https://www.nuget.org 
-  - nuget push VcEngine.Automation.*.symbols.nupkg -Source https://www.nuget.org/api/v2/package 
+  - nuget setApiKey $NUGET_API_KEY -Source https://www.nuget.org -Verbosity quiet
+  - nuget push VcEngine.Automation.*.nupkg -Source https://www.nuget.org/api/v2/package 
 
 deploy:
   skip_cleanup: true
   provider: script
   script: 
     - nuget setApiKey $NUGET_API_KEY -Source https://www.nuget.org -Verbosity quiet
-    - nuget push VcEngine.Automation.*.symbols.nupkg -Source https://www.nuget.org/api/v2/package 
+    - nuget push VcEngine.Automation.*.nupkg -Source https://www.nuget.org/api/v2/package 
   on:
     branch: master
