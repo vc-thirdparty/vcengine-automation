@@ -4,6 +4,7 @@ solution: src/VcEngineAutomation.sln
 script:
   - msbuild /p:Configuration=Release src/VcEngineAutomation.sln
   - nuget pack ./nuspec/VcEngineAutomation.nuspec -Symbols
+  - nuget setApiKey $NUGET_API_KEY -Source https://www.nuget.org -Verbosity quiet
 
 deploy:
   skip_cleanup: true
