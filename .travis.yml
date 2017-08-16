@@ -2,14 +2,15 @@ language: csharp
 solution: src/VcEngineAutomation.sln
 
 script:
-  - msbuild /p:Configuration=Release src/VcEngineAutomation.sln
-  - nuget pack ./nuspec/VcEngineAutomation.nuspec -Symbols
+  - xbuild /p:Configuration=Release src/VcEngineAutomation.sln
+  - wget -nv https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - mono nuget.exe pack ./nuspec/VcEngineAutomation.nuspec -Verbosity detailed
 
 deploy:
   skip_cleanup: true
   provider: script
   script: 
-    - nuget setApiKey $NUGET_API_KEY -Source https://www.nuget.org -Verbosity quiet
-    - nuget push VcEngine.Automation.*.symbols.nupkg -Source https://www.nuget.org/api/v2/package 
+    - mono nuget.exe push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
   on:
     branch: master
+    tags: true
