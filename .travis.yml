@@ -3,10 +3,11 @@ solution: src/VcEngineAutomation.sln
 
 script:
   - xbuild /p:Configuration=Release src/VcEngineAutomation.sln
-  - nuget pack ./nuspec/VcEngineAutomation.nuspec
+  - wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - mono nuget.exe pack ./nuspec/VcEngineAutomation.nuspec -Verbosity detailed
 
 deploy:
   skip_cleanup: true
   provider: script
   script: 
-    - nuget push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
+    - mono nuget.exe push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
