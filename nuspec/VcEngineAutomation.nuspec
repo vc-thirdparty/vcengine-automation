@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>VcEngine.Automation</id>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <authors>Erik Ramfelt</authors>
     <owners>Erik Ramfelt</owners>
     <description>Library to automate version 4.0.0+ of Visual Components Engine. This can be used for automated testing and other automation tasks.</description>
