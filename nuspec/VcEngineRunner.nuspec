@@ -1,21 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read this before creating packages: https://chocolatey.org/docs/create-packages -->
+<!-- It is especially important to read the above link to understand additional requirements when publishing packages to the community feed aka dot org (https://chocolatey.org/packages). -->
+
+<!-- Test your packages in a test environment: https://github.com/chocolatey/chocolatey-test-environment -->
+
+<!--
+This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Reference. Chocolatey uses a special version of NuGet.Core that allows us to do more than was initially possible. As such there are certain things to be aware of:
+
+* the package xmlns schema url may cause issues with nuget.exe
+* Any of the following elements can ONLY be used by choco tools - projectSourceUrl, docsUrl, mailingListUrl, bugTrackerUrl, packageSourceUrl, provides, conflicts, replaces 
+* nuget.exe can still install packages with those elements but they are ignored. Any authoring tools or commands will error on those elements 
+-->
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
 	<metadata>
-		<id>VcEngine.Runner</id>
+		<id>vcenginerunner</id>
+
 		<version>0.0.2</version>
+		<packageSourceUrl>https://github.com/redsolo/vcengine-automation/src/VcEngine.Runner</packageSourceUrl>
+		<owners>Erik Ramfelt</owners>
+
 		<title>VcEngine Runner</title>
 		<authors>Erik Ramfelt</authors>
-		<owners>Erik Ramfelt</owners>
-		<licenseUrl>https://github.com/redsolo/vcengine-automation/blob/master/LICENSE</licenseUrl>
+
 		<projectUrl>https://github.com/redsolo/vcengine-automation/</projectUrl>
-		<packageSourceUrl>https://github.com/redsolo/vcengine-automation/src/VcEngine.Runner</packageSourceUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<copyright>Copyright 2016-2017</copyright>
+		<licenseUrl>https://github.com/redsolo/vcengine-automation/blob/master/LICENSE</licenseUrl>
+		<bugTrackerUrl>https://github.com/redsolo/vcengine-automation/issues</bugTrackerUrl>
+		
+		<tags>Automation</tags>
 		<summary>Tool to automate Visual Components simulation software.</summary>
 		<description>This application allows to run simulations, record simulations, interact with Visual Components software.</description>
-		<copyright>Copyright 2016-2017</copyright>
-		<tags>Automation</tags>
+
 	</metadata>
 	<files>
-		<file src="..\src\VcEngineRunner\bin\**\*.*" exclude="**\*.pdb;**\*.xml;**\*.vshost.*;**\*RANDOM_SEED*" target="tools"/>
-		<file src="..\LICENSE.txt" target="tools"/>
+		<file src="..\src\VcEngineRunner\bin\Release\*.*" exclude="**\*.pdb;**\*.xml;**\*.vshost.*;**\*RANDOM_SEED*" target="tools"/>
+		<file src="..\LICENSE" target="tools/LICENSE"/>
 	</files>
 </package>
