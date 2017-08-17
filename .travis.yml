@@ -13,4 +13,3 @@ deploy:
     - mono nuget.exe push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
   on:
     branch: master
-    tags: true
