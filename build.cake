@@ -95,7 +95,10 @@ Task("Zip-Pack")
 		var files = GetFiles("./src/VcEngineRunner/bin/Release/*.*")
 			.Where(f => fileExtensions.Contains(f.GetExtension().ToLower()))
 			.Concat(GetFiles("./LICENSE"));
-		Zip("./", outputDir.Path.GetFilePath("VcEngineRunner." + version + ".zip"), files);
+
+			EnsureDirectoryExists("./output/release");		
+		CopyFiles(files, "./output/release");
+		Zip("./output/release/", outputDir.Path.GetFilePath("VcEngineRunner." + version + ".zip"));
 	});
 
 Task("Choco-Pack")
