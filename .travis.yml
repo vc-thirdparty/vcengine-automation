@@ -10,6 +10,6 @@ deploy:
   skip_cleanup: true
   provider: script
   script: 
-    - mono nuget.exe push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
+    - nuget push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
   on:
     branch: master
