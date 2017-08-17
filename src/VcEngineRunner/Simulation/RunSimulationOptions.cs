@@ -2,7 +2,7 @@
 
 namespace VcEngineRunner.Simulation
 {
-    public class RunSimulationOptions
+    public class RunSimulationOptions : GenericOptions
     {
         [Option('f', "file", HelpText = "Layout file to run", Required = true)]
         public string LayoutFile { get; set; }

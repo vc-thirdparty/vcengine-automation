@@ -7,7 +7,7 @@ namespace VcEngineRunner.Simulation
         Video,
         Experience
     }
-    public class RecordSimulationOptions
+    public class RecordSimulationOptions : GenericOptions
     {
         [Option('f', "file", HelpText = "Layout file to record", Required = true)]
         public string LayoutFile { get; set; }

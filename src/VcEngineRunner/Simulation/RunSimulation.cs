@@ -18,7 +18,7 @@ namespace VcEngineRunner.Simulation
 
         public int Run()
         {
-            vcEngine = VcEngine.Attach();
+            vcEngine = VcEngine.AttachOrLaunch(options.InstallationPath);
             var outputPanel = vcEngine.OutputPanel;
             var simulationPanel = SimulationPanel.Attach(vcEngine);
             var duration = TimeSpan.Parse(options.Duration);

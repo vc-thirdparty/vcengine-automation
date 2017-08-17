@@ -19,7 +19,7 @@ namespace VcEngineRunner.Simulation
 
         public int Run()
         {
-            vcEngine = VcEngine.Attach();
+            vcEngine = VcEngine.AttachOrLaunch(options.InstallationPath);
             var simulationPanel = SimulationPanel.Attach(vcEngine);
             var duration = TimeSpan.Parse(options.Duration);
             simulationPanel.SpeedFactor = options.SpeedFactor;
