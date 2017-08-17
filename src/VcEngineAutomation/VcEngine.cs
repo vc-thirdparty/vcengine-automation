@@ -3,13 +3,13 @@ using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
+using FlaUI.Core.Shapes;
 using FlaUI.Core.Tools;
 using FlaUI.UIA3;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using FlaUI.Core.Shapes;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
@@ -22,6 +22,8 @@ namespace VcEngineAutomation
     public class VcEngine
     {
         private readonly Lazy<AutomationElement> viewPort;
+
+        public static string DefaultInstallationPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional");
 
         public DockedTabRetriever TabRetriever { get; }
         public Application Application { get; }
@@ -202,8 +204,9 @@ namespace VcEngineAutomation
 
         public static VcEngine AttachOrLaunch()
         {
-            return AttachOrLaunch(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional"));
+            return AttachOrLaunch(DefaultInstallationPath);
         }
+
         public static VcEngine AttachOrLaunch(string installationPath)
         {
             return AttachOrLaunch(new ProcessStartInfo()
@@ -219,7 +222,7 @@ namespace VcEngineAutomation
             Process process = Process.GetProcessesByName("VisualComponents.Essentials").Concat(Process.GetProcessesByName("VisualComponents.Engine")).FirstOrDefault();
             if (process == null)
             {
-                FlaUI.Core.Application.Launch(processStartInfo);
+                Application.Launch(processStartInfo);
             }
             return Attach();
         }

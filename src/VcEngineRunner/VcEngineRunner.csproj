@@ -49,6 +49,7 @@
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulation\GenericOptions.cs" />
     <Compile Include="Simulation\RecordSimulation.cs" />
     <Compile Include="Simulation\RecordSimulationOptions.cs" />
     <Compile Include="Simulation\RunSimulation.cs" />

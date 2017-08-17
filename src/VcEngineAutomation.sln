@@ -10,8 +10,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AE344D96-246A-4172-8E2A-F9B5A4EDF5A0}"
 	ProjectSection(SolutionItems) = preProject
 		..\.travis.yml = ..\.travis.yml
-		..\nuspec\VcEngine.Runner.nuspec = ..\nuspec\VcEngine.Runner.nuspec
+		..\build.cake = ..\build.cake
+		..\README.md = ..\README.md
 		..\nuspec\VcEngineAutomation.nuspec = ..\nuspec\VcEngineAutomation.nuspec
+		..\nuspec\VcEngineRunner.nuspec = ..\nuspec\VcEngineRunner.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VcEngineRunner", "VcEngineRunner\VcEngineRunner.csproj", "{8896530B-3E62-4F03-8A46-340C2A6C8D6E}"
