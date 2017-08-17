@@ -1,3 +1,9 @@
+#Cake build 
+tools/
+build.ps1
+
+# Sonarqube
+.sonarqube/
 
 # Created by https://www.gitignore.io/api/csharp,visualstudio
 
@@ -27,6 +33,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+
 
 # Visual Studio 2015 cache/options directory
 .vs/
