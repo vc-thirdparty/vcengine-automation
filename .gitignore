@@ -1,6 +1,7 @@
 #Cake build 
 tools/
 build.ps1
+output/
 
 # Sonarqube
 .sonarqube/

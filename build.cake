@@ -17,14 +17,28 @@ var nugetKey = EnvironmentVariable("NUGET_API_KEY") ?? Argument("nugetKey", "");
 var travis = EnvironmentVariable("TRAVIS") ?? "false";
 
 //////////////////////////////////////////////////////////////////////
+// PREPARATION
+//////////////////////////////////////////////////////////////////////
+
+// Define directories.
+var outputDir = Directory("./output");
+
+//////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
 	.Does(() =>
 	{
+		CleanDirectories(outputDir);
 		CleanDirectories("./src/**/bin");
 		CleanDirectories("./src/**/obj");
+	});
+
+Task("Init")
+	.Does(() =>
+	{
+		CreateDirectory(outputDir);
 	});
 
 Task("SetVersion")
@@ -39,6 +53,7 @@ Task("SetVersion")
    });
 
 Task("Build")
+	.IsDependentOn("Init")
 	.IsDependentOn("NuGet-Restore-Packages")
 	.IsDependentOn("SetVersion")
 	.Does(() =>
@@ -57,7 +72,6 @@ Task("Build")
 
 
 Task("NuGet-Restore-Packages")
-	.IsDependentOn("Clean")
 	.Does(() =>
 	{
 		NuGetRestore("./src/VcEngineAutomation.sln");
@@ -68,8 +82,20 @@ Task("Nuget-Pack")
 	.Does(() =>
 	{
 		NuGetPack("./nuspec/VcEngineAutomation.nuspec", new NuGetPackSettings {
-			Version = version
+			Version = version,
+			OutputDirectory = outputDir
 		});
+	});
+
+Task("Zip-Pack")
+	.IsDependentOn("Build")
+	.Does(() =>
+	{
+		var fileExtensions = new string[] { ".dll", ".exe" };
+		var files = GetFiles("./src/VcEngineRunner/bin/Release/*.*")
+			.Where(f => fileExtensions.Contains(f.GetExtension().ToLower()))
+			.Concat(GetFiles("./LICENSE"));
+		Zip("./", outputDir.Path.GetFilePath("VcEngineRunner." + version + ".zip"), files);
 	});
 
 Task("Choco-Pack")
@@ -110,11 +136,13 @@ Task("Sonar-Analyse")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
+	.IsDependentOn("Clean")
 	.IsDependentOn("Sonar-Init")
 	.IsDependentOn("Build")
 	.IsDependentOn("Nuget-Pack")
+	.IsDependentOn("Zip-Pack")
 	.IsDependentOn("Sonar-Analyse");
-	;
+
 	
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
