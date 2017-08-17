@@ -15,7 +15,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
 	<metadata>
 		<id>vcenginerunner</id>
 
-		<version>0.0.2</version>
+		<version>$version$</version>
 		<packageSourceUrl>https://github.com/redsolo/vcengine-automation/src/VcEngine.Runner</packageSourceUrl>
 		<owners>Erik Ramfelt</owners>
 

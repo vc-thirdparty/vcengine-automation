@@ -6,13 +6,15 @@
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
-var version = Argument("version", "0.0.3");
+var version = EnvironmentVariable("PKG_VERSION") ?? Argument("pkgVersion", "0.0.0");
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
 var sonarqubeKey = EnvironmentVariable("SONARQUBE_API_KEY") ?? Argument("sonarqubeKey", "");
 var nugetKey = EnvironmentVariable("NUGET_API_KEY") ?? Argument("nugetKey", "");
+
+var travis = EnvironmentVariable("TRAVIS") ?? "false";
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -21,10 +23,12 @@ var nugetKey = EnvironmentVariable("NUGET_API_KEY") ?? Argument("nugetKey", "");
 Task("Clean")
 	.Does(() =>
 	{
+	Information("My setting is: " + travis);
 	});
 
 Task("SetVersion")
-   .Does(() => {
+	.WithCriteria(() => travis == "true")
+	.Does(() => {
 	   ReplaceRegexInFiles("./**/AssemblyInfo.cs", 
 						   "(?<=AssemblyVersion\\(\")(.+?)(?=\"\\))", 
 						   version);
@@ -35,6 +39,7 @@ Task("SetVersion")
 
 Task("Build")
 	.IsDependentOn("NuGet-Restore-Packages")
+	.IsDependentOn("SetVersion")
 	.Does(() =>
 	{
 		if(IsRunningOnWindows())

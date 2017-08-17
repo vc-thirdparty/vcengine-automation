@@ -1,15 +1,18 @@
 language: csharp
 solution: src/VcEngineAutomation.sln
 
+env:
+  - PKG_VERSION = 0.0.3
+
 script:
   - xbuild /p:Configuration=Release src/VcEngineAutomation.sln
   - wget -nv https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-  - mono nuget.exe pack ./nuspec/VcEngineAutomation.nuspec -Verbosity detailed
+  - mono nuget.exe pack ./nuspec/VcEngineAutomation.nuspec -Verbosity detailed -Version PKG_VERSION
 
 deploy:
   skip_cleanup: true
   provider: script
   script: 
-    - nuget push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package 
+    - nuget push VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package
   on:
     branch: master
