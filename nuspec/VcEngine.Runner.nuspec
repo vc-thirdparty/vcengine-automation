@@ -1,0 +1,21 @@
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+	<metadata>
+		<id>VcEngine.Runner</id>
+		<version>0.0.2</version>
+		<title>VcEngine Runner</title>
+		<authors>Erik Ramfelt</authors>
+		<owners>Erik Ramfelt</owners>
+		<licenseUrl>https://github.com/redsolo/vcengine-automation/blob/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/redsolo/vcengine-automation/</projectUrl>
+		<packageSourceUrl>https://github.com/redsolo/vcengine-automation/src/VcEngine.Runner</packageSourceUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Tool to automate Visual Components simulation software.</summary>
+		<description>This application allows to run simulations, record simulations, interact with Visual Components software.</description>
+		<copyright>Copyright 2016-2017</copyright>
+		<tags>Automation</tags>
+	</metadata>
+	<files>
+		<file src="..\src\VcEngineRunner\bin\**\*.*" exclude="**\*.pdb;**\*.xml;**\*.vshost.*;**\*RANDOM_SEED*" target="tools"/>
+		<file src="..\LICENSE.txt" target="tools"/>
+	</files>
+</package>

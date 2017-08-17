@@ -23,7 +23,7 @@ namespace VcEngineAutomation
     {
         private readonly Lazy<AutomationElement> viewPort;
 
-        private readonly DockedTabRetriever dockedTabRetriever;
+        public DockedTabRetriever TabRetriever { get; }
         public Application Application { get; }
         public AutomationBase Automation { get; }
 
@@ -57,7 +57,7 @@ namespace VcEngineAutomation
             Console.WriteLine("Waiting for application main window");
 
             MainWindow = Retry.WhileException(() => Application.GetMainWindow(automation), TimeSpan.FromMinutes(2), TimeSpan.FromMilliseconds(200));
-            dockedTabRetriever = new DockedTabRetriever(MainWindow);
+            TabRetriever = new DockedTabRetriever(MainWindow);
 
             Console.WriteLine("Waiting for main ribbon");
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
@@ -69,8 +69,8 @@ namespace VcEngineAutomation
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
             Camera = new Camera(this);
-            OutputPanel = new OutputPanel(this, () => IsR7 ? dockedTabRetriever.GetPane("VcOutput") : dockedTabRetriever.GetPane("Output", "VcOutputContentPane"));
-            ECataloguePanel = new ECataloguePanel(this, () => IsR7 ? dockedTabRetriever.GetPane("VcECatalogue") : dockedTabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
+            OutputPanel = new OutputPanel(this, () => IsR7 ? TabRetriever.GetPane("VcOutput") : TabRetriever.GetPane("Output", "VcOutputContentPane"));
+            ECataloguePanel = new ECataloguePanel(this, () => IsR7 ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
             
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.Properties.IsEnabled.Value, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
@@ -85,7 +85,7 @@ namespace VcEngineAutomation
         }
         public CommandPanel GetCommandPanel(string startOfTitle)
         {
-            return new CommandPanel(this, () => IsR7 ? dockedTabRetriever.GetPane("CommandPanelViewModel") : dockedTabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
+            return new CommandPanel(this, () => IsR7 ? TabRetriever.GetPane("CommandPanelViewModel") : TabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
         }
 
         public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)
