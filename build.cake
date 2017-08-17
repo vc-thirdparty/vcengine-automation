@@ -61,20 +61,27 @@ Task("NuGet-Restore-Packages")
 		NuGetRestore("./src/VcEngineAutomation.sln");
 	});
 
-Task("Package")
+Task("Nuget-Pack")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{
 		NuGetPack("./nuspec/VcEngineAutomation.nuspec", new NuGetPackSettings {
 			Version = version
 		});
-//		ChocolateyPack("./nuspec/VcEngineRunner.nuspec", new ChocolateyPackSettings {
-//			Version = version
-//		});
 	});
 
-Task("Initialise-Sonar")
+Task("Choco-Pack")
+	.IsDependentOn("Build")
+	.Does(() =>
+	{
+		ChocolateyPack("./nuspec/VcEngineRunner.nuspec", new ChocolateyPackSettings {
+			Version = version
+		});
+	});
+
+Task("Sonar-Init")
 	.WithCriteria(IsRunningOnWindows())
+	.WithCriteria(() => sonarcloudKey != "")
 	.Does(() => 
 	{
 		SonarBegin(new SonarBeginSettings{
@@ -86,6 +93,7 @@ Task("Initialise-Sonar")
   
 Task("Sonar-Analyse")
 	.WithCriteria(IsRunningOnWindows())
+	.WithCriteria(() => sonarcloudKey != "")
 	.Does(() => {
 		SonarEnd(new SonarEndSettings{
 			Login = sonarcloudKey
@@ -100,9 +108,9 @@ Task("Sonar-Analyse")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-	.IsDependentOn("Initialise-Sonar")
+	.IsDependentOn("Sonar-Init")
 	.IsDependentOn("Build")
-	.IsDependentOn("Package")
+	.IsDependentOn("Nuget-Pack")
 	.IsDependentOn("Sonar-Analyse");
 	;
 	
