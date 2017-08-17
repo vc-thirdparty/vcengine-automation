@@ -11,7 +11,7 @@ var version = EnvironmentVariable("PKG_VERSION") ?? Argument("pkgVersion", "0.0.
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
-var sonarqubeKey = EnvironmentVariable("SONARQUBE_API_KEY") ?? Argument("sonarqubeKey", "");
+var sonarcloudKey = EnvironmentVariable("SONARCLOUD_API_KEY") ?? Argument("sonarcloudKey", "");
 var nugetKey = EnvironmentVariable("NUGET_API_KEY") ?? Argument("nugetKey", "");
 
 var travis = EnvironmentVariable("TRAVIS") ?? "false";
@@ -23,7 +23,6 @@ var travis = EnvironmentVariable("TRAVIS") ?? "false";
 Task("Clean")
 	.Does(() =>
 	{
-	Information("My setting is: " + travis);
 	});
 
 Task("SetVersion")
@@ -69,12 +68,13 @@ Task("Package")
 		NuGetPack("./nuspec/VcEngineAutomation.nuspec", new NuGetPackSettings {
 			Version = version
 		});
-		ChocolateyPack("./nuspec/VcEngineRunner.nuspec", new ChocolateyPackSettings {
-			Version = version
-		});
+//		ChocolateyPack("./nuspec/VcEngineRunner.nuspec", new ChocolateyPackSettings {
+//			Version = version
+//		});
 	});
 
 Task("Initialise-Sonar")
+	.WithCriteria(IsRunningOnWindows())
 	.Does(() => 
 	{
 		SonarBegin(new SonarBeginSettings{
@@ -85,9 +85,10 @@ Task("Initialise-Sonar")
 	});
   
 Task("Sonar-Analyse")
+	.WithCriteria(IsRunningOnWindows())
 	.Does(() => {
 		SonarEnd(new SonarEndSettings{
-			Login = sonarqubeKey
+			Login = sonarcloudKey
 		});
 	});
   
@@ -99,10 +100,10 @@ Task("Sonar-Analyse")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-//    .IsDependentOn("Initialise-Sonar")
+	.IsDependentOn("Initialise-Sonar")
 	.IsDependentOn("Build")
 	.IsDependentOn("Package")
-//    .IsDependentOn("Sonar-Analyse");
+	.IsDependentOn("Sonar-Analyse");
 	;
 	
 //////////////////////////////////////////////////////////////////////
