@@ -3,26 +3,28 @@ solution: src/VcEngineAutomation.sln
 
 env:
   global:
-    - PKG_VERSION=0.0.3
+    - PKG_VERSION=0.0.4
+
+install:
+  - curl -Lsfo build.sh https://cakebuild.net/download/bootstrapper/linux
 
 before_script:
-  - curl -Lsfo build.sh https://cakebuild.net/download/bootstrapper/linux
   - chmod a+x build.sh
 
 script:
   - ./build.sh
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: 
-    - nuget push output/VcEngine.Automation.$PKG_VERSION.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package
-  on:
-    branch: master
+  - provider: script
+    skip_cleanup: true
+    script: 
+      - nuget push output/VcEngine.Automation.$PKG_VERSION.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package
+    on:
+      tags: true
 
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file: output/VcEngineRunner.$PKG_VERSION.zip
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: releases
+    skip_cleanup: true
+    api_key: $GITHUB_TOKEN
+    file: output/VcEngineRunner.$PKG_VERSION.zip
+    on:
+      tags: true
