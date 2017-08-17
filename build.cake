@@ -23,6 +23,8 @@ var travis = EnvironmentVariable("TRAVIS") ?? "false";
 Task("Clean")
 	.Does(() =>
 	{
+		CleanDirectories("./src/**/bin");
+		CleanDirectories("./src/**/obj");
 	});
 
 Task("SetVersion")
