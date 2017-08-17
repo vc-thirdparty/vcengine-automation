@@ -13,9 +13,16 @@ script:
   - ./build.sh
 
 deploy:
-  skip_cleanup: true
   provider: script
+  skip_cleanup: true
   script: 
-    - nuget push output/VcEngine.Automation.*.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package
+    - nuget push output/VcEngine.Automation.$PKG_VERSION.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package
   on:
     branch: master
+
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: output/VcEngineRunner.$PKG_VERSION.zip
+  skip_cleanup: true
+  on:
+    tags: true
