@@ -3,7 +3,7 @@ solution: src/VcEngineAutomation.sln
 
 env:
   global:
-    - PKG_VERSION = 0.0.3
+    - PKG_VERSION=0.0.3
 
 script:
   - xbuild /p:Configuration=Release src/VcEngineAutomation.sln
