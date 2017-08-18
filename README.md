@@ -50,3 +50,6 @@ The following command will load *robot-palletizing.vcmx* and record the simulati
 VcEngineRunner record-simulation -f robot-palletizing.vcmx --duration 00:00:10 -o robot.avi -t Video
 ```
 [![Recording simulation to video file](http://img.youtube.com/vi/sq4lEuiQ9qA/0.jpg)](http://www.youtube.com/watch?v=sq4lEuiQ9qA)
+
+## Notes ##
+This git repository is not related or managed by Visual Components.
