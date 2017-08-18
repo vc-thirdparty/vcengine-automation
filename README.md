@@ -43,5 +43,6 @@ This command records a simulation to a Video or Experience file.
 
 The following command will load *robot-palletizing.vcmx* and record the simulation for 10 seconds into the *robot.avi* file.
 ```
-VcEngineRunner.exe record-simulation -f  c:\temp\runner\robot-palletizing.vcmx --duration 00:00:10 -o robot.avi -t Video
+VcEngineRunner record-simulation -f robot-palletizing.vcmx --duration 00:00:10 -o robot.avi -t Video
 ```
+[![Recording simulation to video file](http://img.youtube.com/vi/sq4lEuiQ9qA/0.jpg)](http://www.youtube.com/watch?v=sq4lEuiQ9qA)
