@@ -2,7 +2,7 @@
 Automation library for Visual Components engine
 
 
-# VcEnginerRunner
+# VcEngine-Runner
 Console application that can control the Visual Components simulation tool to do the following:
  - Run a simulation simulation for a specified duration
  - Record a simulation to a video  or the VC Experience format
