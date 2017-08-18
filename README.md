@@ -1,6 +1,8 @@
 # VcEngine-Automation
 [![Build status](https://travis-ci.org/redsolo/vcengine-automation.svg?branch=develop)](https://travis-ci.org/redsolo/vcengine-automation),  [![NuGet VcEngine](http://flauschig.ch/nubadge.php?id=VcEngine.Automation)](https://www.nuget.org/packages/VcEngine.Automation/) 
 
+VcEngine-Automation repository contains a console application and library that can control Visual Components simulation tool through it's user interface. 
+
 # VcEngine-Automation Library
 Automation library for Visual Components engine in C#. With the library it is possible to control the engine through a C# application instead of manual using in the through the UI. 
 
@@ -26,7 +28,9 @@ Console application that can control the Visual Components simulation tool to au
 Currently the application can:
  - Run a simulation simulation for a specified duration *run-simulation* 
  - Record a simulation to a video  or the VC Experience format *record-simulation*
- 
+
+Releases of the console application can be found in the [Releases](https://github.com/redsolo/vcengine-automation/releases) section in this repository.
+
 ## Run Simulation
 This command runs a simulation for a duration at maximum speed and saves the output in the Output panel into a file. If the simulation is stopped/paused before the simulation has run for the full duration, it will re-run the simulation and record it to a video file.
 
