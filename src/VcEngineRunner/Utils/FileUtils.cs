@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Fldt.Runner.Utils
+namespace VcEngineRunner.Utils
 {
     public static class FileUtils
     {

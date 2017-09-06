@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using VcEngineAutomation;
-using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
 
 namespace VcEngineAutomationTester
@@ -90,7 +89,7 @@ namespace VcEngineAutomationTester
 
         private static void Launch()
         {
-            var vcEngine = VcEngine.AttachOrLaunch(@"C:\Program Files\Visual Components\Visual Components Professional 4.0.4");
+            var vcEngine = VcEngine.AttachOrLaunch(@"C:\Program Files\Visual Components\Visual Components Professional");
             vcEngine.Ribbon.DrawingTab.Select();
             vcEngine.Application.Close();
         }
