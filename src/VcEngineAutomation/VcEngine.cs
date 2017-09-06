@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Text.RegularExpressions;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
@@ -59,7 +60,7 @@ namespace VcEngineAutomation
             IsR6 = fileVersionInfo.FileVersion.StartsWith("4.0.3");
             IsR7 = fileVersionInfo.FileVersion.StartsWith("4.0.4");
             IsR8 = fileVersionInfo.FileVersion.StartsWith("4.0.5");
-            Console.WriteLine("Vc Version: " + (IsR5 ? "R5" : IsR6 ? "R6" : IsR7 ? "R7" : IsR8 ? "R8" : "Unknown"));
+            Console.WriteLine("VcEngine Version: " + (IsR5 ? "R5" : IsR6 ? "R6" : IsR7 ? "R7" : IsR8 ? "R8" : fileVersionInfo.FileVersion));
             MainWindowName = fileVersionInfo.FileDescription;
 
             Console.WriteLine("Waiting for application main window");
@@ -94,6 +95,8 @@ namespace VcEngineAutomation
             }
             catch (Win32Exception)
             {
+                // This fixes a problem on a test laptop where it could not retrieve the Process.MainModule for some
+                // reason. This hack has been copied from https://stackoverflow.com/a/5497319/28553
                 var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
                 using (var searcher = new ManagementObjectSearcher(wmiQueryString))
                 using (var results = searcher.Get())
@@ -105,10 +108,13 @@ namespace VcEngineAutomation
                         {
                             Process = p,
                             Path = (string)mo["ExecutablePath"],
+                            Id = (int)(uint)mo["ProcessId"],
                             CommandLine = (string)mo["CommandLine"],
                         };
-
-                    return FileVersionInfo.GetVersionInfo(query.First().Path);
+                    var processObject = query.First(q => process.Id == q.Id);
+                    return FileVersionInfo.GetVersionInfo(string.IsNullOrEmpty(processObject.Path) 
+                        ? Regex.Match(processObject.CommandLine, "\"(.*)\"").Groups[1].Value : 
+                        processObject.Path);
                 }
             }
         }
