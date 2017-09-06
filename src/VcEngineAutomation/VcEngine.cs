@@ -7,9 +7,11 @@ using FlaUI.Core.Shapes;
 using FlaUI.Core.Tools;
 using FlaUI.UIA3;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
@@ -29,6 +31,7 @@ namespace VcEngineAutomation
         public Application Application { get; }
         public AutomationBase Automation { get; }
 
+        public bool IsR8 { get; }
         public bool IsR7 { get; }
         public bool IsR6 { get; }
         public bool IsR5 { get;  }
@@ -48,16 +51,18 @@ namespace VcEngineAutomation
 
         public VcEngine(Application application, AutomationBase automation)
         {
-            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Process.GetProcessById(application.ProcessId).MainModule.FileName);
+            Application = application;
+            Automation = automation;
+
+            var fileVersionInfo = GetVersionInfo(Process.GetProcessById(application.ProcessId));
             IsR5 = fileVersionInfo.ProductVersion.StartsWith("4.0.2");
             IsR6 = fileVersionInfo.FileVersion.StartsWith("4.0.3");
             IsR7 = fileVersionInfo.FileVersion.StartsWith("4.0.4");
-
+            IsR8 = fileVersionInfo.FileVersion.StartsWith("4.0.5");
+            Console.WriteLine("Vc Version: " + (IsR5 ? "R5" : IsR6 ? "R6" : IsR7 ? "R7" : IsR8 ? "R8" : "Unknown"));
             MainWindowName = fileVersionInfo.FileDescription;
-            Application = application;
-            Automation = automation;
-            Console.WriteLine("Waiting for application main window");
 
+            Console.WriteLine("Waiting for application main window");
             MainWindow = Retry.WhileException(() => Application.GetMainWindow(automation), TimeSpan.FromMinutes(2), TimeSpan.FromMilliseconds(200));
             TabRetriever = new DockedTabRetriever(MainWindow);
 
@@ -79,6 +84,33 @@ namespace VcEngineAutomation
 
             Console.WriteLine("Setting main window as foreground");
             MainWindow.SetForeground();
+        }
+
+        private FileVersionInfo GetVersionInfo(Process process)
+        {
+            try
+            {
+                return process.MainModule.FileVersionInfo;
+            }
+            catch (Win32Exception)
+            {
+                var wmiQueryString = "SELECT ProcessId, ExecutablePath, CommandLine FROM Win32_Process";
+                using (var searcher = new ManagementObjectSearcher(wmiQueryString))
+                using (var results = searcher.Get())
+                {
+                    var query = from p in Process.GetProcesses()
+                        join mo in results.Cast<ManagementObject>()
+                            on p.Id equals (int)(uint)mo["ProcessId"]
+                        select new
+                        {
+                            Process = p,
+                            Path = (string)mo["ExecutablePath"],
+                            CommandLine = (string)mo["CommandLine"],
+                        };
+
+                    return FileVersionInfo.GetVersionInfo(query.First().Path);
+                }
+            }
         }
 
         public CommandPanel GetCommandPanel()
