@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,7 +60,6 @@
     <Compile Include="Models\Camera.cs" />
     <Compile Include="Models\Component.cs" />
     <Compile Include="Models\ComponentFeature.cs" />
-    <Compile Include="Models\ModuleTypes.cs" />
     <Compile Include="Models\Options.cs" />
     <Compile Include="Models\Visual3DToolbar.cs" />
     <Compile Include="Models\World.cs" />

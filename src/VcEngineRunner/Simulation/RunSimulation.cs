@@ -33,11 +33,11 @@ namespace VcEngineRunner.Simulation
 
             if (simulationPanel.ElapsedSimulationTime >= duration)
             {
-                File.WriteAllText($"{fileNameWithoutExtension}.txt", "Success");
+                File.WriteAllText($"{fileNameWithoutExtension}.txt", string.Join("\r\n", "Success, simulation ran for full duration", outputPanel.Text));
                 return 0;
             }
 
-            File.WriteAllText($"{fileNameWithoutExtension}.txt", outputPanel.Text);
+            File.WriteAllText($"{fileNameWithoutExtension}.txt", string.Join("\r\n", $"Failure, simulation was paused after {simulationPanel.ElapsedSimulationTime}", outputPanel.Text));
             simulationPanel.Reset();
             simulationPanel.SpeedFactor = 50;
             if (File.Exists($"{fileNameWithoutExtension}.avi"))
