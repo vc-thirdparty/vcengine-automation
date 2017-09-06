@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
-using FlaUI.Core.Input;
-using VcEngineAutomation.Extensions;
 
 namespace VcEngineAutomation.Ribbons
 {

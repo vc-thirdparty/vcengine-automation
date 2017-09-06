@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using VcEngineAutomation;
-using VcEngineAutomation.Models;
 using VcEngineAutomation.Panels;
 
 namespace VcEngineAutomationTester
