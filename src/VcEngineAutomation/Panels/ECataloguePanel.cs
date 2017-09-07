@@ -1,6 +1,7 @@
 ﻿using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using System;
+using FlaUI.Core.Tools;
 
 namespace VcEngineAutomation.Panels
 {
@@ -19,5 +20,11 @@ namespace VcEngineAutomation.Panels
         public AutomationElement[] DisplayedItems => panel.Value.FindAllDescendants(cf => cf.ByClassName("LargeItem"));
         public AutomationElement CollectionsPanel => panel.Value.FindFirstDescendant(cf => cf.ByAutomationId("CollectionsPanel"));
         public AutomationElement ItemPanel => panel.Value.FindFirstDescendant(cf => cf.ByAutomationId("ItemPanel"));
+
+        public void WaitUntilPopulated(TimeSpan timeSpan)
+        {
+            var label = panel.Value.FindFirstDescendant(cf => cf.ByName("No Items."));
+            Retry.While(() => !label.Properties.IsOffscreen.Value, timeSpan, TimeSpan.FromSeconds(1));
+        }
     }
 }
