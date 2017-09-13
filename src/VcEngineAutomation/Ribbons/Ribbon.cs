@@ -42,7 +42,7 @@ namespace VcEngineAutomation.Ribbons
 
         public RibbonTab GetTab(string automationId, string automationIdR7)
         {
-            automationId = vcEngine.IsR7 ? automationIdR7 : automationId;
+            automationId = vcEngine.IsR7 || vcEngine.IsR8 ? automationIdR7 : automationId;
             ExpandState(ExpandCollapseState.Expanded);
             RibbonTab tab;
             if (!tabs.TryGetValue(automationId, out tab))
