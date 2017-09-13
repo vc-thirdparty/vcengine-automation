@@ -70,15 +70,15 @@ namespace VcEngineAutomation
             Console.WriteLine("Waiting for main ribbon");
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
-            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("viewportContentPane")));
+            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR8 ? "Viewport" : "viewportContentPane")));
             World = new World(this);
             Ribbon = new Ribbon(this, MainWindow, mainTab);
             ApplicationMenu = new ApplicationMenu(this);
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
             Camera = new Camera(this);
-            OutputPanel = new OutputPanel(this, () => IsR7 ? TabRetriever.GetPane("VcOutput") : TabRetriever.GetPane("Output", "VcOutputContentPane"));
-            ECataloguePanel = new ECataloguePanel(this, () => IsR7 ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
+            OutputPanel = new OutputPanel(this, () => IsR7 || IsR8 ? TabRetriever.GetPane("VcOutput") : TabRetriever.GetPane("Output", "VcOutputContentPane"));
+            ECataloguePanel = new ECataloguePanel(this, () => IsR7 || IsR8 ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
             
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.Properties.IsEnabled.Value, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
@@ -121,11 +121,11 @@ namespace VcEngineAutomation
 
         public CommandPanel GetCommandPanel()
         {
-            return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR7 ? "CommandPanelViewModelTabItem" : "CommandPanelViewModelContentPane")));
+            return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR7 || IsR8 ? "CommandPanelViewModelTabItem" : "CommandPanelViewModelContentPane")));
         }
         public CommandPanel GetCommandPanel(string startOfTitle)
         {
-            return new CommandPanel(this, () => IsR7 ? TabRetriever.GetPane("CommandPanelViewModel") : TabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
+            return new CommandPanel(this, () => IsR7 || IsR8 ? TabRetriever.GetPane("CommandPanelViewModel") : TabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
         }
 
         public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)
