@@ -1,6 +1,6 @@
+#addin "Cake.FileHelpers&version=1.0.4"
 #addin "nuget:?package=Cake.Sonar"
 #tool "nuget:?package=MSBuild.SonarQube.Runner.Tool"
-#addin "Cake.FileHelpers"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS

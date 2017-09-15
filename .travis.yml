@@ -3,7 +3,7 @@ solution: src/VcEngineAutomation.sln
 
 env:
   global:
-    - PKG_VERSION=0.2.1
+    - PKG_VERSION=0.2.2
 
 install:
   - curl -Lsfo build.sh https://cakebuild.net/download/bootstrapper/linux
