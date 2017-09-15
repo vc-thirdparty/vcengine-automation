@@ -1,5 +1,6 @@
 #Cake build 
 tools/
+!tools/packages.config
 build.ps1
 output/
 
