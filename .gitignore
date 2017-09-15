@@ -1,6 +1,4 @@
-#Cake build 
-tools/
-!tools/packages.config
+#Own build 
 build.ps1
 output/
 
@@ -289,7 +287,7 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/**
-# !tools/packages.config
+!tools/packages.config
 
 # Telerik's JustMock configuration file
 *.jmconfig
@@ -425,8 +423,8 @@ __pycache__/
 # Python Tools for Visual Studio (PTVS)
 
 # Cake - Uncomment if you are using it
-# tools/**
-# !tools/packages.config
+tools/**
+!tools/packages.config
 
 # Telerik's JustMock configuration file
 
