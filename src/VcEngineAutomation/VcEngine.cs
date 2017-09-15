@@ -85,7 +85,14 @@ namespace VcEngineAutomation
 
             Console.WriteLine("Setting main window as foreground");
             MainWindow.SetForeground();
+
+            CheckForCrashAction = null;
         }
+
+        /// <summary>
+        /// Action to add custom code to check for crashes, this action should be quick
+        /// </summary>
+        public Action<VcEngine> CheckForCrashAction { get; set; }
 
         private FileVersionInfo GetVersionInfo(Process process)
         {
@@ -155,6 +162,7 @@ namespace VcEngineAutomation
             var currentPropertyValue = MainWindow.Properties.HelpText;
             return currentPropertyValue != null && ((string)currentPropertyValue).Contains("Busy");
         }
+
         public virtual void CheckForCrash()
         {
             MainWindow.WaitWhileBusy();
@@ -168,6 +176,8 @@ namespace VcEngineAutomation
                 var text = VcMessageBox.GetTextAndClose(this);
                 if (text.ToLower().Contains("unhandled exception")) throw new InvalidOperationException(text);
             }
+
+            CheckForCrashAction?.Invoke(this);
         }
 
         public void MoveFocusTo3DViewPort()
