@@ -226,6 +226,20 @@ namespace VcEngineAutomation.Ribbons
             SelectDropdownItem(menu, text);
             vcEngine.WaitWhileBusy();
         }
+        public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState)
+        {
+            AutomationElement[] menues = Group(groupName).FindAllChildren();
+            string itemNames = string.Join("', '", menues.Select(i => i.Properties.Name.Value));
+            Menu menu = menues.FirstOrDefault(b => string.Equals(b.Properties.Name, itemName, StringComparison.OrdinalIgnoreCase))?.AsMenu();
+            if (menu == null) throw new InvalidOperationException($"No ribbon menu found named '{itemName}', available choices are '{itemNames}'");
+            var togglePattern = GetDropdownMenuItem(menu, text).Patterns.Toggle.Pattern;
+            if (togglePattern.ToggleState != toggleState)
+            {
+                togglePattern.Toggle();;
+            }
+            menu.Patterns.ExpandCollapse.Pattern.Collapse();
+            vcEngine.WaitWhileBusy();
+        }
         public void SelectDropdownItem(string groupName, int itemIndex, string text)
         {
             var elements = Group(groupName).FindAllChildren();
@@ -236,13 +250,18 @@ namespace VcEngineAutomation.Ribbons
         }
         private void SelectDropdownItem(Menu menu, string text)
         {
+            GetDropdownMenuItem(menu, text).Invoke();
+            vcEngine.WaitWhileBusy();
+        }
+
+        private MenuItem GetDropdownMenuItem(Menu menu, string text)
+        {
             Window popup = vcEngine.MainWindow.GetCreatedWindowsForAction(() => menu.AsComboBox().Expand()).First();
             MenuItem[] menuItems = popup.FindAllChildren(cf => cf.ByControlType(ControlType.MenuItem)).Select(ae => ae.AsMenuItem()).ToArray();
             string menuItemNames = string.Join("', '", menuItems.Select(m => m.FindFirstChild().AsLabel().Text).ToArray());
             MenuItem menuItem = menuItems.FirstOrDefault(m => m.FindFirstChild().AsLabel().Text.Equals(text, StringComparison.OrdinalIgnoreCase));
             if (menuItem == null) throw new InvalidOperationException($"No ribbon menu item found named '{text}', available choices are '{menuItemNames}'");
-            menuItem.Invoke();
-            vcEngine.WaitWhileBusy();
+            return menuItem;
         }
 
         [Obsolete("Use FindComboBox instead")]
