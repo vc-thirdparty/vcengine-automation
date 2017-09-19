@@ -43,8 +43,8 @@ namespace VcEngineAutomation
         public Options Options { get; }
         public Camera Camera { get; }
         public Visual3DToolbar Visual3DToolbar { get; }
-        public PropertiesPanel PropertiesPanel => new PropertiesPanel(this, false);
-        public PropertiesPanel DrawingPropertiesPanel => new PropertiesPanel(this, true);
+        public PropertiesPanel PropertiesPanel => Retry.WhileException(() => new PropertiesPanel(this, false), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+        public PropertiesPanel DrawingPropertiesPanel => Retry.WhileException(() => new PropertiesPanel(this, true), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
         public ECataloguePanel ECataloguePanel { get; }
         public OutputPanel OutputPanel { get; }
         public AutomationElement ViewPort => viewPort.Value;
@@ -163,7 +163,7 @@ namespace VcEngineAutomation
             return currentPropertyValue != null && ((string)currentPropertyValue).Contains("Busy");
         }
 
-        public virtual void CheckForCrash()
+        public void CheckForCrash()
         {
             MainWindow.WaitWhileBusy();
             if (MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return;
@@ -194,7 +194,7 @@ namespace VcEngineAutomation
                 Mouse.MoveBy((int)moveOffset.X, (int)moveOffset.Y);
             }
         }
-        public void LoadLayout(string layoutFile, bool closeMandatoryUpdateWindow = true)
+        public void LoadLayout(string layoutFile)
         {
             string fileToLoad = GetFileToLoad(layoutFile);
             AutomationElement menuBar = ApplicationMenu.GetMenu("Open", "Computer");

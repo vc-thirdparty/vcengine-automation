@@ -131,13 +131,18 @@ namespace VcEngineAutomation.Extensions
             }
         }
 
-        public static Window[] FindModalWindowsProtected(this Window window, int index = 0)
+        public static Window[] FindModalWindowsProtected(this Window window)
+        {
+            return FindModalWindowsProtected(window, 0);
+        }
+
+        private static Window[] FindModalWindowsProtected(this Window window, int index )
         {
             try
             {
                 Window[] modalWindows = window.ModalWindows;
                 Window progressBarDialog = modalWindows.FirstOrDefault(w => w.Properties.AutomationId.ValueOrDefault == "ProgressBarDialog");
-                modalWindows = modalWindows.Except(new[] {progressBarDialog}).ToArray();
+                modalWindows = modalWindows.Except(new[] { progressBarDialog }).ToArray();
                 if (!modalWindows.Any() && progressBarDialog != null)
                 {
                     return progressBarDialog.FindModalWindowsProtected();
@@ -150,6 +155,16 @@ namespace VcEngineAutomation.Extensions
                 Thread.Sleep(DefaultSleepForComException);
                 return FindModalWindowsProtected(window, index + 1);
             }
+        }
+
+
+        public static Window[] RetryUntilAnyModalWindow(this Window window)
+        {
+            return RetryUntilAnyModalWindow(window, null);
+        }
+        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? waitTimeSpan)
+        {
+            return Retry.While(window.FindModalWindowsProtected, windows => !windows.Any(), waitTimeSpan ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
         }
 
     }
