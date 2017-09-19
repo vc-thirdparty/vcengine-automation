@@ -194,7 +194,7 @@ namespace VcEngineAutomation
                 Mouse.MoveBy((int)moveOffset.X, (int)moveOffset.Y);
             }
         }
-        public void LoadLayout(string layoutFile, bool closeMandatoryUpdateWindow = true)
+        public void LoadLayout(string layoutFile)
         {
             string fileToLoad = GetFileToLoad(layoutFile);
             AutomationElement menuBar = ApplicationMenu.GetMenu("Open", "Computer");
