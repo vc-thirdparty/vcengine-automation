@@ -222,41 +222,26 @@ namespace VcEngineAutomation.Ribbons
 
         public void SelectDropdownItem(string groupName, string itemName, string text)
         {
-            AutomationElement[] menues = Group(groupName).FindAllChildren();
-            string itemNames = string.Join("', '", menues.Select(i => i.Properties.Name.Value));
-            Menu menu = menues.FirstOrDefault(b => string.Equals(b.Properties.Name, itemName, StringComparison.OrdinalIgnoreCase))?.AsMenu();
-            if (menu == null) throw new InvalidOperationException($"No ribbon menu found named '{itemName}', available choices are '{itemNames}'");
-            SelectDropdownItem(menu, text);
-            vcEngine.WaitWhileBusy();
-        }
-        public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState)
-        {
-            AutomationElement[] menues = Group(groupName).FindAllChildren();
-            string itemNames = string.Join("', '", menues.Select(i => i.Properties.Name.Value));
-            Menu menu = menues.FirstOrDefault(b => string.Equals(b.Properties.Name, itemName, StringComparison.OrdinalIgnoreCase))?.AsMenu();
-            if (menu == null) throw new InvalidOperationException($"No ribbon menu found named '{itemName}', available choices are '{itemNames}'");
-            var togglePattern = GetDropdownMenuItem(menu, text).Patterns.Toggle.Pattern;
-            if (togglePattern.ToggleState != toggleState)
-            {
-                togglePattern.Toggle();;
-            }
-            menu.Patterns.ExpandCollapse.Pattern.Collapse();
+            GetDropdownMenuItem(FindMenu(groupName, itemName), text).Invoke();
             vcEngine.WaitWhileBusy();
         }
         public void SelectDropdownItem(string groupName, int itemIndex, string text)
         {
-            var elements = Group(groupName).FindAllChildren();
-            if (elements.Length <= itemIndex) throw new InvalidOperationException($"No ribbon menu found at the specified index {itemIndex}");
-            Menu menu = elements[itemIndex].AsMenu();
-            SelectDropdownItem(menu, text);
-            vcEngine.WaitWhileBusy();
-        }
-        private void SelectDropdownItem(Menu menu, string text)
-        {
-            GetDropdownMenuItem(menu, text).Invoke();
+            GetDropdownMenuItem(FindMenu(groupName, itemIndex), text).Invoke();
             vcEngine.WaitWhileBusy();
         }
 
+        public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState)
+        {
+            Menu menu = FindMenu(groupName, itemName);
+            var togglePattern = GetDropdownMenuItem(menu, text).Patterns.Toggle.Pattern;
+            if (togglePattern.ToggleState != toggleState)
+            {
+                togglePattern.Toggle();
+            }
+            menu.Patterns.ExpandCollapse.Pattern.Collapse();
+            vcEngine.WaitWhileBusy();
+        }
         private MenuItem GetDropdownMenuItem(Menu menu, string text)
         {
             Window popup = vcEngine.MainWindow.GetCreatedWindowsForAction(() => menu.AsComboBox().Expand()).First();
@@ -323,6 +308,26 @@ namespace VcEngineAutomation.Ribbons
             if (element == null) throw new InvalidOperationException($"No check box found in group '{groupName}' with name {labelName}");
             Helpers.WaitUntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsCheckBox();
+        }
+
+        public Menu FindMenu(string groupName, string itemName)
+        {
+            AutomationElement[] menues = Group(groupName).FindAllChildren();
+            string itemNames = string.Join("', '", menues.Select(i => i.Properties.Name.Value));
+            Menu menu = menues.FirstOrDefault(b => string.Equals(b.Properties.Name, itemName, StringComparison.OrdinalIgnoreCase))?.AsMenu();
+            if (menu == null) throw new InvalidOperationException($"No ribbon menu found named '{itemName}', available choices are '{itemNames}'");
+            return menu;
+        }
+        public Menu FindMenu(string groupName, int itemIndex)
+        {
+            var elements = Group(groupName).FindAllChildren();
+            if (elements.Length <= itemIndex) throw new InvalidOperationException($"No ribbon menu found at the specified index {itemIndex}");
+            return elements[itemIndex].AsMenu();
+        }
+
+        public MenuItem FindDropdownMenuItem(string groupName, string itemName, string text)
+        {
+            return GetDropdownMenuItem(FindMenu(groupName, itemName), text);
         }
     }
 }
