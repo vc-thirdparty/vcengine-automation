@@ -46,8 +46,11 @@ namespace VcEngineAutomation.Ribbons
                     Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                     if (!TabPage.IsSelected)
                     {
-                        vcEngine.Ribbon.HomeTab.Select();
-                        Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                        if (this != vcEngine.Ribbon.HomeTab)
+                        {
+                            vcEngine.Ribbon.HomeTab.Select();
+                            Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                        }
                         Mouse.LeftClick(TabPage.GetCenter());
                         Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                         if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
