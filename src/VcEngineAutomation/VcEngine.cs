@@ -163,7 +163,7 @@ namespace VcEngineAutomation
             return currentPropertyValue != null && ((string)currentPropertyValue).Contains("Busy");
         }
 
-        public virtual void CheckForCrash()
+        public void CheckForCrash()
         {
             MainWindow.WaitWhileBusy();
             if (MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return;
