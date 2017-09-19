@@ -107,8 +107,7 @@ namespace VcEngineAutomation.Windows
 
         public static FileDialog Attach(Window mainWindow)
         {
-            var findWindowProtected = mainWindow.FindModalWindowsProtected();
-            return new FileDialog(mainWindow, findWindowProtected.First());
+            return new FileDialog(mainWindow, mainWindow.RetryUntilAnyModalWindow().First());
         }
 
         public static FileDialog Attach(VcEngine vcEngine)
