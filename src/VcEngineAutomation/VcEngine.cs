@@ -261,7 +261,7 @@ namespace VcEngineAutomation
             {
                 WorkingDirectory = installationPath,
                 FileName = Path.Combine(installationPath, "VisualComponents.Engine.exe"),
-                Arguments = "-automation-mode",
+                Arguments = "-AutomationMode",
                 WindowStyle = ProcessWindowStyle.Maximized
             });
         }
