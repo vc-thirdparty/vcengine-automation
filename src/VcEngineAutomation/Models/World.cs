@@ -1,4 +1,5 @@
-﻿using FlaUI.Core.Input;
+﻿using System;
+using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -57,11 +58,11 @@ namespace VcEngineAutomation.Models
             vcEngine.PropertiesPanel.SetProperty("Name", newComponentName);
         }
 
-        public void CopyAndPasteSelectedComponents()
+        public void CopyAndPasteSelectedComponents(TimeSpan? waitTimeSpan = null)
         {
             vcEngine.MoveFocusTo3DViewPort();
             vcEngine.Ribbon.HomeTab.ClickButton("Clipboard", "Copy");
-            vcEngine.Ribbon.HomeTab.ClickButton("Clipboard", "Paste");
+            vcEngine.Ribbon.HomeTab.ClickButton("Clipboard", "Paste", waitTimeSpan);
         }
         public void DeleteSelectedComponent()
         {

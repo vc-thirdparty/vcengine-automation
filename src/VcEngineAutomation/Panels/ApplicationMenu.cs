@@ -38,16 +38,16 @@ namespace VcEngineAutomation.Panels
         }
 
 
-        public void ClickCancel()
+        public void ClickCancel(TimeSpan? waitTimeSpan=null)
         {
             vcEngine.MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("cancel")).AsButton().Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void ClickOk()
+        public void ClickOk(TimeSpan? waitTimeSpan = null)
         {
             vcEngine.MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("ok")).AsButton().Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
     }
 }

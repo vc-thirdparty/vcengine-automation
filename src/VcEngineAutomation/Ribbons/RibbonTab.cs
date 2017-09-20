@@ -95,12 +95,12 @@ namespace VcEngineAutomation.Ribbons
             }
             throw new InvalidOperationException($"Unknown type '{typeof(T)}'");
         }
-        public void ClickButton(string groupName, string buttonName)
+        public void ClickButton(string groupName, string buttonName, TimeSpan? waitTimeSpan=null)
         {
             var button = FindButtonByName(groupName, buttonName);
             if (!button.IsEnabled()) throw new InvalidOperationException($"Ribbon button '{buttonName}' is not enabled");
             Invoke(button);
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
         public Button FindButtonByName(string groupName, string buttonName)
@@ -135,7 +135,7 @@ namespace VcEngineAutomation.Ribbons
             }
         }
 
-        public void ClickButton(int groupIndex, int buttonIndex)
+        public void ClickButton(int groupIndex, int buttonIndex, TimeSpan? waitTimeSpan = null)
         {
             vcEngine.CheckForCrash();
             AutomationElement[] buttons = GetGroupItems<Button>(Group(groupIndex));
@@ -143,9 +143,9 @@ namespace VcEngineAutomation.Ribbons
             Button button = buttons[buttonIndex].AsButton();
             if (!button.Properties.IsEnabled) throw new InvalidOperationException($"Ribbon button at index {buttonIndex} is not enabled");
             Invoke(button);
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-        public void ClickButton(string groupName, int buttonIndex)
+        public void ClickButton(string groupName, int buttonIndex, TimeSpan? waitTimeSpan = null)
         {
             vcEngine.CheckForCrash();
             AutomationElement[] buttons = GetGroupItems<Button>(Group(groupName));
@@ -153,19 +153,19 @@ namespace VcEngineAutomation.Ribbons
             Button button = buttons[buttonIndex].AsButton();
             if (!button.Properties.IsEnabled) throw new InvalidOperationException($"Ribbon button at index {buttonIndex} is not enabled");
             Invoke(button);
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
 
-        public CommandPanel ClickCommandPanelButton(string groupName, string buttonName, string startOfTitle=null)
+        public CommandPanel ClickCommandPanelButton(string groupName, string buttonName, string startOfTitle=null, TimeSpan? waitTimeSpan = null)
         {
-            ClickButton(groupName, buttonName);
+            ClickButton(groupName, buttonName, waitTimeSpan);
             return GetCommandPanel(startOfTitle);
         }
 
-        public CommandPanel ClickCommandPanelButton(string groupName, int buttonIndex, string startOfTitle = null)
+        public CommandPanel ClickCommandPanelButton(string groupName, int buttonIndex, string startOfTitle = null, TimeSpan? waitTimeSpan = null)
         {
-            ClickButton(groupName, buttonIndex);
+            ClickButton(groupName, buttonIndex, waitTimeSpan);
             return GetCommandPanel(startOfTitle);
         }
 
@@ -182,7 +182,7 @@ namespace VcEngineAutomation.Ribbons
         }
 
 
-        public void SelectBigDropdownItem(string groupName, int index, int menuIndex)
+        public void SelectBigDropdownItem(string groupName, int index, int menuIndex, TimeSpan? waitTimeSpan=null)
         {
             Menu menu = Group(groupName).FindAllChildren().ElementAtOrDefault(index)?.AsMenu();
             if (menu == null) throw new InvalidOperationException("No ribbon menu at specified index");
@@ -193,9 +193,15 @@ namespace VcEngineAutomation.Ribbons
             if (elements.Length < menuIndex) throw new InvalidOperationException($"no menu item found at index '{menuIndex}'");
             MenuItem menuItem = elements[menuIndex].AsMenuItem();
             menuItem?.Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
+
         public void SelectBigDropdownItem(string groupName, int index, params string[] text)
+        {
+            SelectBigDropdownItem(groupName, index, null, text);
+        }
+
+        public void SelectBigDropdownItem(string groupName, int index, TimeSpan? waitTimeSpan, params string[] text)
         {
             Menu menu = Group(groupName).FindAllChildren().ElementAtOrDefault(index)?.AsMenu();
             if (menu == null) throw new InvalidOperationException("No ribbon menu at specified index");
@@ -217,21 +223,21 @@ namespace VcEngineAutomation.Ribbons
                 }
             }
             menuItem?.Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void SelectDropdownItem(string groupName, string itemName, string text)
+        public void SelectDropdownItem(string groupName, string itemName, string text, TimeSpan? waitTimeSpan=null)
         {
             GetDropdownMenuItem(FindMenu(groupName, itemName), text).Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-        public void SelectDropdownItem(string groupName, int itemIndex, string text)
+        public void SelectDropdownItem(string groupName, int itemIndex, string text, TimeSpan? waitTimeSpan = null)
         {
             GetDropdownMenuItem(FindMenu(groupName, itemIndex), text).Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState)
+        public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState, TimeSpan? waitTimeSpan = null)
         {
             Menu menu = FindMenu(groupName, itemName);
             var togglePattern = GetDropdownMenuItem(menu, text).Patterns.Toggle.Pattern;
@@ -240,7 +246,7 @@ namespace VcEngineAutomation.Ribbons
                 togglePattern.Toggle();
             }
             menu.Patterns.ExpandCollapse.Pattern.Collapse();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
         private MenuItem GetDropdownMenuItem(Menu menu, string text)
         {

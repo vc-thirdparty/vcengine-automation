@@ -194,7 +194,7 @@ namespace VcEngineAutomation
                 Mouse.MoveBy((int)moveOffset.X, (int)moveOffset.Y);
             }
         }
-        public void LoadLayout(string layoutFile)
+        public void LoadLayout(string layoutFile, TimeSpan? waitTimeSpan=null)
         {
             string fileToLoad = GetFileToLoad(layoutFile);
             AutomationElement menuBar = ApplicationMenu.GetMenu("Open", "Computer");
@@ -202,7 +202,7 @@ namespace VcEngineAutomation
             Helpers.WaitUntilInputIsProcessed();
             //MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Open(fileToLoad);
-            WaitWhileBusy(TimeSpan.FromMinutes(5));
+            WaitWhileBusy(waitTimeSpan ?? TimeSpan.FromMinutes(5));
         }
         private static string GetFileToLoad(string layoutFile)
         {
@@ -227,7 +227,7 @@ namespace VcEngineAutomation
             return fileToLoad;
         }
 
-        public void SaveLayout(string fileToSave, bool overwrite = false)
+        public void SaveLayout(string fileToSave, bool overwrite = false, TimeSpan? waitForTimeSpan=null)
         {
             if (!fileToSave.ToLower().EndsWith(".vcmx")) throw new InvalidOperationException($"File extension when saving layout file must be 'vcmx' and not '{Path.GetExtension(fileToSave)}'");
             AutomationElement menuBar = ApplicationMenu.GetMenu("Save As", "Computer");
@@ -235,7 +235,7 @@ namespace VcEngineAutomation
             Helpers.WaitUntilInputIsProcessed();
             MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Save(fileToSave, overwrite);
-            WaitWhileBusy(TimeSpan.FromMinutes(1));
+            WaitWhileBusy(waitForTimeSpan ?? TimeSpan.FromMinutes(1));
         }
 
         public static VcEngine Attach()
