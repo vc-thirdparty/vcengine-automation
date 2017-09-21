@@ -34,6 +34,7 @@ namespace VcEngineAutomation
 
         public bool IsR8 { get; }
         public bool IsR7 { get; }
+        public bool IsR7OrAbove { get; }
         public bool IsR6 { get; }
         public bool IsR5 { get;  }
         public Window MainWindow { get; }
@@ -60,6 +61,10 @@ namespace VcEngineAutomation
             IsR6 = fileVersionInfo.FileVersion.StartsWith("4.0.3");
             IsR7 = fileVersionInfo.FileVersion.StartsWith("4.0.4");
             IsR8 = fileVersionInfo.FileVersion.StartsWith("4.0.5");
+            IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4 
+                && fileVersionInfo.FileMinorPart >= 0 
+                && fileVersionInfo.FileBuildPart >= 5;
+
             Console.WriteLine("VcEngine Version: " + (IsR5 ? "R5" : IsR6 ? "R6" : IsR7 ? "R7" : IsR8 ? "R8" : fileVersionInfo.FileVersion));
             MainWindowName = fileVersionInfo.FileDescription;
 
@@ -77,8 +82,8 @@ namespace VcEngineAutomation
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
             Camera = new Camera(this);
-            OutputPanel = new OutputPanel(this, () => IsR7 || IsR8 ? TabRetriever.GetPane("VcOutput") : TabRetriever.GetPane("Output", "VcOutputContentPane"));
-            ECataloguePanel = new ECataloguePanel(this, () => IsR7 || IsR8 ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
+            OutputPanel = new OutputPanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("VcOutput") : TabRetriever.GetPane("Output", "VcOutputContentPane"));
+            ECataloguePanel = new ECataloguePanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
             
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.Properties.IsEnabled.Value, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
@@ -128,11 +133,11 @@ namespace VcEngineAutomation
 
         public CommandPanel GetCommandPanel()
         {
-            return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR7 || IsR8 ? "CommandPanelViewModelTabItem" : "CommandPanelViewModelContentPane")));
+            return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR7OrAbove ? "CommandPanelViewModelTabItem" : "CommandPanelViewModelContentPane")));
         }
         public CommandPanel GetCommandPanel(string startOfTitle)
         {
-            return new CommandPanel(this, () => IsR7 || IsR8 ? TabRetriever.GetPane("CommandPanelViewModel") : TabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
+            return new CommandPanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("CommandPanelViewModel") : TabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
         }
 
         public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)

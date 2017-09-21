@@ -16,10 +16,10 @@ namespace VcEngineAutomation.Panels
 
         public PropertiesPanel(VcEngine vcEngine, bool isInDrawingContext)
         {
-            Pane = vcEngine.IsR7 || vcEngine.IsR8
+            Pane = vcEngine.IsR7OrAbove
                 ? new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor")
                 : new DockedTabRetriever(vcEngine.MainWindow).GetPane(isInDrawingContext ? "Drawing Properties" : "Component Properties", "VcPropertyEditorContentPane");
-            lockButton = new Lazy<Button>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7 || vcEngine.IsR8 ? "Property.LockButton" : "LockButton1")).AsButton());
+            lockButton = new Lazy<Button>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7OrAbove ? "Property.LockButton" : "LockButton1")).AsButton());
         }
 
         public AutomationElement CoordinatePane
