@@ -84,7 +84,7 @@ namespace VcEngineAutomation.Panels
             return Pane.GetTextBoxForLabel(label);
         }
 
-        public void Apply()
+        public void Apply(TimeSpan? waitTimeSpan=null)
         {
             vcEngine.WaitWhileBusy();
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
@@ -94,10 +94,10 @@ namespace VcEngineAutomation.Panels
             if (button.Properties.IsOffscreen) throw new InvalidOperationException("Apply button was not visible");
             if (!button.Properties.IsEnabled) throw new InvalidOperationException("Apply button was not enabled");
             button.Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void Cancel()
+        public void Cancel(TimeSpan? waitTimeSpan=null)
         {
             vcEngine.WaitWhileBusy();
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
@@ -107,12 +107,12 @@ namespace VcEngineAutomation.Panels
             if (button.Properties.IsOffscreen) throw new InvalidOperationException("Cancel button was not visible");
             if (!button.Properties.IsEnabled) throw new InvalidOperationException("Cancel button was not enabled");
             button.Invoke();
-            vcEngine.WaitWhileBusy();
+            vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void Close()
+        public void Close(TimeSpan? waitTimeSpan = null)
         {
-            Cancel();
+            Cancel(waitTimeSpan);
         }
 
         public void Dispose()
