@@ -2,6 +2,8 @@
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
+using FlaUI.Core.Input;
+using FlaUI.Core.Tools;
 using VcEngineAutomation.Extensions;
 
 namespace VcEngineAutomation.Windows
@@ -67,9 +69,15 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox Attach(Window mainWindow)
         {
+            var window = Retry.WhileException(() => AttachToWindow(mainWindow), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+            return new MessageBox(mainWindow, window.AsWindow());
+        }
+
+        private static AutomationElement AttachToWindow(Window mainWindow)
+        {
             var window = mainWindow.FindFirstDescendant(cf => cf.ByClassName("#32770"));
             if (window == null) throw new InvalidOperationException("WPF message box was not found");
-            return new MessageBox(mainWindow, window.AsWindow());
+            return window;
         }
 
         public static MessageBox AttachIfShown(VcEngine vcEngine)
@@ -126,6 +134,7 @@ namespace VcEngineAutomation.Windows
             if (!IsClosed && !window.IsClosed())
             {
                 window.Close();
+                Helpers.WaitUntilResponsive(mainWindow, TimeSpan.FromSeconds(5));
             }
         }
     }
