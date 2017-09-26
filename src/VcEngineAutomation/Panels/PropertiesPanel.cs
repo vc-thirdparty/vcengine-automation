@@ -4,6 +4,7 @@ using System.Linq;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
+using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Utils;
@@ -13,9 +14,11 @@ namespace VcEngineAutomation.Panels
     public class PropertiesPanel
     {
         private readonly Lazy<Button> lockButton;
+        private readonly VcEngine vcEngine;
 
         public PropertiesPanel(VcEngine vcEngine, bool isInDrawingContext)
         {
+            this.vcEngine = vcEngine;
             Pane = vcEngine.IsR7OrAbove
                 ? new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor")
                 : new DockedTabRetriever(vcEngine.MainWindow).GetPane(isInDrawingContext ? "Drawing Properties" : "Component Properties", "VcPropertyEditorContentPane");
@@ -56,11 +59,26 @@ namespace VcEngineAutomation.Panels
             set
             {
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
-                textBoxs[0].Enter(value.X.ToString("F3", CultureInfo.InvariantCulture));
-                textBoxs[1].Enter(value.Y.ToString("F3", CultureInfo.InvariantCulture));
-                textBoxs[2].Enter(value.Z.ToString("F3", CultureInfo.InvariantCulture));
-                // Hack for R5
-                HeaderLabel.LeftClick();
+                if (!double.Parse(textBoxs[0].Text, CultureInfo.InvariantCulture).Equals(value.X))
+                {
+                    textBoxs[0].Enter(value.X.ToString("F3", CultureInfo.InvariantCulture));
+                    Keyboard.Type(VirtualKeyShort.ENTER);
+                }
+                if (!double.Parse(textBoxs[1].Text, CultureInfo.InvariantCulture).Equals(value.Y))
+                {
+                    textBoxs[1].Enter(value.Y.ToString("F3", CultureInfo.InvariantCulture));
+                    Keyboard.Type(VirtualKeyShort.ENTER);
+                }
+                if (!double.Parse(textBoxs[2].Text, CultureInfo.InvariantCulture).Equals(value.Z))
+                {
+                    textBoxs[2].Enter(value.Z.ToString("F3", CultureInfo.InvariantCulture));
+                    Keyboard.Type(VirtualKeyShort.ENTER);
+                }
+                if (!vcEngine.IsR7OrAbove)
+                {
+                    // Hack for R5
+                    HeaderLabel.LeftClick();
+                }
             }
         }
 
@@ -79,11 +97,26 @@ namespace VcEngineAutomation.Panels
             set
             {
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
-                textBoxs[5].Enter(value.Rx.ToString("F3", CultureInfo.InvariantCulture));
-                textBoxs[4].Enter(value.Ry.ToString("F3", CultureInfo.InvariantCulture));
-                textBoxs[3].Enter(value.Rz.ToString("F3", CultureInfo.InvariantCulture));
-                // Hack for R5
-                HeaderLabel.LeftClick();
+                if (!double.Parse(textBoxs[5].Text, CultureInfo.InvariantCulture).Equals(value.Rx))
+                {
+                    textBoxs[5].Enter(value.Rx.ToString("F3", CultureInfo.InvariantCulture));
+                    Keyboard.Type(VirtualKeyShort.ENTER);
+                }
+                if (!double.Parse(textBoxs[4].Text, CultureInfo.InvariantCulture).Equals(value.Ry))
+                {
+                    textBoxs[4].Enter(value.Ry.ToString("F3", CultureInfo.InvariantCulture));
+                    Keyboard.Type(VirtualKeyShort.ENTER);
+                }
+                if (!double.Parse(textBoxs[3].Text, CultureInfo.InvariantCulture).Equals(value.Rz))
+                {
+                    textBoxs[3].Enter(value.Rz.ToString("F3", CultureInfo.InvariantCulture));
+                    Keyboard.Type(VirtualKeyShort.ENTER);
+                }
+                if (!vcEngine.IsR7OrAbove)
+                {
+                    // Hack for R5
+                    HeaderLabel.LeftClick();
+                }
             }
         }
 
