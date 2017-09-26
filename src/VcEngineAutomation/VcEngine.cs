@@ -25,6 +25,7 @@ namespace VcEngineAutomation
     public class VcEngine
     {
         private readonly Lazy<AutomationElement> viewPort;
+        private readonly Lazy<AutomationElement> quickAccessToolBar;
 
         public static string DefaultInstallationPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional");
 
@@ -40,6 +41,7 @@ namespace VcEngineAutomation
         public Window MainWindow { get; }
         public Ribbon Ribbon { get; }
         public string MainWindowName { get; }
+        public AutomationElement QuickAccessToolbar => quickAccessToolBar.Value;
         public ApplicationMenu ApplicationMenu { get; }
         public Options Options { get; }
         public Camera Camera { get; }
@@ -76,6 +78,7 @@ namespace VcEngineAutomation
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
             viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR8 ? "Viewport" : "viewportContentPane")));
+            quickAccessToolBar = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByClassName("QuickAccessToolbar")));
             World = new World(this);
             Ribbon = new Ribbon(this, MainWindow, mainTab);
             ApplicationMenu = new ApplicationMenu(this);
@@ -241,6 +244,33 @@ namespace VcEngineAutomation
             MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Save(fileToSave, overwrite);
             WaitWhileBusy(waitForTimeSpan ?? TimeSpan.FromMinutes(1));
+        }
+
+        private Button FindQuickAccessToolbarButton(string automationId, string name)
+        {
+            var button = QuickAccessToolbar.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsButton();
+            if (button == null)
+            {
+                QuickAccessToolbar.FindFirstDescendant(cf => cf.ByAutomationId("dropdownBtn")).Patterns.Toggle.Pattern.Toggle();
+                var menuItem = MainWindow.Popup.FindFirstChild(cf => cf.ByName(name))?.AsMenuItem();
+                if (menuItem == null) throw new InvalidOperationException($"Feature {name} is not enabled in exe.config file");
+                menuItem.Invoke();
+                button = QuickAccessToolbar.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsButton();
+            }
+            if (button == null) throw new InvalidOperationException($"Could not find {name} button");
+            return button.AsButton();
+        }
+        public void DoUndo()
+        {
+            var undoButton = FindQuickAccessToolbarButton("QATUndo", "Undo");
+            if (!undoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to undo");
+            undoButton.Invoke();
+        }
+        public void DoRedo()
+        {
+            var undoButton = FindQuickAccessToolbarButton("QATRedo", "Redo");
+            if (!undoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to redo");
+            undoButton.Invoke();
         }
 
         public static VcEngine Attach()
