@@ -65,7 +65,7 @@ namespace VcEngineAutomation
             IsR8 = fileVersionInfo.FileVersion.StartsWith("4.0.5");
             IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4 
                 && fileVersionInfo.FileMinorPart >= 0 
-                && fileVersionInfo.FileBuildPart >= 5;
+                && fileVersionInfo.FileBuildPart >= 4;
 
             Console.WriteLine("VcEngine Version: " + (IsR5 ? "R5" : IsR6 ? "R6" : IsR7 ? "R7" : IsR8 ? "R8" : fileVersionInfo.FileVersion));
             MainWindowName = fileVersionInfo.FileDescription;
