@@ -248,14 +248,14 @@ namespace VcEngineAutomation
 
         private Button FindQuickAccessToolbarButton(string automationId, string name)
         {
-            var button = QuickAccessToolbar.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsButton();
+            var button = QuickAccessToolbar.FindFirstChild(cf => IsR7OrAbove ? cf.ByAutomationId(automationId) : cf.ByName(name))?.AsButton();
             if (button == null)
             {
                 QuickAccessToolbar.FindFirstDescendant(cf => cf.ByAutomationId("dropdownBtn")).Patterns.Toggle.Pattern.Toggle();
                 var menuItem = MainWindow.Popup.FindFirstChild(cf => cf.ByName(name))?.AsMenuItem();
                 if (menuItem == null) throw new InvalidOperationException($"Feature {name} is not enabled in exe.config file");
                 menuItem.Invoke();
-                button = QuickAccessToolbar.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsButton();
+                button = QuickAccessToolbar.FindFirstChild(cf => IsR7OrAbove ? cf.ByAutomationId(automationId) : cf.ByName(name))?.AsButton();
             }
             if (button == null) throw new InvalidOperationException($"Could not find {name} button");
             return button.AsButton();
