@@ -247,50 +247,6 @@ namespace VcEngineAutomation.Panels
         }
     }
 
-    public class Position
-    {
-        protected bool Equals(Position other)
-        {
-            return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Position)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = X.GetHashCode();
-                hashCode = (hashCode * 397) ^ Y.GetHashCode();
-                hashCode = (hashCode * 397) ^ Z.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        public Position() { }
-        public Position(double x, double y, double z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-
-        public override string ToString()
-        {
-            return $"{X}; {Y}; {Z}";
-        }
-    }
-
     public class Rotation
     {
         public Rotation() { }
