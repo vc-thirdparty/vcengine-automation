@@ -15,6 +15,7 @@ namespace VcEngineAutomation.Panels
     {
         private readonly Lazy<Button> lockButton;
         private readonly VcEngine vcEngine;
+        private static readonly IFormatProvider englishUsCultureInfo = System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag("en-US");
 
         public PropertiesPanel(VcEngine vcEngine, bool isInDrawingContext)
         {
@@ -194,6 +195,15 @@ namespace VcEngineAutomation.Panels
                 return GetProperty("Default", propertyName);
             }
         }
+        public double GetPropertyAsDouble(string key)
+        {
+            return double.Parse(GetProperty(key), englishUsCultureInfo);
+        }
+        public int GetPropertyAsInt(string key)
+        {
+            return int.Parse(GetProperty(key), englishUsCultureInfo);
+        }
+        
 
         public string GetProperty(string tabName, string propertyName)
         {

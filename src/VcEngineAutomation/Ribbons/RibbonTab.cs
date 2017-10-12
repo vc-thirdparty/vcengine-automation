@@ -245,7 +245,10 @@ namespace VcEngineAutomation.Ribbons
             {
                 togglePattern.Toggle();
             }
-            menu.Patterns.ExpandCollapse.Pattern.Collapse();
+            if (menu.Patterns.ExpandCollapse.Pattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
+            {
+                menu.Patterns.ExpandCollapse.Pattern.Collapse();
+            }
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
         private MenuItem GetDropdownMenuItem(Menu menu, string text)
