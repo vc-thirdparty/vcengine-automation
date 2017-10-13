@@ -9,6 +9,7 @@ using FlaUI.UIA3;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -26,6 +27,10 @@ namespace VcEngineAutomation
     {
         private readonly Lazy<AutomationElement> viewPort;
         private readonly Lazy<AutomationElement> quickAccessToolBar;
+        // Hardcoded for now until other ways to get locale for application
+        private readonly Lazy<CultureInfo> appCultureInfo = new Lazy<CultureInfo>(() => CultureInfo.GetCultureInfoByIetfLanguageTag("en-US"));
+        private readonly Lazy<Button> lazyUndoButton;
+        private readonly Lazy<Button> lazyRedoButton;
 
         public static string DefaultInstallationPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional");
 
@@ -52,6 +57,7 @@ namespace VcEngineAutomation
         public OutputPanel OutputPanel { get; }
         public AutomationElement ViewPort => viewPort.Value;
         public World World { get; }
+        public CultureInfo CultureInfo => appCultureInfo.Value;
 
         public VcEngine(Application application, AutomationBase automation)
         {
@@ -95,6 +101,9 @@ namespace VcEngineAutomation
             MainWindow.SetForeground();
 
             CheckForCrashAction = null;
+
+            lazyUndoButton = new Lazy<Button>(() => FindQuickAccessToolbarButton("QATUndo", "Undo"));
+            lazyRedoButton = new Lazy<Button>(() => FindQuickAccessToolbarButton("QATUndo", "Redo"));
         }
 
         /// <summary>
@@ -262,16 +271,17 @@ namespace VcEngineAutomation
         }
         public void DoUndo()
         {
-            var undoButton = FindQuickAccessToolbarButton("QATUndo", "Undo");
-            if (!undoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to undo");
-            undoButton.Invoke();
+            if (!UndoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to undo");
+            UndoButton.Invoke();
         }
         public void DoRedo()
         {
-            var undoButton = FindQuickAccessToolbarButton("QATRedo", "Redo");
-            if (!undoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to redo");
-            undoButton.Invoke();
+            if (!RedoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to redo");
+            RedoButton.Invoke();
         }
+
+        public Button UndoButton => lazyUndoButton.Value;
+        public Button RedoButton => lazyRedoButton.Value;
 
         public static VcEngine Attach()
         {

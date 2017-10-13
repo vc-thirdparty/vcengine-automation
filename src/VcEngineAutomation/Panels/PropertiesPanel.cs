@@ -15,7 +15,7 @@ namespace VcEngineAutomation.Panels
     {
         private readonly Lazy<Button> lockButton;
         private readonly VcEngine vcEngine;
-        private static readonly IFormatProvider englishUsCultureInfo = System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag("en-US");
+        private readonly IFormatProvider appCultureInfo;
 
         public PropertiesPanel(VcEngine vcEngine, bool isInDrawingContext)
         {
@@ -24,6 +24,7 @@ namespace VcEngineAutomation.Panels
                 ? new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor")
                 : new DockedTabRetriever(vcEngine.MainWindow).GetPane(isInDrawingContext ? "Drawing Properties" : "Component Properties", "VcPropertyEditorContentPane");
             lockButton = new Lazy<Button>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7OrAbove ? "Property.LockButton" : "LockButton1")).AsButton());
+            appCultureInfo = vcEngine.CultureInfo;
         }
 
         public AutomationElement CoordinatePane
@@ -52,27 +53,27 @@ namespace VcEngineAutomation.Panels
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
                 return new Position
                 {
-                    X = double.Parse(textBoxs[0].Text, CultureInfo.InvariantCulture),
-                    Y = double.Parse(textBoxs[1].Text, CultureInfo.InvariantCulture),
-                    Z = double.Parse(textBoxs[2].Text, CultureInfo.InvariantCulture)
+                    X = double.Parse(textBoxs[0].Text, appCultureInfo),
+                    Y = double.Parse(textBoxs[1].Text, appCultureInfo),
+                    Z = double.Parse(textBoxs[2].Text, appCultureInfo)
                 };
             }
             set
             {
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
-                if (!double.Parse(textBoxs[0].Text, CultureInfo.InvariantCulture).Equals(value.X))
+                if (!double.Parse(textBoxs[0].Text, appCultureInfo).Equals(value.X))
                 {
-                    textBoxs[0].Enter(value.X.ToString("F3", CultureInfo.InvariantCulture));
+                    textBoxs[0].Enter(value.X.ToString("F3", appCultureInfo));
                     Keyboard.Type(VirtualKeyShort.ENTER);
                 }
-                if (!double.Parse(textBoxs[1].Text, CultureInfo.InvariantCulture).Equals(value.Y))
+                if (!double.Parse(textBoxs[1].Text, appCultureInfo).Equals(value.Y))
                 {
-                    textBoxs[1].Enter(value.Y.ToString("F3", CultureInfo.InvariantCulture));
+                    textBoxs[1].Enter(value.Y.ToString("F3", appCultureInfo));
                     Keyboard.Type(VirtualKeyShort.ENTER);
                 }
-                if (!double.Parse(textBoxs[2].Text, CultureInfo.InvariantCulture).Equals(value.Z))
+                if (!double.Parse(textBoxs[2].Text, appCultureInfo).Equals(value.Z))
                 {
-                    textBoxs[2].Enter(value.Z.ToString("F3", CultureInfo.InvariantCulture));
+                    textBoxs[2].Enter(value.Z.ToString("F3", appCultureInfo));
                     Keyboard.Type(VirtualKeyShort.ENTER);
                 }
                 if (!vcEngine.IsR7OrAbove)
@@ -90,27 +91,27 @@ namespace VcEngineAutomation.Panels
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
                 return new Rotation
                 {
-                    Rx = double.Parse(textBoxs[5].Text, CultureInfo.InvariantCulture),
-                    Ry = double.Parse(textBoxs[4].Text, CultureInfo.InvariantCulture),
-                    Rz = double.Parse(textBoxs[3].Text, CultureInfo.InvariantCulture)
+                    Rx = double.Parse(textBoxs[5].Text, appCultureInfo),
+                    Ry = double.Parse(textBoxs[4].Text, appCultureInfo),
+                    Rz = double.Parse(textBoxs[3].Text, appCultureInfo)
                 };
             }
             set
             {
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
-                if (!double.Parse(textBoxs[5].Text, CultureInfo.InvariantCulture).Equals(value.Rx))
+                if (!double.Parse(textBoxs[5].Text, appCultureInfo).Equals(value.Rx))
                 {
-                    textBoxs[5].Enter(value.Rx.ToString("F3", CultureInfo.InvariantCulture));
+                    textBoxs[5].Enter(value.Rx.ToString("F3", appCultureInfo));
                     Keyboard.Type(VirtualKeyShort.ENTER);
                 }
-                if (!double.Parse(textBoxs[4].Text, CultureInfo.InvariantCulture).Equals(value.Ry))
+                if (!double.Parse(textBoxs[4].Text, appCultureInfo).Equals(value.Ry))
                 {
-                    textBoxs[4].Enter(value.Ry.ToString("F3", CultureInfo.InvariantCulture));
+                    textBoxs[4].Enter(value.Ry.ToString("F3", appCultureInfo));
                     Keyboard.Type(VirtualKeyShort.ENTER);
                 }
-                if (!double.Parse(textBoxs[3].Text, CultureInfo.InvariantCulture).Equals(value.Rz))
+                if (!double.Parse(textBoxs[3].Text, appCultureInfo).Equals(value.Rz))
                 {
-                    textBoxs[3].Enter(value.Rz.ToString("F3", CultureInfo.InvariantCulture));
+                    textBoxs[3].Enter(value.Rz.ToString("F3", appCultureInfo));
                     Keyboard.Type(VirtualKeyShort.ENTER);
                 }
                 if (!vcEngine.IsR7OrAbove)
@@ -197,11 +198,11 @@ namespace VcEngineAutomation.Panels
         }
         public double GetPropertyAsDouble(string key)
         {
-            return double.Parse(GetProperty(key), englishUsCultureInfo);
+            return double.Parse(GetProperty(key), appCultureInfo);
         }
         public int GetPropertyAsInt(string key)
         {
-            return int.Parse(GetProperty(key), englishUsCultureInfo);
+            return int.Parse(GetProperty(key), appCultureInfo);
         }
         
 
@@ -254,48 +255,6 @@ namespace VcEngineAutomation.Panels
         {
             get { return GetProperty("Default", "Visible").Equals("True"); }
             set { SetProperty("Default", "Visible", value );}
-        }
-    }
-
-    public class Rotation
-    {
-        public Rotation() { }
-        public Rotation(double rX, double rY, double rZ)
-        {
-            Rx = rX;
-            Ry = rY;
-            Rz = rZ;
-        }
-
-        public double Rz { get; set; }
-
-        public double Ry { get; set; }
-
-        public double Rx { get; set; }
-
-
-        protected bool Equals(Rotation other)
-        {
-            return Rx.Equals(other.Rx) && Ry.Equals(other.Ry) && Rz.Equals(other.Rz);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Rotation)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Rx.GetHashCode();
-                hashCode = (hashCode * 397) ^ Ry.GetHashCode();
-                hashCode = (hashCode * 397) ^ Rz.GetHashCode();
-                return hashCode;
-            }
         }
     }
 }
