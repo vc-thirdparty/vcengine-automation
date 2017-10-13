@@ -9,6 +9,7 @@ using FlaUI.UIA3;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management;
@@ -26,6 +27,8 @@ namespace VcEngineAutomation
     {
         private readonly Lazy<AutomationElement> viewPort;
         private readonly Lazy<AutomationElement> quickAccessToolBar;
+        // Hardcoded for now until other ways to get locale for application
+        private readonly Lazy<CultureInfo> appCultureInfo = new Lazy<CultureInfo>(() => System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag("en-US"));
 
         public static string DefaultInstallationPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional");
 
@@ -52,6 +55,7 @@ namespace VcEngineAutomation
         public OutputPanel OutputPanel { get; }
         public AutomationElement ViewPort => viewPort.Value;
         public World World { get; }
+        public CultureInfo CultureInfo => appCultureInfo.Value;
 
         public VcEngine(Application application, AutomationBase automation)
         {
