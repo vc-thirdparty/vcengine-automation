@@ -89,7 +89,7 @@ namespace VcEngineAutomation.Utils
 
         public void DockPane(string paneTItle)
         {
-            Window window = mainWindow.FindAllChildren(cf => cf.ByControlType(ControlType.Window)).FirstOrDefault(w => w.AsWindow().Title == paneTItle).AsWindow();
+            Window window = mainWindow.FindAllChildren(cf => cf.ByControlType(ControlType.Window)).FirstOrDefault(w => w.AsWindow().Title == paneTItle)?.AsWindow();
             if (window != null)
             {                
                 Point point = window.Properties.BoundingRectangle.Value.North;
