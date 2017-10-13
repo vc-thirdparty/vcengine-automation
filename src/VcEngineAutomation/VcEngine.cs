@@ -281,7 +281,7 @@ namespace VcEngineAutomation
         }
 
         public Button UndoButton => lazyUndoButton.Value;
-        public Button RedoButton => lazyUndoButton.Value;
+        public Button RedoButton => lazyRedoButton.Value;
 
         public static VcEngine Attach()
         {
