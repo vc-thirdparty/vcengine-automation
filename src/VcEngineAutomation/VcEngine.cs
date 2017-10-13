@@ -28,7 +28,7 @@ namespace VcEngineAutomation
         private readonly Lazy<AutomationElement> viewPort;
         private readonly Lazy<AutomationElement> quickAccessToolBar;
         // Hardcoded for now until other ways to get locale for application
-        private readonly Lazy<CultureInfo> appCultureInfo = new Lazy<CultureInfo>(() => System.Globalization.CultureInfo.GetCultureInfoByIetfLanguageTag("en-US"));
+        private readonly Lazy<CultureInfo> appCultureInfo = new Lazy<CultureInfo>(() => CultureInfo.GetCultureInfoByIetfLanguageTag("en-US"));
         private readonly Lazy<Button> lazyUndoButton;
         private readonly Lazy<Button> lazyRedoButton;
 
