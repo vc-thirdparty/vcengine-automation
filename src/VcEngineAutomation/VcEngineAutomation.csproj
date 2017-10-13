@@ -69,6 +69,7 @@
     <Compile Include="Panels\OutputPanel.cs" />
     <Compile Include="Panels\Position.cs" />
     <Compile Include="Panels\PropertiesPanel.cs" />
+    <Compile Include="Panels\Rotation.cs" />
     <Compile Include="Panels\SimulationPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ribbons\Ribbon.cs" />
