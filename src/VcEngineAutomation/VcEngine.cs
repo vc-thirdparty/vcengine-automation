@@ -255,12 +255,15 @@ namespace VcEngineAutomation
             WaitWhileBusy(waitForTimeSpan ?? TimeSpan.FromMinutes(1));
         }
 
-        private Button FindQuickAccessToolbarButton(string automationId, string name)
+        public Button FindQuickAccessToolbarButton(string automationId, string name)
         {
             var button = QuickAccessToolbar.FindFirstChild(cf => IsR7OrAbove ? cf.ByAutomationId(automationId) : cf.ByName(name))?.AsButton();
             if (button == null)
             {
-                QuickAccessToolbar.FindFirstDescendant(cf => cf.ByAutomationId("dropdownBtn")).Patterns.Toggle.Pattern.Toggle();
+                var dropdown = QuickAccessToolbar.FindFirstDescendant(cf => cf.ByAutomationId("dropdownBtn"));
+                // Toggle pattern is supported but does not activate on R5 correctly
+                //dropdown.Patterns.Toggle.Pattern.Toggle();
+                dropdown.Click();
                 var menuItem = MainWindow.Popup.FindFirstChild(cf => cf.ByName(name))?.AsMenuItem();
                 if (menuItem == null) throw new InvalidOperationException($"Feature {name} is not enabled in exe.config file");
                 menuItem.Invoke();
