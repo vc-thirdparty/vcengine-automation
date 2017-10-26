@@ -103,7 +103,7 @@ namespace VcEngineAutomation
             CheckForCrashAction = null;
 
             lazyUndoButton = new Lazy<Button>(() => FindQuickAccessToolbarButton("QATUndo", "Undo"));
-            lazyRedoButton = new Lazy<Button>(() => FindQuickAccessToolbarButton("QATUndo", "Redo"));
+            lazyRedoButton = new Lazy<Button>(() => FindQuickAccessToolbarButton("QATRedo", "Redo"));
         }
 
         /// <summary>
