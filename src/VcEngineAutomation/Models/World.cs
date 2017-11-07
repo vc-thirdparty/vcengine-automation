@@ -20,7 +20,7 @@ namespace VcEngineAutomation.Models
         public void Clear()
         {
             vcEngine.ApplicationMenu.GetMenu("Clear All");
-            Helpers.WaitUntilInputIsProcessed();
+            Wait.UntilInputIsProcessed();
             VcMessageBox.AttachIfShown(vcEngine)?.ClickNo();
         }
 
@@ -35,8 +35,8 @@ namespace VcEngineAutomation.Models
         public void LoadComponentByVcid(string vcid)
         {
             vcEngine.ECataloguePanel.SearchTextBox.Enter(vcid);
-            Helpers.WaitUntilInputIsProcessed();
-            Helpers.WaitUntilResponsive(vcEngine.ECataloguePanel.SearchTextBox);
+            Wait.UntilInputIsProcessed();
+            Wait.UntilResponsive(vcEngine.ECataloguePanel.SearchTextBox);
             vcEngine.ECataloguePanel.DisplayedItems.First().DoubleClick();
         }
 

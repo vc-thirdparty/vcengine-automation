@@ -134,7 +134,7 @@ namespace VcEngineAutomation.Windows
             if (!IsClosed && !window.IsClosed())
             {
                 window.Close();
-                Helpers.WaitUntilResponsive(mainWindow, TimeSpan.FromSeconds(5));
+                Wait.UntilResponsive(mainWindow, TimeSpan.FromSeconds(5));
             }
         }
     }

@@ -32,27 +32,27 @@ namespace VcEngineAutomation.Ribbons
                 if (!TabPage.IsSelected)
                 {
                     Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(100));
-                    Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                    Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                     if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
                 }
             }
             else*/
             {
-                Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                 //Mouse.MoveTo(TabPage.GetCenter());
                 if (!TabPage.IsSelected)
                 {
                     Mouse.LeftClick(TabPage.GetCenter());
-                    Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                    Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                     if (!TabPage.IsSelected)
                     {
                         if (this != vcEngine.Ribbon.HomeTab)
                         {
                             vcEngine.Ribbon.HomeTab.Select();
-                            Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                            Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                         }
                         Mouse.LeftClick(TabPage.GetCenter());
-                        Helpers.WaitUntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                        Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
                         if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
                     }
                 }
@@ -118,11 +118,11 @@ namespace VcEngineAutomation.Ribbons
             var className = button.Properties.ClassName.Value;
             if (className == "ToggleButtonTool")
             {
-                Helpers.WaitUntilResponsive(button, TimeSpan.FromSeconds(5));
+                Wait.UntilResponsive(button, TimeSpan.FromSeconds(5));
                 if (button.Patterns.Toggle.Pattern.ToggleState.Value != ToggleState.On)
                 {
                     button.Click(true);
-                    Helpers.WaitUntilResponsive(button, TimeSpan.FromSeconds(5));
+                    Wait.UntilResponsive(button, TimeSpan.FromSeconds(5));
                 }
             }
             else if (className == "ButtonTool")
@@ -219,7 +219,7 @@ namespace VcEngineAutomation.Ribbons
                 if (menuItem == null) throw new InvalidOperationException($"No ribbon menu item found named '{s}' among '{string.Join("', '", menuItemsText.Select(t => t.Item2))}'");
                 if (s != text.Last())
                 {
-                    menuItems = menuItem.SubMenuItems.ToArray();
+                    menuItems = menuItem.Items.ToArray();
                 }
             }
             menuItem?.Invoke();
@@ -286,7 +286,7 @@ namespace VcEngineAutomation.Ribbons
         {
             AutomationElement element = Group(groupName).FindAllChildren(cf => cf.ByControlType(ControlType.Edit)).ElementAtOrDefault(index);
             if (element == null) throw new InvalidOperationException($"No text box found in group '{groupName}' at index {index}");
-            Helpers.WaitUntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsTextBox();
         }
 
@@ -294,30 +294,30 @@ namespace VcEngineAutomation.Ribbons
         {
             TextBox textbox = FindTextBox(groupName, index);
             if (!textbox.IsEnabled()) throw new InvalidOperationException($"Text box {groupName} at index {index} was not enabled");
-            Helpers.WaitUntilResponsive(textbox, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
             textbox.Text = text;
         }
         public ComboBox FindComboBox(string groupName, int index)
         {
             AutomationElement element = Group(groupName).FindAllDescendants(cf => cf.ByClassName("ComboBox").And(cf.ByAutomationId("PART_FocusSite"))).ElementAtOrDefault(index);
             if (element == null) throw new InvalidOperationException($"No text combo box found in group '{groupName}' at index {index}");
-            Helpers.WaitUntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             element.Click();
-            Helpers.WaitUntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsComboBox();
         }
         public CheckBox FindCheckBox(string groupName, int index)
         {
             AutomationElement element = Group(groupName).FindAllChildren(cf => cf.ByClassName("ToggleButtonTool")).ElementAtOrDefault(index);
             if (element == null) throw new InvalidOperationException($"No check box found in group '{groupName}' at index {index}");
-            Helpers.WaitUntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsCheckBox();
         }
         public CheckBox FindCheckBox(string groupName, string labelName)
         {
             AutomationElement element = Group(groupName).FindFirstDescendant(cf => cf.ByClassName("ToggleButtonTool").And(cf.ByName(labelName)));
             if (element == null) throw new InvalidOperationException($"No check box found in group '{groupName}' with name {labelName}");
-            Helpers.WaitUntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsCheckBox();
         }
 

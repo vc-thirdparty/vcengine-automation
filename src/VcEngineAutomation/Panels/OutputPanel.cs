@@ -28,7 +28,7 @@ namespace VcEngineAutomation.Panels
             if (!string.IsNullOrEmpty(Text))
             {
                 TextBox.RightClick(true);
-                vcEngine.MainWindow.Popup.ContextMenu.MenuItems.First(m => m.Properties.Name == "Clear").Invoke();
+                vcEngine.MainWindow.Popup.ContextMenu.Items.First(m => m.Properties.Name == "Clear").Invoke();
                 vcEngine.MainWindow.WaitWhileBusy();
             }
         }

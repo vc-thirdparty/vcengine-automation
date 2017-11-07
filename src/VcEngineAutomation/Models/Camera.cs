@@ -23,25 +23,25 @@ namespace VcEngineAutomation.Models
         {
             if (vcEngine.IsR7OrAbove) throw new NotImplementedException("Not implemented for changes in R7");
             cameraMoveButtons.Value[1].Click(true);
-            Helpers.WaitUntilResponsive(cameraMoveButtons.Value[1]);
+            Wait.UntilResponsive(cameraMoveButtons.Value[1]);
         }
         public void RotateUp()
         {
             if (vcEngine.IsR7OrAbove) throw new NotImplementedException("Not implemented for changes in R7");
             cameraMoveButtons.Value[0].Click(true);
-            Helpers.WaitUntilResponsive(cameraMoveButtons.Value[0]);
+            Wait.UntilResponsive(cameraMoveButtons.Value[0]);
         }
         public void RotateLeft()
         {
             if (vcEngine.IsR7OrAbove) throw new NotImplementedException("Not implemented for changes in R7");
             cameraMoveButtons.Value[2].Click(true);
-            Helpers.WaitUntilResponsive(cameraMoveButtons.Value[2]);
+            Wait.UntilResponsive(cameraMoveButtons.Value[2]);
         }
         public void RotateRight()
         {
             if (vcEngine.IsR7OrAbove) throw new NotImplementedException("Not implemented for changes in R7");
             cameraMoveButtons.Value[3].Click(true);
-            Helpers.WaitUntilResponsive(cameraMoveButtons.Value[3]);
+            Wait.UntilResponsive(cameraMoveButtons.Value[3]);
         }
 
         /*public void ViewFront()
