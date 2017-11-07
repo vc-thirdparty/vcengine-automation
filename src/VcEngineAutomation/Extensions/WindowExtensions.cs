@@ -68,7 +68,7 @@ namespace VcEngineAutomation.Extensions
 
         public static bool IsClosed(this Window item)
         {
-            if (item.Properties.IsOffscreen.ValueOrDefault) return true;
+            if (item.IsOffscreen) return true;
             return item.Properties.ProcessId == 0;
         }
 

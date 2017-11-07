@@ -12,7 +12,7 @@ namespace VcEngineAutomation.Panels
 {
     public class PropertiesPanel
     {
-        private readonly Lazy<Button> lockButton;
+        private readonly Lazy<ToggleButton> lockButton;
         private readonly VcEngine vcEngine;
         private readonly IFormatProvider appCultureInfo;
 
@@ -22,7 +22,7 @@ namespace VcEngineAutomation.Panels
             Pane = vcEngine.IsR7OrAbove
                 ? new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor")
                 : new DockedTabRetriever(vcEngine.MainWindow).GetPane(isInDrawingContext ? "Drawing Properties" : "Component Properties", "VcPropertyEditorContentPane");
-            lockButton = new Lazy<Button>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7OrAbove ? "Property.LockButton" : "LockButton1")).AsButton());
+            lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7OrAbove ? "Property.LockButton" : "LockButton1")).AsToggleButton());
             appCultureInfo = vcEngine.CultureInfo;
         }
 
@@ -144,7 +144,7 @@ namespace VcEngineAutomation.Panels
                 ClickTab(tab);
             }
             AutomationElement control = item.GetItemForLabel(propertyName);
-            if (!control.Properties.IsEnabled.Value) throw new InvalidOperationException($"Property '{tab}::{propertyName}' is not enabled");
+            if (!control.IsEnabled) throw new InvalidOperationException($"Property '{tab}::{propertyName}' is not enabled");
             if (control.Properties.ControlType == ControlType.ComboBox)
             {
                 ComboBox comboBox = control.AsComboBox();
@@ -224,7 +224,7 @@ namespace VcEngineAutomation.Panels
             if (control.Properties.ControlType == ControlType.ComboBox)
             {
                 ComboBox comboBox = control.AsComboBox();
-                if (!comboBox.Properties.IsEnabled) throw new InvalidOperationException($"Property '{tabName}::{propertyName}' is not enabled");
+                if (!comboBox.IsEnabled) throw new InvalidOperationException($"Property '{tabName}::{propertyName}' is not enabled");
                 return comboBox.SelectedItem.FindFirstDescendant().AsTextBox().Text;
             }
             else if (control.Properties.ControlType == ControlType.CheckBox)
@@ -239,14 +239,13 @@ namespace VcEngineAutomation.Panels
 
         public bool IsLocked
         {
-            get { return lockButton.Value.Patterns.Toggle.Pattern.ToggleState == ToggleState.On; }
+            get { return lockButton.Value.ToggleState == ToggleState.On; }
             set
             {
-                var togglePattern = lockButton.Value.Patterns.Toggle.Pattern;
-                ToggleState state = togglePattern.ToggleState;
+                ToggleState state = lockButton.Value.ToggleState;
                 if (value && state == ToggleState.Off || !value && state == ToggleState.On)
                 {
-                    togglePattern.Toggle();
+                    lockButton.Value.Toggle();
                 }
             }
         }

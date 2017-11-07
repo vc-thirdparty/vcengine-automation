@@ -24,7 +24,7 @@ namespace VcEngineAutomation.Panels
         public void WaitUntilPopulated(TimeSpan timeSpan)
         {
             var label = panel.Value.FindFirstDescendant(cf => cf.ByName("No Items."));
-            Retry.While(() => !label.Properties.IsOffscreen.Value, timeSpan, TimeSpan.FromSeconds(1));
+            Retry.While(() => !label.IsOffscreen, timeSpan, TimeSpan.FromSeconds(1));
         }
     }
 }
