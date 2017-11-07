@@ -181,7 +181,7 @@ namespace VcEngineAutomation.Extensions
             {
                 listItem.Item1.IsSelected = true;
             }
-            Helpers.WaitUntilInputIsProcessed();
+            Wait.UntilInputIsProcessed();
             if (valueComboBox.Patterns.ExpandCollapse.Pattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
             {
                 valueComboBox.Collapse();

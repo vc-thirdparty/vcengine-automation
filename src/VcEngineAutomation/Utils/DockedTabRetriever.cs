@@ -36,11 +36,11 @@ namespace VcEngineAutomation.Utils
             if (pane == null)
             {
                 tabItem.LeftClick();
-                Helpers.WaitUntilResponsive(tabItem);
+                Wait.UntilResponsive(tabItem);
                 if (!tabItem.IsSelected)
                 {
                     tabItem.Select();
-                    Helpers.WaitUntilResponsive(tabItem);
+                    Wait.UntilResponsive(tabItem);
                 }
                 pane = tabItem.FindFirstChild(cf => cf.ByControlType(ControlType.Custom));
                 if (pane == null) throw new InvalidOperationException($"Could not find the underlying custom pane for tab item '{automationId}TabItem'");
@@ -72,13 +72,13 @@ namespace VcEngineAutomation.Utils
             }
             if (tabPage.Properties.AutomationId.ValueOrDefault == customPaneAutomationId)
             {
-                Helpers.WaitUntilResponsive(tabPage);
+                Wait.UntilResponsive(tabPage);
                 return tabPage;
             }
 
             var pane = tabPage.FindFirstDescendant(cf => cf.ByAutomationId(customPaneAutomationId));
             if (pane == null) throw new InvalidOperationException($"Could not find pane with automation id '{customPaneAutomationId}'");
-            Helpers.WaitUntilResponsive(pane);
+            Wait.UntilResponsive(pane);
             return pane;
             /*AutomationElement[] descendants = mainWindow.FindAllDescendants(cf => cf.ByAutomationId(customPaneAutomationId));
             descendants.Should().NotBeEmpty("no docked panes could be found");

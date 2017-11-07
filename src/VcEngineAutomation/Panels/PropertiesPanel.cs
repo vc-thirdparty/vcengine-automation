@@ -162,7 +162,7 @@ namespace VcEngineAutomation.Panels
             }
             else if (control.Properties.ControlType == ControlType.CheckBox)
             {
-                control.AsCheckBox().State = (bool) value ? ToggleState.On : ToggleState.Off;
+                control.AsCheckBox().IsChecked = (bool)value;
             }
             else
             {
@@ -229,7 +229,7 @@ namespace VcEngineAutomation.Panels
             }
             else if (control.Properties.ControlType == ControlType.CheckBox)
             {
-                return control.AsCheckBox().State == ToggleState.On ? "True" : "False";
+                return control.AsCheckBox().ToggleState == ToggleState.On ? "True" : "False";
             }
             else
             {

@@ -34,7 +34,7 @@ namespace VcEngineAutomation.Windows
                 if (value != null)
                 {
                     fileNameTextBox.Value.Enter(value);
-                    Helpers.WaitUntilInputIsProcessed();
+                    Wait.UntilInputIsProcessed();
                 }
             }
         }
@@ -55,7 +55,7 @@ namespace VcEngineAutomation.Windows
             }
             FileName = filename;
             fileNameTextBox.Value.KeyIn(VirtualKeyShort.RETURN);
-            Helpers.WaitUntilInputIsProcessed();
+            Wait.UntilInputIsProcessed();
             mainWindow.WaitWhileBusy();
 
             Thread.Sleep(500);
@@ -85,7 +85,7 @@ namespace VcEngineAutomation.Windows
             }
             FileName = fileName;
             fileNameTextBox.Value.KeyIn(VirtualKeyShort.RETURN);
-            Helpers.WaitUntilInputIsProcessed();
+            Wait.UntilInputIsProcessed();
             mainWindow.WaitWhileBusy();
 
             /*if (!window.IsClosed())

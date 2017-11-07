@@ -169,7 +169,7 @@ namespace VcEngineAutomation
 
         private bool ShellIsBusy()
         {
-            Helpers.WaitUntilResponsive(MainWindow);
+            Wait.UntilResponsive(MainWindow);
             if (MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return false;
             CheckForCrash();
             if (MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")) != null)
@@ -216,7 +216,7 @@ namespace VcEngineAutomation
             string fileToLoad = GetFileToLoad(layoutFile);
             AutomationElement menuBar = ApplicationMenu.GetMenu("Open", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
-            Helpers.WaitUntilInputIsProcessed();
+            Wait.UntilInputIsProcessed();
             //MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Open(fileToLoad);
             WaitWhileBusy(waitTimeSpan ?? TimeSpan.FromMinutes(5));
@@ -249,7 +249,7 @@ namespace VcEngineAutomation
             if (!fileToSave.ToLower().EndsWith(".vcmx")) throw new InvalidOperationException($"File extension when saving layout file must be 'vcmx' and not '{Path.GetExtension(fileToSave)}'");
             AutomationElement menuBar = ApplicationMenu.GetMenu("Save As", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
-            Helpers.WaitUntilInputIsProcessed();
+            Wait.UntilInputIsProcessed();
             MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Save(fileToSave, overwrite);
             WaitWhileBusy(waitForTimeSpan ?? TimeSpan.FromMinutes(1));
