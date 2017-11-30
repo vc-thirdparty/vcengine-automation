@@ -190,7 +190,13 @@ namespace VcEngineAutomation.Extensions
 
         public static string GetSelectedText(this ComboBox comboBox)
         {
+            comboBox.Expand();
             return comboBox.SelectedItem?.FindFirstChild().AsLabel().Text;
+        }
+        public static ComboBoxItem GetSelectedItem(this ComboBox comboBox)
+        {
+            comboBox.Expand();
+            return comboBox.SelectedItem;
         }
         /*   public static void ClickItem(this ComboBox comboBox, string name)
            {
