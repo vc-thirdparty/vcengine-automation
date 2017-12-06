@@ -117,7 +117,8 @@ namespace VcEngineAutomation.Panels
 
         public void Dispose()
         {
-            if (Pane.IsVisible())
+            vcEngine.WaitWhileBusy();
+            if (!Pane.IsOffscreen)
             {
                 Close();
             }
