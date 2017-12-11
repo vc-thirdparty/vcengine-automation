@@ -25,7 +25,7 @@ namespace VcEngineAutomation.Windows
         public void ClickYes()
         {
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_yes"));
-            if (element == null) throw new InvalidOperationException("Yes button could not be found in message box");
+            if (element == null) throw new InvalidOperationException("'Yes' button could not be found in message box");
             element.AsButton().Invoke();
             mainWindow.WaitWhileBusy();
         }
@@ -33,23 +33,27 @@ namespace VcEngineAutomation.Windows
         {
             windowWasClosed = true;
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_ok"));
-            if (element == null) throw new InvalidOperationException("Ok button could not be found in message box");
+            if (element == null) throw new InvalidOperationException("'Ok' button could not be found in message box");
             element.AsButton().Invoke();
             mainWindow.WaitWhileBusy();
         }
         public void ClickNo()
         {
             AutomationElement element = window.FindFirstDescendant(cf => cf.ByAutomationId("_no"));
-            if (element == null) throw new InvalidOperationException("No button could not be found in message box");
+            if (element == null) throw new InvalidOperationException("'No' button could not be found in message box");
+            element.AsButton().Invoke();
+            mainWindow.WaitWhileBusy();
+        }
+        public void ClickCancel()
+        {
+            var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_cancel"));
+            if (element == null) throw new InvalidOperationException("'Cancel' button could not be found in message box");
             element.AsButton().Invoke();
             mainWindow.WaitWhileBusy();
         }
         public void Cancel()
         {
-            var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_cancel"));
-            if (element == null) throw new InvalidOperationException("Cancel button could not be found in message box");
-            element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            ClickCancel();
         }
 
         public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow = null)
