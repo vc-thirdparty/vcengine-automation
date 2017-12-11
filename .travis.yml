@@ -18,7 +18,7 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: 
-      - nuget push output/VcEngine.Automation.$PKG_VERSION.nupkg -ApiKey $NUGET_API_KEY  -Source https://www.nuget.org/api/v2/package
+      - ./build.sh -Target Nuget-Push
     on:
       tags: true
 
