@@ -15,6 +15,7 @@ var sonarcloudKey = EnvironmentVariable("SONARCLOUD_API_KEY") ?? Argument("sonar
 var nugetKey = EnvironmentVariable("NUGET_API_KEY") ?? Argument("nugetKey", "");
 
 var travis = EnvironmentVariable("TRAVIS") ?? "false";
+var nugetApiKey = EnvironmentVariable("NUGET_API_KEY") ?? "NOOP";
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -84,6 +85,15 @@ Task("Nuget-Pack")
 		NuGetPack("./nuspec/VcEngineAutomation.nuspec", new NuGetPackSettings {
 			Version = version,
 			OutputDirectory = outputDir
+		});
+	});
+	
+Task("Nuget-Push")
+	.Does(() =>
+	{
+		NuGetPush(GetFiles("./**/*.nupkg"), new NuGetPushSettings {
+			ApiKey = nugetApiKey,
+			Source = "https://www.nuget.org/api/v2/package"
 		});
 	});
 
