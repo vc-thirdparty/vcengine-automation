@@ -98,7 +98,7 @@ namespace VcEngineAutomation.Ribbons
         public void ClickButton(string groupName, string buttonName, TimeSpan? waitTimeSpan=null)
         {
             var button = FindButtonByName(groupName, buttonName);
-            if (!button.IsEnabled()) throw new InvalidOperationException($"Ribbon button '{buttonName}' is not enabled");
+            if (!button.IsEnabled) throw new InvalidOperationException($"Ribbon button '{buttonName}' is not enabled");
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
@@ -141,7 +141,7 @@ namespace VcEngineAutomation.Ribbons
             AutomationElement[] buttons = GetGroupItems<Button>(Group(groupIndex));
             if (buttons.Length <= buttonIndex) throw new InvalidOperationException($"No ribbon button found at index {buttonIndex}, number of buttons are {buttons.Length}");
             Button button = buttons[buttonIndex].AsButton();
-            if (!button.Properties.IsEnabled) throw new InvalidOperationException($"Ribbon button at index {buttonIndex} is not enabled");
+            if (!button.IsEnabled) throw new InvalidOperationException($"Ribbon button at index {buttonIndex} is not enabled");
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
@@ -151,7 +151,7 @@ namespace VcEngineAutomation.Ribbons
             AutomationElement[] buttons = GetGroupItems<Button>(Group(groupName));
             if (buttons.Length <= buttonIndex) throw new InvalidOperationException($"No ribbon button found at index {buttonIndex}, number of buttons are {buttons.Length}");
             Button button = buttons[buttonIndex].AsButton();
-            if (!button.Properties.IsEnabled) throw new InvalidOperationException($"Ribbon button at index {buttonIndex} is not enabled");
+            if (!button.IsEnabled) throw new InvalidOperationException($"Ribbon button at index {buttonIndex} is not enabled");
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
@@ -186,7 +186,7 @@ namespace VcEngineAutomation.Ribbons
         {
             Menu menu = Group(groupName).FindAllChildren().ElementAtOrDefault(index)?.AsMenu();
             if (menu == null) throw new InvalidOperationException("No ribbon menu at specified index");
-            if (!menu.Properties.IsEnabled) throw new InvalidOperationException("Ribbon menu item is not enabled");
+            if (!menu.IsEnabled) throw new InvalidOperationException("Ribbon menu item is not enabled");
 
             Window popup = vcEngine.MainWindow.GetCreatedWindowsForAction(() => menu.AsComboBox().Expand()).First();
             AutomationElement[] elements = popup.FindAllDescendants(cf => cf.ByControlType(ControlType.MenuItem));
@@ -205,7 +205,7 @@ namespace VcEngineAutomation.Ribbons
         {
             Menu menu = Group(groupName).FindAllChildren().ElementAtOrDefault(index)?.AsMenu();
             if (menu == null) throw new InvalidOperationException("No ribbon menu at specified index");
-            if (!menu.Properties.IsEnabled) throw new InvalidOperationException("Ribbon menu item is not enabled");
+            if (!menu.IsEnabled) throw new InvalidOperationException("Ribbon menu item is not enabled");
             if (menu.Properties.Name == text.Last()) return;
 
             Window popup = vcEngine.MainWindow.GetCreatedWindowsForAction(() => menu.AsComboBox().Expand()).First();
@@ -293,7 +293,7 @@ namespace VcEngineAutomation.Ribbons
         public void EnterIntoTexBox(string groupName, int index, string text)
         {
             TextBox textbox = FindTextBox(groupName, index);
-            if (!textbox.IsEnabled()) throw new InvalidOperationException($"Text box {groupName} at index {index} was not enabled");
+            if (!textbox.IsEnabled) throw new InvalidOperationException($"Text box {groupName} at index {index} was not enabled");
             Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
             textbox.Text = text;
         }

@@ -95,7 +95,7 @@ namespace VcEngineAutomation
             ECataloguePanel = new ECataloguePanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
             
             Console.WriteLine("Waiting for ribbon to become enabled");
-            Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.Properties.IsEnabled.Value, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
+            Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.IsEnabled, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
 
             Console.WriteLine("Setting main window as foreground");
             MainWindow.SetForeground();
@@ -274,12 +274,12 @@ namespace VcEngineAutomation
         }
         public void DoUndo()
         {
-            if (!UndoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to undo");
+            if (!UndoButton.IsEnabled) throw new InvalidOperationException("There is nothing to undo");
             UndoButton.Invoke();
         }
         public void DoRedo()
         {
-            if (!RedoButton.Properties.IsEnabled) throw new InvalidOperationException("There is nothing to redo");
+            if (!RedoButton.IsEnabled) throw new InvalidOperationException("There is nothing to redo");
             RedoButton.Invoke();
         }
 

@@ -90,9 +90,9 @@ namespace VcEngineAutomation.Panels
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
             if (buttons.Length != 2) throw new InvalidOperationException("Cancel and Apply buttons were not found in command panel");
             Button button = buttons[0];
-            Retry.While(() => !button.Properties.IsEnabled.Value, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
-            if (button.Properties.IsOffscreen) throw new InvalidOperationException("Apply button was not visible");
-            if (!button.Properties.IsEnabled) throw new InvalidOperationException("Apply button was not enabled");
+            Retry.While(() => !button.IsEnabled, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            if (button.IsOffscreen) throw new InvalidOperationException("Apply button was not visible");
+            if (!button.IsEnabled) throw new InvalidOperationException("Apply button was not enabled");
             button.Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
@@ -103,9 +103,9 @@ namespace VcEngineAutomation.Panels
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
             if (buttons.Length != 2) throw new InvalidOperationException("Cancel and Apply buttons were not found in command panel");
             Button button = buttons[1];
-            Retry.While(() => !button.Properties.IsEnabled.Value, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
-            if (button.Properties.IsOffscreen) throw new InvalidOperationException("Cancel button was not visible");
-            if (!button.Properties.IsEnabled) throw new InvalidOperationException("Cancel button was not enabled");
+            Retry.While(() => !button.IsEnabled, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            if (button.IsOffscreen) throw new InvalidOperationException("Cancel button was not visible");
+            if (!button.IsEnabled) throw new InvalidOperationException("Cancel button was not enabled");
             button.Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
@@ -117,7 +117,8 @@ namespace VcEngineAutomation.Panels
 
         public void Dispose()
         {
-            if (Pane.IsVisible())
+            vcEngine.WaitWhileBusy();
+            if (!Pane.IsOffscreen)
             {
                 Close();
             }

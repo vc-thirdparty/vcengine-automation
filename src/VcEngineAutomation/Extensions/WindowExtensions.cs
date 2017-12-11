@@ -68,7 +68,7 @@ namespace VcEngineAutomation.Extensions
 
         public static bool IsClosed(this Window item)
         {
-            if (item.Properties.IsOffscreen.ValueOrDefault) return true;
+            if (item.IsOffscreen) return true;
             return item.Properties.ProcessId == 0;
         }
 
@@ -190,7 +190,13 @@ namespace VcEngineAutomation.Extensions
 
         public static string GetSelectedText(this ComboBox comboBox)
         {
+            comboBox.Expand();
             return comboBox.SelectedItem?.FindFirstChild().AsLabel().Text;
+        }
+        public static ComboBoxItem GetSelectedItem(this ComboBox comboBox)
+        {
+            comboBox.Expand();
+            return comboBox.SelectedItem;
         }
         /*   public static void ClickItem(this ComboBox comboBox, string name)
            {

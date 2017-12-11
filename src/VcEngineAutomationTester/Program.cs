@@ -34,7 +34,15 @@ namespace VcEngineAutomationTester
             else if (args.Contains("test-misc"))
             {
                 TestMisc();
-            } else if (args.Contains("test-all"))
+            }
+            else if (args.Contains("test-ecat"))
+            {
+                var eng = VcEngine.Attach();
+                eng.ECataloguePanel.Search("Adj");
+                eng.ECataloguePanel.DisplayedComponents[0].Load();
+                eng.ECataloguePanel.ClearSearch();
+            }
+            else if (args.Contains("test-all"))
             {
                 var eng = VcEngine.Attach();
                 eng.World.Clear();
@@ -48,6 +56,9 @@ namespace VcEngineAutomationTester
                 eng.World.CopyAndPasteSelectedComponents();
                 eng.World.DeleteSelectedComponent();
                 eng.World.Clear();
+                eng.ECataloguePanel.Search("Beam");
+                eng.ECataloguePanel.DisplayedComponents[0].Load();
+                eng.ECataloguePanel.ClearSearch();
             }
         }
 
