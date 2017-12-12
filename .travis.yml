@@ -13,6 +13,7 @@ before_script:
 
 script:
   - ./build.sh build.cake --target=ZipPack
+  - cat ./build.sh
 
 deploy:
   - provider: script
