@@ -15,7 +15,6 @@ var sonarcloudKey = EnvironmentVariable("SONARCLOUD_API_KEY") ?? Argument("sonar
 var nugetKey = EnvironmentVariable("NUGET_API_KEY") ?? Argument("nugetKey", "");
 
 var travis = EnvironmentVariable("TRAVIS") ?? "false";
-var nugetApiKey = EnvironmentVariable("NUGET_API_KEY") ?? "NOOP";
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -92,7 +91,7 @@ Task("NugetPush")
 	.Does(() =>
 	{
 		NuGetPush(GetFiles("./**/*.nupkg"), new NuGetPushSettings {
-			ApiKey = nugetApiKey,
+			ApiKey = nugetKey,
 			Source = "https://www.nuget.org/api/v2/package"
 		});
 	});
