@@ -12,13 +12,13 @@ before_script:
   - chmod a+x build.sh
 
 script:
-  - ./build.sh build.cake -target ZipPack
+  - ./build.sh build.cake --target ZipPack
 
 deploy:
   - provider: script
     skip_cleanup: true
     script: 
-      - ./build.sh -target NugetPush
+      - ./build.sh --target NugetPush
     on:
       tags: true
 
