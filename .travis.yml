@@ -6,7 +6,7 @@ env:
     - PKG_VERSION=0.3.2
 
 install:
-  - curl -Lsfo build.sh https://raw.githubusercontent.com/cake-build/example/master/build.sh
+  - curl -Lsfo build.sh https://cakebuild.net/download/bootstrapper/linux
 
 before_script:
   - chmod a+x build.sh
