@@ -55,7 +55,7 @@ Task("SetVersion")
 
 Task("Build")
 	.IsDependentOn("Init")
-	.IsDependentOn("NuGet-Restore-Packages")
+	.IsDependentOn("NuGetRestorePackages")
 	.IsDependentOn("SetVersion")
 	.Does(() =>
 	{
@@ -150,11 +150,11 @@ Task("SonarAnalyse")
 
 Task("Default")
 	.IsDependentOn("Clean")
-	.IsDependentOn("Sonar-Init")
+	.IsDependentOn("SonarInit")
 	.IsDependentOn("Build")
-	.IsDependentOn("Nuget-Pack")
-	.IsDependentOn("Zip-Pack")
-	.IsDependentOn("Sonar-Analyse");
+	.IsDependentOn("NugetPack")
+	.IsDependentOn("ZipPack")
+	.IsDependentOn("SonarAnalyse");
 
 	
 //////////////////////////////////////////////////////////////////////
