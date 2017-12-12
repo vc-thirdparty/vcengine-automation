@@ -5,12 +5,6 @@ env:
   global:
     - PKG_VERSION=0.3.2
 
-install:
-  - curl -Lsfo build.sh https://cakebuild.net/download/bootstrapper/linux
-
-before_script:
-  - chmod a+x build.sh
-
 script:
   - ./build.sh --target=ZipPack
 
@@ -18,7 +12,7 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: 
-      - ./build.sh --target NugetPush
+      - ./build.sh --target=NugetPush
     on:
       tags: true
 
