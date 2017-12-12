@@ -6,7 +6,7 @@ env:
     - PKG_VERSION=0.3.2
 
 script:
-  - ./build.sh --target=ZipPack
+  - ./build.sh
 
 deploy:
   - provider: script
