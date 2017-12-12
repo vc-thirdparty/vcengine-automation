@@ -72,13 +72,13 @@ Task("Build")
 	});
 
 
-Task("NuGet-Restore-Packages")
+Task("NuGetRestorePackages")
 	.Does(() =>
 	{
 		NuGetRestore("./src/VcEngineAutomation.sln");
 	});
 
-Task("Nuget-Pack")
+Task("NugetPack")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{
@@ -88,7 +88,7 @@ Task("Nuget-Pack")
 		});
 	});
 	
-Task("Nuget-Push")
+Task("NugetPush")
 	.Does(() =>
 	{
 		NuGetPush(GetFiles("./**/*.nupkg"), new NuGetPushSettings {
@@ -97,7 +97,7 @@ Task("Nuget-Push")
 		});
 	});
 
-Task("Zip-Pack")
+Task("ZipPack")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{
@@ -111,7 +111,7 @@ Task("Zip-Pack")
 		Zip("./output/release/", outputDir.Path.GetFilePath("VcEngineRunner." + version + ".zip"));
 	});
 
-Task("Choco-Pack")
+Task("ChocoPack")
 	.IsDependentOn("Build")
 	.Does(() =>
 	{
@@ -120,7 +120,7 @@ Task("Choco-Pack")
 		});
 	});
 
-Task("Sonar-Init")
+Task("SonarInit")
 	.WithCriteria(IsRunningOnWindows())
 	.WithCriteria(() => sonarcloudKey != "")
 	.Does(() => 
@@ -132,7 +132,7 @@ Task("Sonar-Init")
 		});
 	});
   
-Task("Sonar-Analyse")
+Task("SonarAnalyse")
 	.WithCriteria(IsRunningOnWindows())
 	.WithCriteria(() => sonarcloudKey != "")
 	.Does(() => {
