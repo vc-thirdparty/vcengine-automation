@@ -12,8 +12,7 @@ before_script:
   - chmod a+x build.sh
 
 script:
-  - ./build.sh build.cake --target=ZipPack
-  - cat ./build.sh
+  - ./build.sh --target=ZipPack
 
 deploy:
   - provider: script
