@@ -12,7 +12,7 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: 
-      - ./build.sh --target=NugetPush
+      - ./build.sh --target=NugetPush --nugetKey=$NUGET_API_KEY
     on:
       tags: true
 
