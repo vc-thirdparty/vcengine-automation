@@ -3,7 +3,7 @@ solution: src/VcEngineAutomation.sln
 
 env:
   global:
-    - PKG_VERSION=0.3.4
+    - PKG_VERSION=0.3.5
 
 script:
   - ./build.sh
@@ -12,7 +12,7 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: 
-      - ./build.sh --target=NugetPush
+      - ./build.sh --target=NugetPush --nugetKey=$NUGET_API_KEY
     on:
       tags: true
 
