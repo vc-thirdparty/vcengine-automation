@@ -90,7 +90,7 @@ Task("NugetPack")
 Task("NugetPush")
 	.Does(() =>
 	{
-		NuGetPush(GetFiles("./**/*.nupkg"), new NuGetPushSettings {
+		NuGetPush(GetFiles("output/**/*.nupkg"), new NuGetPushSettings {
 			ApiKey = nugetKey,
 			Source = "https://www.nuget.org/api/v2/package"
 		});
