@@ -21,7 +21,7 @@ namespace VcEngineAutomation.Extensions
         }
         public static bool IsVisible(this AutomationElement element)
         {
-            return !element.IsOffscreen;
+            return !element.Properties.IsOffscreen.ValueOrDefault;
         }
         public static string ToDebugString(this AutomationElement item)
         {
