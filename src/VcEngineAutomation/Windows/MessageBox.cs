@@ -62,14 +62,14 @@ namespace VcEngineAutomation.Windows
             element.AsButton().Invoke();
         }
 
-        public static MessageBox Attach(VcEngine vcEngine)
+        public static MessageBox Attach(VcEngine vcEngine, TimeSpan? timeout = null)
         {
-            return Attach(vcEngine.MainWindow);
+            return Attach(vcEngine.MainWindow, timeout);
         }
 
-        public static MessageBox Attach(Window mainWindow)
+        public static MessageBox Attach(Window mainWindow, TimeSpan? timeout = null)
         {
-            var window = Retry.WhileException(() => AttachToWindow(mainWindow), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+            var window = Retry.WhileException(() => AttachToWindow(mainWindow), timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
             return new MessageBox(mainWindow, window.AsWindow());
         }
 
@@ -80,17 +80,17 @@ namespace VcEngineAutomation.Windows
             return window;
         }
 
-        public static MessageBox AttachIfShown(VcEngine vcEngine)
+        public static MessageBox AttachIfShown(VcEngine vcEngine, TimeSpan? timeout = null)
         {
-            return AttachIfShown(vcEngine.MainWindow);
+            return AttachIfShown(vcEngine.MainWindow, timeout);
         }
 
-        public static MessageBox AttachIfShown(Window parent)
+        public static MessageBox AttachIfShown(Window parent, TimeSpan? timeout=null)
         {
             var state = parent.Patterns.Window.PatternOrDefault?.WindowInteractionState?.ValueOrDefault;
             if (state == WindowInteractionState.ReadyForUserInteraction || state == null) return null;
 
-            Window window = parent.FindWindowProtected(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("#32770")));
+            Window window = parent.FindWindowProtected(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("#32770")), timeout);
             //Window window = mainWindow.ModalWindows.FirstOrDefault(w => w.Properties.ClassName == "#32770");
             if (window != null)
             {
@@ -99,13 +99,13 @@ namespace VcEngineAutomation.Windows
             return null;
         }
 
-        public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress = null)
+        public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress = null, TimeSpan? timeout = null)
         {
-            return GetTextAndClose(vcEngine.MainWindow, buttonToPress);
+            return GetTextAndClose(vcEngine.MainWindow, buttonToPress, timeout);
         }
-        public static string GetTextAndClose(Window mainWindow, string buttonToPress=null)
+        public static string GetTextAndClose(Window mainWindow, string buttonToPress=null, TimeSpan? timeout = null)
         {
-            using (MessageBox messageBox = Attach(mainWindow))
+            using (MessageBox messageBox = Attach(mainWindow, timeout))
             {
                 string text = messageBox.Text;
                 if (buttonToPress != null)
@@ -117,13 +117,13 @@ namespace VcEngineAutomation.Windows
             }
         }
 
-        public static string GetTextAndCloseIfShown(VcEngine vcEngine)
+        public static string GetTextAndCloseIfShown(VcEngine vcEngine, TimeSpan? timeout = null)
         {
-            return GetTextAndCloseIfShown(vcEngine.MainWindow);
+            return GetTextAndCloseIfShown(vcEngine.MainWindow, timeout);
         }
-        public static string GetTextAndCloseIfShown(Window mainWindow)
+        public static string GetTextAndCloseIfShown(Window mainWindow, TimeSpan? timeout = null)
         {
-            using (MessageBox messageBox = AttachIfShown(mainWindow))
+            using (MessageBox messageBox = AttachIfShown(mainWindow, timeout))
             {
                 return messageBox?.Text;
             }
