@@ -38,11 +38,15 @@ namespace VcEngineAutomation
         public Application Application { get; }
         public AutomationBase Automation { get; }
 
+        public bool IsR9 { get; }
+        public bool IsR9OrAbove { get; }
         public bool IsR8 { get; }
+        public bool IsR8OrAbove { get; }
         public bool IsR7 { get; }
         public bool IsR7OrAbove { get; }
         public bool IsR6 { get; }
         public bool IsR5 { get;  }
+        public string Version { get; }
         public Window MainWindow { get; }
         public Ribbon Ribbon { get; }
         public string MainWindowName { get; }
@@ -65,15 +69,22 @@ namespace VcEngineAutomation
             Automation = automation;
 
             var fileVersionInfo = GetVersionInfo(Process.GetProcessById(application.ProcessId));
+            Version = fileVersionInfo.FileVersion;
+            IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4
+                          && fileVersionInfo.FileMinorPart >= 0
+                          && fileVersionInfo.FileBuildPart >= 4;
+            IsR8OrAbove = fileVersionInfo.FileMajorPart >= 4
+                          && fileVersionInfo.FileMinorPart >= 0
+                          && fileVersionInfo.FileBuildPart >= 5;
+            IsR9OrAbove = fileVersionInfo.FileMajorPart >= 4
+                          && fileVersionInfo.FileMinorPart >= 1;
             IsR5 = fileVersionInfo.ProductVersion.StartsWith("4.0.2");
-            IsR6 = fileVersionInfo.FileVersion.StartsWith("4.0.3");
-            IsR7 = fileVersionInfo.FileVersion.StartsWith("4.0.4");
-            IsR8 = fileVersionInfo.FileVersion.StartsWith("4.0.5");
-            IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4 
-                && fileVersionInfo.FileMinorPart >= 0 
-                && fileVersionInfo.FileBuildPart >= 4;
+            IsR6 = Version.StartsWith("4.0.3");
+            IsR7 = Version.StartsWith("4.0.4");
+            IsR8 = Version.StartsWith("4.0.5") || Version.StartsWith("4.0.6");
+            IsR9 = Version.StartsWith("4.1.0");
 
-            Console.WriteLine("VcEngine Version: " + (IsR5 ? "R5" : IsR6 ? "R6" : IsR7 ? "R7" : IsR8 ? "R8" : fileVersionInfo.FileVersion));
+            Console.WriteLine($"VcEngine Version: {Version}");
             MainWindowName = fileVersionInfo.FileDescription;
 
             Console.WriteLine("Waiting for application main window");
@@ -83,7 +94,7 @@ namespace VcEngineAutomation
             Console.WriteLine("Waiting for main ribbon");
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
-            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR8 ? "Viewport" : "viewportContentPane")));
+            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR8OrAbove ? "Viewport" : "viewportContentPane")));
             quickAccessToolBar = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByClassName("QuickAccessToolbar")));
             World = new World(this);
             Ribbon = new Ribbon(this, MainWindow, mainTab);

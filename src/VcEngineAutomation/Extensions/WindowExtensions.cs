@@ -84,89 +84,45 @@ namespace VcEngineAutomation.Extensions
                 TimeSpan.FromMilliseconds(100));
         }
 
-        public static bool CanWindowBeResized(this Window window, int attemptIndex=0)
+        public static bool CanWindowBeResized(this Window window, TimeSpan? timeout = null)
         {
-            try
+            return Retry.WhileException(() =>
             {
                 if (!window.Patterns.Window.IsSupported) return false;
-                bool canWindowBeResized = window.Patterns.Window.Pattern.CanMaximize.ValueOrDefault && window.Patterns.Window.Pattern.CanMinimize.ValueOrDefault;
-                return canWindowBeResized;
-            }
-            catch (COMException)
-            {
-                if (attemptIndex == 5)
-                {
-                    throw;
-                }
-                WaitWhileBusy(window);
-                return CanWindowBeResized(window, attemptIndex + 1);
-            }
+                return window.Patterns.Window.Pattern.CanMaximize.ValueOrDefault && window.Patterns.Window.Pattern.CanMinimize.ValueOrDefault;
+            }, timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
 
-        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, int index = 0)
+        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout = null)
         {
-            try
-            {
-                return window.FindFirstDescendant(condition)?.AsWindow();
-            }
-            catch (COMException)
-            {
-                if (index >= 5) throw;
-                Thread.Sleep(200);
-                return FindWindowProtected(window, condition, index + 1);
-            }
+            return Retry.WhileException(() => window.FindFirstDescendant(condition)?.AsWindow(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
 
-        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, int index = 0)
+        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout = null)
         {
-            try
-            {
-                return window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray();
-            }
-            catch (COMException)
-            {
-                if (index >= 5) throw;
-                Thread.Sleep(200);
-                return FindAllWindowsProtected(window, condition, index + 1);
-            }
+            return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
-
-        public static Window[] FindModalWindowsProtected(this Window window)
+        
+        private static Window[] FindModelWindowsImpl(Window window)
         {
-            return FindModalWindowsProtected(window, 0);
-        }
 
-        private static Window[] FindModalWindowsProtected(this Window window, int index )
-        {
-            try
+            Window[] modalWindows = window.ModalWindows;
+            Window progressBarDialog = modalWindows.FirstOrDefault(w => w.Properties.AutomationId.ValueOrDefault == "ProgressBarDialog");
+            modalWindows = modalWindows.Except(new[] { progressBarDialog }).ToArray();
+            if (!modalWindows.Any() && progressBarDialog != null)
             {
-                Window[] modalWindows = window.ModalWindows;
-                Window progressBarDialog = modalWindows.FirstOrDefault(w => w.Properties.AutomationId.ValueOrDefault == "ProgressBarDialog");
-                modalWindows = modalWindows.Except(new[] { progressBarDialog }).ToArray();
-                if (!modalWindows.Any() && progressBarDialog != null)
-                {
-                    return progressBarDialog.FindModalWindowsProtected();
-                }
-                return modalWindows;
+                return FindModelWindowsImpl(progressBarDialog);
             }
-            catch (COMException)
-            {
-                if (index >= 5) throw;
-                Thread.Sleep(DefaultSleepForComException);
-                return FindModalWindowsProtected(window, index + 1);
-            }
+            return modalWindows;
         }
-
-
-        public static Window[] RetryUntilAnyModalWindow(this Window window)
+        public static Window[] FindModalWindowsProtected(this Window window, TimeSpan? timeout=null)
         {
-            return RetryUntilAnyModalWindow(window, null);
+            return Retry.WhileException(() => FindModelWindowsImpl(window), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
-        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? waitTimeSpan)
+        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? timeout = null)
         {
-            return Retry.While(window.FindModalWindowsProtected, windows => !windows.Any(), waitTimeSpan ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+            return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
         }
-
     }
 
     public static class ComboboxExtensions
