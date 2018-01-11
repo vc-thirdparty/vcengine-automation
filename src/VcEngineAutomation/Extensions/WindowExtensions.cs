@@ -105,7 +105,6 @@ namespace VcEngineAutomation.Extensions
         
         private static Window[] FindModelWindowsImpl(Window window)
         {
-
             Window[] modalWindows = window.ModalWindows;
             Window progressBarDialog = modalWindows.FirstOrDefault(w => w.Properties.AutomationId.ValueOrDefault == "ProgressBarDialog");
             modalWindows = modalWindows.Except(new[] { progressBarDialog }).ToArray();
@@ -115,13 +114,27 @@ namespace VcEngineAutomation.Extensions
             }
             return modalWindows;
         }
-        public static Window[] FindModalWindowsProtected(this Window window, TimeSpan? timeout=null)
-        {
-            return Retry.WhileException(() => FindModelWindowsImpl(window), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
-        }
+
         public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? timeout = null)
         {
             return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+        }
+        public static Window[] FindModalWindowsProtected(this Window window)
+        {
+            return FindModalWindowsProtected(window, 0);
+        }
+        private static Window[] FindModalWindowsProtected(this Window window, int index)
+        {
+            try
+            {
+                return FindModelWindowsImpl(window);
+            }
+            catch (COMException)
+            {
+                if (index >= 5) throw;
+                Thread.Sleep(DefaultSleepForComException);
+                return FindModalWindowsProtected(window, index + 1);
+            }
         }
     }
 
