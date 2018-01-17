@@ -197,7 +197,11 @@ namespace VcEngineAutomation.Panels
         {
             return int.Parse(GetProperty(key), appCultureInfo);
         }
-        
+        public bool GetPropertyAsBool(string key)
+        {
+            return bool.Parse(GetProperty(key));
+        }
+
 
         public string GetProperty(string tabName, string propertyName)
         {
