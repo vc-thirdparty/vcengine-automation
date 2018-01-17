@@ -159,14 +159,22 @@ namespace VcEngineAutomation.Extensions
 
         public static string GetSelectedText(this ComboBox comboBox)
         {
-            comboBox.Expand();
-            return comboBox.SelectedItem?.FindFirstChild().AsLabel().Text;
+            return Retry.WhileException(() =>
+            {
+                comboBox.Expand();
+                return comboBox.SelectedItem?.FindFirstChild().AsLabel().Text;
+            }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
         }
+
         public static ComboBoxItem GetSelectedItem(this ComboBox comboBox)
         {
-            comboBox.Expand();
-            return comboBox.SelectedItem;
+            return Retry.WhileException(() =>
+            {
+                comboBox.Expand();
+                return comboBox.SelectedItem;
+            }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
         }
+
         /*   public static void ClickItem(this ComboBox comboBox, string name)
            {
                Retry.ForDefault(() => comboBox.Enabled);
