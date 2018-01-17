@@ -63,6 +63,7 @@
     <Compile Include="Actions\RecordExperienceAction.cs" />
     <Compile Include="Actions\RunSimulationAction.cs" />
     <Compile Include="Extensions\AutomationElementExtensions.cs" />
+    <Compile Include="Extensions\TextBoxExtensions.cs" />
     <Compile Include="Extensions\WindowExtensions.cs" />
     <Compile Include="Models\Camera.cs" />
     <Compile Include="Models\Component.cs" />

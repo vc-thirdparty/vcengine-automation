@@ -2,6 +2,7 @@
 using FlaUI.Core.AutomationElements.Infrastructure;
 using System;
 using System.Linq;
+using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
 using FlaUI.Core.Tools;
 using VcEngineAutomation.Models;
@@ -24,7 +25,17 @@ namespace VcEngineAutomation.Panels
         public EcatComponent[] DisplayedComponents => DisplayedItems.Select(ae => new EcatComponent(ae)).ToArray();
         public AutomationElement CollectionsPanel => panel.Value.FindFirstDescendant(cf => cf.ByAutomationId("CollectionsPanel"));
         public AutomationElement ItemPanel => panel.Value.FindFirstDescendant(cf => cf.ByAutomationId("ItemPanel"));
-        
+
+        public bool IsUpdating()
+        {
+            var isOffscreenValueOrDefault = !ItemPanel.FindFirstDescendant(cf => cf.ByAutomationId("progressBar")).Properties.IsOffscreen.ValueOrDefault;
+            return isOffscreenValueOrDefault;
+        }
+
+        public void WaitUntilUpdated(TimeSpan? timespan = null)
+        {
+            Retry.While(IsUpdating, timespan ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+        }
 
         public void WaitUntilPopulated(TimeSpan timeSpan)
         {
@@ -34,14 +45,8 @@ namespace VcEngineAutomation.Panels
 
         public void Search(string text, TimeSpan? timespan = null)
         {
-            var progress = ItemPanel.FindFirstDescendant(cf => cf.ByAutomationId("progressBar"));
             SearchTextBox.Text = text;
-
-            // Wait until search is started
-            Retry.While(() => progress.IsOffscreen, timespan ?? TimeSpan.FromSeconds(2), TimeSpan.FromMilliseconds(500));
-
-            // Wait until search is completed
-            WaitWhileSearching(timespan);
+            WaitUntilUpdated(timespan);
         }
         public void ClearSearch(TimeSpan? timespan = null)
         {
@@ -49,8 +54,30 @@ namespace VcEngineAutomation.Panels
         }
         public void WaitWhileSearching(TimeSpan? timespan = null)
         {
-            var progress = ItemPanel.FindFirstDescendant(cf => cf.ByAutomationId("progressBar"));
-            Retry.While(() => !progress.IsOffscreen, timespan ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+            WaitUntilUpdated(timespan);
+        }
+        public EcatComponent[] GetComponents()
+        {
+            return DisplayedItems.Select(ae => new EcatComponent(ae)).ToArray();
+        }
+    }
+    public class EcatComponent
+    {
+        public AutomationElement AutomationElement { get; }
+
+        public EcatComponent(AutomationElement automationElement)
+        {
+            this.AutomationElement = automationElement;
+        }
+
+        public void Load()
+        {
+            AutomationElement.DoubleClick(true);
+        }
+
+        public string Name
+        {
+            get { return AutomationElement.FindFirstChild(cf => cf.ByControlType(ControlType.Text)).AsLabel().Text; }
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
-using FlaUI.Core.Input;
-using FlaUI.Core.WindowsAPI;
 using System;
 using System.Linq;
 using VcEngineAutomation.Extensions;
@@ -23,7 +21,7 @@ namespace VcEngineAutomation.Panels
                 ? new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor")
                 : new DockedTabRetriever(vcEngine.MainWindow).GetPane(isInDrawingContext ? "Drawing Properties" : "Component Properties", "VcPropertyEditorContentPane");
             lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7OrAbove ? "Property.LockButton" : "LockButton1")).AsToggleButton());
-            appCultureInfo = vcEngine.CultureInfo;
+            appCultureInfo = VcEngine.CultureInfo;
         }
 
         public AutomationElement CoordinatePane
@@ -62,18 +60,15 @@ namespace VcEngineAutomation.Panels
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
                 if (!double.Parse(textBoxs[0].Text, appCultureInfo).Equals(value.X))
                 {
-                    textBoxs[0].Enter(value.X.ToString("F3", appCultureInfo));
-                    Keyboard.Type(VirtualKeyShort.ENTER);
+                    textBoxs[0].EnterWithReturn(value.X);
                 }
                 if (!double.Parse(textBoxs[1].Text, appCultureInfo).Equals(value.Y))
                 {
-                    textBoxs[1].Enter(value.Y.ToString("F3", appCultureInfo));
-                    Keyboard.Type(VirtualKeyShort.ENTER);
+                    textBoxs[1].EnterWithReturn(value.Y);
                 }
                 if (!double.Parse(textBoxs[2].Text, appCultureInfo).Equals(value.Z))
                 {
-                    textBoxs[2].Enter(value.Z.ToString("F3", appCultureInfo));
-                    Keyboard.Type(VirtualKeyShort.ENTER);
+                    textBoxs[2].EnterWithReturn(value.Z);
                 }
                 if (!vcEngine.IsR7OrAbove)
                 {
@@ -100,18 +95,15 @@ namespace VcEngineAutomation.Panels
                 TextBox[] textBoxs = CoordinatePane.FindAllDescendants(cf => cf.ByControlType(ControlType.Edit)).Select(ae => ae.AsTextBox()).ToArray();
                 if (!double.Parse(textBoxs[5].Text, appCultureInfo).Equals(value.Rx))
                 {
-                    textBoxs[5].Enter(value.Rx.ToString("F3", appCultureInfo));
-                    Keyboard.Type(VirtualKeyShort.ENTER);
+                    textBoxs[5].EnterWithReturn(value.Rx);
                 }
                 if (!double.Parse(textBoxs[4].Text, appCultureInfo).Equals(value.Ry))
                 {
-                    textBoxs[4].Enter(value.Ry.ToString("F3", appCultureInfo));
-                    Keyboard.Type(VirtualKeyShort.ENTER);
+                    textBoxs[4].EnterWithReturn(value.Ry);
                 }
                 if (!double.Parse(textBoxs[3].Text, appCultureInfo).Equals(value.Rz))
                 {
-                    textBoxs[3].Enter(value.Rz.ToString("F3", appCultureInfo));
-                    Keyboard.Type(VirtualKeyShort.ENTER);
+                    textBoxs[3].EnterWithReturn(value.Rz);
                 }
                 if (!vcEngine.IsR7OrAbove)
                 {
@@ -155,10 +147,12 @@ namespace VcEngineAutomation.Panels
             }
             else if (control.Properties.ControlType == ControlType.Edit)
             {
-                control.AsTextBox().Enter(value.ToString());
-                control.KeyIn(VirtualKeyShort.RETURN);
-                // Hack for R5
-                HeaderLabel.LeftClick();
+                control.AsTextBox().EnterWithReturn(value);
+                if (!vcEngine.IsR7OrAbove)
+                {
+                    // Hack for R5
+                    HeaderLabel.LeftClick();
+                }
             }
             else if (control.Properties.ControlType == ControlType.CheckBox)
             {
@@ -203,7 +197,11 @@ namespace VcEngineAutomation.Panels
         {
             return int.Parse(GetProperty(key), appCultureInfo);
         }
-        
+        public bool GetPropertyAsBool(string key)
+        {
+            return bool.Parse(GetProperty(key));
+        }
+
 
         public string GetProperty(string tabName, string propertyName)
         {
