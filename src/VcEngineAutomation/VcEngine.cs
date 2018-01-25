@@ -94,7 +94,7 @@ namespace VcEngineAutomation
             Console.WriteLine("Waiting for main ribbon");
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
-            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR8OrAbove ? "Viewport" : "viewportContentPane")));
+            viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("Viewport")));
             quickAccessToolBar = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByClassName("QuickAccessToolbar")));
             World = new World(this);
             Ribbon = new Ribbon(this, MainWindow, mainTab);
