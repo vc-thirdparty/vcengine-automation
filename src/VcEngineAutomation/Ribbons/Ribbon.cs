@@ -8,14 +8,12 @@ namespace VcEngineAutomation.Ribbons
     public class Ribbon
     {
         private readonly VcEngine vcEngine;
-        private readonly Window mainWindow;
 
         private readonly Dictionary<string, RibbonTab> tabs = new Dictionary<string, RibbonTab>();
 
-        public Ribbon(VcEngine vcEngine, Window mainWindow, Tab tab)
+        public Ribbon(VcEngine vcEngine, Tab tab)
         {
             this.vcEngine = vcEngine;
-            this.mainWindow = mainWindow;
             MainTab = tab;
         }
 
