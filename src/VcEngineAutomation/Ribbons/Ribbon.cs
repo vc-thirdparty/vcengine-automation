@@ -19,12 +19,12 @@ namespace VcEngineAutomation.Ribbons
             MainTab = tab;
         }
 
-        public RibbonTab HomeTab => GetTab("HOME", "VcTabHome");
-        public RibbonTab DrawingTab => GetTab("Drawing", "VcTabDrawing");
-        public RibbonTab ModelingTab => GetTab("Modeling", "VcTabAuthor");
-        public RibbonTab ProgramTab => GetTab("Program", "VcTabTeach");
-        public RibbonTab HelpTab => GetTab("Help", "VcTabHelp");
-        public RibbonTab ConnectivityTab => GetTab("Connectivity", "VcTabConnections");
+        public RibbonTab HomeTab => GetTab("VcTabHome");
+        public RibbonTab DrawingTab => GetTab("VcTabDrawing");
+        public RibbonTab ModelingTab => GetTab("VcTabAuthor");
+        public RibbonTab ProgramTab => GetTab("VcTabTeach");
+        public RibbonTab HelpTab => GetTab("VcTabHelp");
+        public RibbonTab ConnectivityTab => GetTab("VcTabConnections");
 
         public void ExpandState(ExpandCollapseState state)
         {
@@ -40,9 +40,8 @@ namespace VcEngineAutomation.Ribbons
             }
         }
 
-        public RibbonTab GetTab(string automationId, string automationIdR7)
+        public RibbonTab GetTab(string automationId)
         {
-            automationId = vcEngine.IsR7OrAbove ? automationIdR7 : automationId;
             ExpandState(ExpandCollapseState.Expanded);
             RibbonTab tab;
             if (!tabs.TryGetValue(automationId, out tab))
