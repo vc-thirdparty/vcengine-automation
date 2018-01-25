@@ -55,8 +55,8 @@ namespace VcEngineAutomation
         public Options Options { get; }
         public Camera Camera { get; }
         public Visual3DToolbar Visual3DToolbar { get; }
-        public PropertiesPanel PropertiesPanel => Retry.WhileException(() => new PropertiesPanel(this, false), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
-        public PropertiesPanel DrawingPropertiesPanel => Retry.WhileException(() => new PropertiesPanel(this, true), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+        public PropertiesPanel PropertiesPanel => Retry.WhileException(() => new PropertiesPanel(this), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+        public PropertiesPanel DrawingPropertiesPanel => PropertiesPanel;
         public ECataloguePanel ECataloguePanel { get; }
         public OutputPanel OutputPanel { get; }
         public AutomationElement ViewPort => viewPort.Value;

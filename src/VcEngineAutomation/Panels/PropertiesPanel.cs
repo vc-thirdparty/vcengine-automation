@@ -11,16 +11,12 @@ namespace VcEngineAutomation.Panels
     public class PropertiesPanel
     {
         private readonly Lazy<ToggleButton> lockButton;
-        private readonly VcEngine vcEngine;
         private readonly IFormatProvider appCultureInfo;
 
-        public PropertiesPanel(VcEngine vcEngine, bool isInDrawingContext)
+        public PropertiesPanel(VcEngine vcEngine)
         {
-            this.vcEngine = vcEngine;
-            Pane = vcEngine.IsR7OrAbove
-                ? new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor")
-                : new DockedTabRetriever(vcEngine.MainWindow).GetPane(isInDrawingContext ? "Drawing Properties" : "Component Properties", "VcPropertyEditorContentPane");
-            lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId(vcEngine.IsR7OrAbove ? "Property.LockButton" : "LockButton1")).AsToggleButton());
+            Pane = new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor");
+            lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId("Property.LockButton")).AsToggleButton());
             appCultureInfo = VcEngine.CultureInfo;
         }
 
@@ -70,11 +66,6 @@ namespace VcEngineAutomation.Panels
                 {
                     textBoxs[2].EnterWithReturn(value.Z);
                 }
-                if (!vcEngine.IsR7OrAbove)
-                {
-                    // Hack for R5
-                    HeaderLabel.LeftClick();
-                }
             }
         }
 
@@ -105,54 +96,76 @@ namespace VcEngineAutomation.Panels
                 {
                     textBoxs[3].EnterWithReturn(value.Rz);
                 }
-                if (!vcEngine.IsR7OrAbove)
-                {
-                    // Hack for R5
-                    HeaderLabel.LeftClick();
-                }
             }
         }
 
-        public void ClickTab(string title)
+        private Tuple<string,string> SplitPropertyIntoTabAndName(string propertyName)
         {
-            Tab tab = Pane.FindFirstDescendant(cf => cf.ByAutomationId("TabsListView")).FindFirstDescendant(cf => cf.ByControlType(ControlType.Tab)).AsTab();
-            TabItem item = null;
-            foreach (TabItem tabItem in tab.TabItems)
+            string[] strings = propertyName.Split(new[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (strings.Length > 1)
             {
-                if (tabItem.FindFirstDescendant(cf => cf.ByControlType(ControlType.Text)).AsLabel().Text == title)
-                {
-                    item = tabItem;
-                }
+                return Tuple.Create(strings[0], strings[1]);
             }
-            if (item == null) throw new InvalidOperationException($"No tab item found with title {title}");
-            item.Select();
+            return Tuple.Create("Default", strings[0]);
+        }
+        private string GetAutomationId(string propertyName)
+        {
+            return $"Property.{propertyName}";
         }
 
-        private void SetProperty(string tab, string propertyName, object value)
+        public void ShowTabForProperty(string propertyName)
+        {
+            ShowTab(SplitPropertyIntoTabAndName(propertyName).Item1);
+        }
+        public void ShowTab(string tabName)
         {
             AutomationElement item = Pane.FindFirstDescendant(cf => cf.ByAutomationId("TabsListView"));
             if (item.IsVisible())
             {
-                ClickTab(tab);
+                var tab = item.FindFirstDescendant(cf => cf.ByAutomationId($"TabItem.{tabName}"))?.AsTabItem();
+                if (tab == null) throw new InvalidOperationException($"Component has no tab named '{tabName}'");
+                if (!tab.IsSelected)
+                {
+                    tab.Select();
+                }
+                return;
             }
-            AutomationElement control = item.GetItemForLabel(propertyName);
-            if (!control.IsEnabled) throw new InvalidOperationException($"Property '{tab}::{propertyName}' is not enabled");
+            if (tabName != "Default") throw new InvalidOperationException($"Component has no tab named '{tabName}'");
+        }
+        [Obsolete("Use ShowTab instead")]
+        public void ClickTab(string title)
+        {
+            ShowTab(title);
+        }
+
+        private AutomationElement FindPropertyControl(string propertyName, bool verifyIsEnabled)
+        {
+            ShowTabForProperty(propertyName);
+            AutomationElement control = Pane.FindFirstDescendant(cf => cf.ByAutomationId(GetAutomationId(propertyName)));
+            if (control == null) throw new InvalidOperationException($"No such property '{propertyName}'");
+            if (verifyIsEnabled && !control.IsEnabled) throw new InvalidOperationException($"Property '{propertyName}' is not enabled");
+            return control;
+        }
+
+        public void ClickButton(string propertyName)
+        {
+            FindPropertyControl(propertyName, true).AsButton().Invoke();
+        }
+
+        public void SetProperty(string propertyName, object value)
+        {
+            var control = FindPropertyControl(propertyName, true);
             if (control.Properties.ControlType == ControlType.ComboBox)
             {
                 ComboBox comboBox = control.AsComboBox();
                 var itemAutomationElement = comboBox.Items.FirstOrDefault(i => i.FindFirstDescendant().AsTextBox().Text.Equals(value.ToString(), StringComparison.OrdinalIgnoreCase));
-                if (itemAutomationElement == null) throw new InvalidOperationException($"Property '{tab}::{propertyName}' has no value '{value}' among '{string.Join("', '", comboBox.Items.Select(i => i.FindFirstDescendant().AsTextBox().Text))}'");
+                if (itemAutomationElement == null) throw new InvalidOperationException($"Property '{propertyName}' has no value '{value}' among '{string.Join("', '", comboBox.Items.Select(i => i.FindFirstDescendant().AsTextBox().Text))}'");
                 itemAutomationElement.IsSelected = true;
                 comboBox.Collapse();
             }
             else if (control.Properties.ControlType == ControlType.Edit)
             {
                 control.AsTextBox().EnterWithReturn(value);
-                if (!vcEngine.IsR7OrAbove)
-                {
-                    // Hack for R5
-                    HeaderLabel.LeftClick();
-                }
             }
             else if (control.Properties.ControlType == ControlType.CheckBox)
             {
@@ -164,29 +177,21 @@ namespace VcEngineAutomation.Panels
             }
         }
 
-        public void SetProperty(string propertyName, object value)
-        {
-            string[] strings = propertyName.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (strings.Length > 1)
-            {
-                SetProperty(strings[0], strings[1], value);
-            }
-            else
-            {
-                SetProperty("Default", propertyName, value);
-            }
-        }
-
         public string GetProperty(string propertyName)
         {
-            string[] strings = propertyName.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-            if (strings.Length > 1)
+            var control = FindPropertyControl(propertyName, false);
+            if (control.Properties.ControlType == ControlType.ComboBox)
             {
-                return GetProperty(strings[0], strings[1]);
+                ComboBox comboBox = control.AsComboBox();
+                return comboBox.SelectedItem.FindFirstDescendant().AsTextBox().Text;
+            }
+            else if (control.Properties.ControlType == ControlType.CheckBox)
+            {
+                return control.AsCheckBox().ToggleState == ToggleState.On ? "True" : "False";
             }
             else
             {
-                return GetProperty("Default", propertyName);
+                return control.AsTextBox().Text;
             }
         }
         public double GetPropertyAsDouble(string key)
@@ -200,39 +205,6 @@ namespace VcEngineAutomation.Panels
         public bool GetPropertyAsBool(string key)
         {
             return bool.Parse(GetProperty(key));
-        }
-
-
-        public string GetProperty(string tabName, string propertyName)
-        {
-            AutomationElement item = Pane.FindFirstDescendant(cf => cf.ByAutomationId("TabsListView"));
-            AutomationElement parent;
-            if (item.IsVisible())
-            {
-                Tab tab = item.FindFirstDescendant(cf => cf.ByControlType(ControlType.Tab)).AsTab();
-                ClickTab(tabName);
-                parent = tab;
-            }
-            else
-            {
-                parent = Pane.FindFirstDescendant(cf => cf.ByAutomationId("ControlsListView"));
-            }
-            
-            AutomationElement control = parent.GetItemForLabel(propertyName);
-            if (control.Properties.ControlType == ControlType.ComboBox)
-            {
-                ComboBox comboBox = control.AsComboBox();
-                if (!comboBox.IsEnabled) throw new InvalidOperationException($"Property '{tabName}::{propertyName}' is not enabled");
-                return comboBox.SelectedItem.FindFirstDescendant().AsTextBox().Text;
-            }
-            else if (control.Properties.ControlType == ControlType.CheckBox)
-            {
-                return control.AsCheckBox().ToggleState == ToggleState.On ? "True" : "False";
-            }
-            else
-            {
-                return control.AsTextBox().Text;
-            }
         }
 
         public bool IsLocked
@@ -249,8 +221,8 @@ namespace VcEngineAutomation.Panels
         }
         public bool IsVisible
         {
-            get { return GetProperty("Default", "Visible").Equals("True"); }
-            set { SetProperty("Default", "Visible", value );}
+            get { return GetProperty("Visible").Equals("True"); }
+            set { SetProperty("Visible", value );}
         }
     }
 }
