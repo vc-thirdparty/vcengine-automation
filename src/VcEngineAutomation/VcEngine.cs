@@ -102,8 +102,8 @@ namespace VcEngineAutomation
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
             Camera = new Camera(this);
-            OutputPanel = new OutputPanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("VcOutput") : TabRetriever.GetPane("Output", "VcOutputContentPane"));
-            ECataloguePanel = new ECataloguePanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("VcECatalogue") : TabRetriever.GetPane("eCatalog", "VcECatalogueContentPane"));
+            OutputPanel = new OutputPanel(this, () => TabRetriever.GetPane("VcOutput"));
+            ECataloguePanel = new ECataloguePanel(this, () => TabRetriever.GetPane("VcECatalogue"));
             
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.IsEnabled, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));
@@ -156,11 +156,11 @@ namespace VcEngineAutomation
 
         public CommandPanel GetCommandPanel()
         {
-            return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId(IsR7OrAbove ? "CommandPanelViewModelTabItem" : "CommandPanelViewModelContentPane")));
+            return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("CommandPanelViewModelTabItem")));
         }
         public CommandPanel GetCommandPanel(string startOfTitle)
         {
-            return new CommandPanel(this, () => IsR7OrAbove ? TabRetriever.GetPane("CommandPanelViewModel") : TabRetriever.GetPane(startOfTitle, "CommandPanelViewModelContentPane"));
+            return new CommandPanel(this, () => TabRetriever.GetPane("CommandPanelViewModel"));
         }
 
         public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)
@@ -268,7 +268,7 @@ namespace VcEngineAutomation
 
         public Button FindQuickAccessToolbarButton(string automationId, string name)
         {
-            var button = QuickAccessToolbar.FindFirstChild(cf => IsR7OrAbove ? cf.ByAutomationId(automationId) : cf.ByName(name))?.AsButton();
+            var button = QuickAccessToolbar.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsButton();
             if (button == null)
             {
                 var dropdown = QuickAccessToolbar.FindFirstDescendant(cf => cf.ByAutomationId("dropdownBtn"));
@@ -278,7 +278,7 @@ namespace VcEngineAutomation
                 var menuItem = MainWindow.Popup.FindFirstChild(cf => cf.ByName(name))?.AsMenuItem();
                 if (menuItem == null) throw new InvalidOperationException($"Feature {name} is not enabled in exe.config file");
                 menuItem.Invoke();
-                button = QuickAccessToolbar.FindFirstChild(cf => IsR7OrAbove ? cf.ByAutomationId(automationId) : cf.ByName(name))?.AsButton();
+                button = QuickAccessToolbar.FindFirstChild(cf => cf.ByAutomationId(automationId))?.AsButton();
             }
             if (button == null) throw new InvalidOperationException($"Could not find {name} button");
             return button.AsButton();
