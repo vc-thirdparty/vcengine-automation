@@ -12,7 +12,8 @@ namespace VcEngineAutomation.Panels
     public class CommandPanel : IDisposable
     {
         private readonly VcEngine vcEngine;
-        private readonly Lazy<string> lazyTitle; 
+        private readonly Lazy<string> lazyTitle;
+        private readonly Lazy<AutomationElement> lazyCustonPane;
 
         public CommandPanel(VcEngine vcEngine, Func<AutomationElement> paneRetriever)
         {
@@ -21,6 +22,7 @@ namespace VcEngineAutomation.Panels
             if (mainPane == null) throw new InvalidOperationException("No command panel could be found");
             Pane = mainPane.FindFirstDescendant(cf => cf.ByClassName("CommandPanelView"));
             lazyTitle = new Lazy<string>(() => mainPane.Properties.Name.ValueOrDefault);
+            lazyCustonPane = new Lazy<AutomationElement>(() => Pane.FindFirstChild(cf => cf.ByControlType(ControlType.Custom)));
         }
 
         public AutomationElement Get(Func<ConditionFactory, ConditionBase> newConditionFunc) 
@@ -28,13 +30,9 @@ namespace VcEngineAutomation.Panels
             return CustomPane.FindFirstDescendant(newConditionFunc);
         }
 
-        public AutomationElement Pane { get; set; }
+        public AutomationElement Pane { get; }
         public string Title => lazyTitle.Value;
-
-        public AutomationElement CustomPane
-        {
-            get { return Pane.FindFirstChild(cf => cf.ByControlType(ControlType.Custom)); }
-        }
+        public AutomationElement CustomPane => lazyCustonPane.Value;
 
         public Button FindButton(string automationId)
         {
