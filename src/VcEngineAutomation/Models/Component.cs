@@ -20,6 +20,10 @@ namespace VcEngineAutomation.Models
         {
             return int.Parse(Properties[key], CultureInfo.InvariantCulture);
         }
+        public bool GetPropertyAsBool(string key)
+        {
+            return bool.Parse(Properties[key]);
+        }
 
         public static List<Component> ParseAsList(string str)
         {
