@@ -1,8 +1,10 @@
-﻿using System;
-using System.Linq;
-using FlaUI.Core.AutomationElements.Infrastructure;
+﻿using FlaUI.Core.AutomationElements.Infrastructure;
+using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
+using System;
+using System.Linq;
 using VcEngineAutomation.Extensions;
+using Menu = FlaUI.Core.AutomationElements.Menu;
 
 namespace VcEngineAutomation.Panels
 {
@@ -14,6 +16,7 @@ namespace VcEngineAutomation.Panels
         {
             this.vcEngine = vcEngine;
         }
+        [Obsolete("Use FindMenuByAutomationId instead")]
         public AutomationElement GetMenu(string header, string subHeader = null)
         {
             vcEngine.MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("MainRibbon")).FindFirstDescendant(cf => cf.ByClassName("ApplicationMenu2010FileTab")).AsButton().Invoke();
@@ -35,6 +38,59 @@ namespace VcEngineAutomation.Panels
                 listItem.Item1.AsTabItem().Select();
             }
             return tabItem;
+        }
+
+        public Menu Menu
+        {
+            get
+            {
+                var appMenu = vcEngine.MainWindow.FindFirstChild(cf => cf.ByAutomationId("ApplicationMenu"));
+                if (appMenu == null)
+                {
+                    vcEngine.MainWindow.FindFirstChild(cf => cf.ByAutomationId("MainRibbon")).FindFirstChild(cf => cf.ByClassName("ApplicationMenu2010FileTab")).AsButton().Invoke();
+                    appMenu = vcEngine.MainWindow.FindFirstChild(cf => cf.ByAutomationId("ApplicationMenu"));
+                }
+                return appMenu.AsMenu();
+            }
+        }
+
+
+        public void Expand()
+        {
+            var appMenu = Menu;
+            if (appMenu.IsOffscreen)
+            {
+                appMenu.AsMenu().Patterns.ExpandCollapse.Pattern.Expand();
+            }
+        }
+
+        public void Collapse()
+        {
+            var appMenu = vcEngine.MainWindow.FindFirstChild(cf => cf.ByAutomationId("ApplicationMenu"));
+            if (appMenu != null && !appMenu.IsOffscreen)
+            {
+                appMenu.AsMenu().Patterns.ExpandCollapse.Pattern.Collapse();
+            }
+        }
+
+        public AutomationElement FindMenuByAutomationId(string menuAutomationId)
+        {
+            var menu = Menu.FindFirstChild(cf => cf.ByAutomationId(menuAutomationId));
+            if (menu == null) throw new InvalidOperationException($"No menu with automationId='{menuAutomationId}'");
+            return menu;
+        }
+
+        public AutomationElement FindMenuItem(string menuAutomationId, string menuItemText)
+        {
+            var menu = FindMenuByAutomationId(menuAutomationId);
+            menu.Click();
+            Mouse.MoveBy(200, 0);
+
+            var listItem = menu.FindFirstDescendant(cf => cf.ByControlType(ControlType.List)).FindAllChildren()
+                .FirstOrDefault(i => i.FindFirstChild().AsLabel().Text == menuItemText)?.AsTabItem();
+            if (listItem == null) throw new InvalidOperationException($"No menu item with text='{menuItemText}'");
+            listItem.Select();
+            return listItem.Parent.Parent;
         }
 
 

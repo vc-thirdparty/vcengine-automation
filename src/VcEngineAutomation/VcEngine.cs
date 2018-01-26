@@ -226,7 +226,7 @@ namespace VcEngineAutomation
         public void LoadLayout(string layoutFile, TimeSpan? waitTimeSpan=null)
         {
             string fileToLoad = GetFileToLoad(layoutFile);
-            AutomationElement menuBar = ApplicationMenu.GetMenu("Open", "Computer");
+            AutomationElement menuBar = ApplicationMenu.FindMenuItem("OpenBackstage", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
             Wait.UntilInputIsProcessed();
             //MainWindow.WaitWhileBusy();
@@ -259,7 +259,7 @@ namespace VcEngineAutomation
         public void SaveLayout(string fileToSave, bool overwrite = false, TimeSpan? waitForTimeSpan=null)
         {
             if (!fileToSave.ToLower().EndsWith(".vcmx")) throw new InvalidOperationException($"File extension when saving layout file must be 'vcmx' and not '{Path.GetExtension(fileToSave)}'");
-            AutomationElement menuBar = ApplicationMenu.GetMenu("Save As", "Computer");
+            AutomationElement menuBar = ApplicationMenu.FindMenuItem("SaveAsBackstage", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
             Wait.UntilInputIsProcessed();
             MainWindow.WaitWhileBusy();

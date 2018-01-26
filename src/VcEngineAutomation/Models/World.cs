@@ -17,7 +17,7 @@ namespace VcEngineAutomation.Models
 
         public void Clear()
         {
-            vcEngine.ApplicationMenu.GetMenu("Clear All");
+            vcEngine.ApplicationMenu.FindMenuByAutomationId("NewBackstage").Click();
             Wait.UntilInputIsProcessed();
             VcMessageBox.AttachIfShown(vcEngine)?.ClickNo();
         }
