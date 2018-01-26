@@ -158,6 +158,7 @@ namespace VcEngineAutomation
         {
             return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("CommandPanelViewModelTabItem")));
         }
+        [Obsolete("Retrieve panel through automation id instead")]
         public CommandPanel GetCommandPanel(string startOfTitle)
         {
             return new CommandPanel(this, () => TabRetriever.GetPane("CommandPanelViewModel"));
