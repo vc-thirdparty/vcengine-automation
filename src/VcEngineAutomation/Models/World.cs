@@ -1,8 +1,7 @@
-﻿using System;
-using FlaUI.Core.Input;
+﻿using FlaUI.Core.Input;
 using FlaUI.Core.WindowsAPI;
+using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using VcEngineAutomation.Windows;
 
 namespace VcEngineAutomation.Models
@@ -10,7 +9,6 @@ namespace VcEngineAutomation.Models
     public class World
     {
         private readonly VcEngine vcEngine;
-        private static readonly Regex MsgBoxRegex = new Regex(@"Component '(.*)' \(");
 
         public World(VcEngine vcEngine)
         {
@@ -61,13 +59,13 @@ namespace VcEngineAutomation.Models
         public void CopyAndPasteSelectedComponents(TimeSpan? waitTimeSpan = null)
         {
             vcEngine.MoveFocusTo3DViewPort();
-            vcEngine.Ribbon.HomeTab.ClickButton("Clipboard", "Copy");
-            vcEngine.Ribbon.HomeTab.ClickButton("Clipboard", "Paste", waitTimeSpan);
+            vcEngine.Ribbon.HomeTab.InvokeButtonByAutomationId("VcTabHomeVcRibbonClipboardCopy");
+            vcEngine.Ribbon.HomeTab.InvokeButtonByAutomationId("VcTabHomeVcRibbonClipboardPaste");
         }
         public void DeleteSelectedComponent()
         {
             vcEngine.MoveFocusTo3DViewPort();
-            vcEngine.Ribbon.HomeTab.ClickButton("Clipboard", "Delete");
+            vcEngine.Ribbon.HomeTab.InvokeButtonByAutomationId("VcTabHomeVcRibbonClipboardDelete");
         }
     }
 }
