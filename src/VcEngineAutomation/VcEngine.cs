@@ -97,7 +97,7 @@ namespace VcEngineAutomation
             viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("Viewport")));
             quickAccessToolBar = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByClassName("QuickAccessToolbar")));
             World = new World(this);
-            Ribbon = new Ribbon(this, MainWindow, mainTab);
+            Ribbon = new Ribbon(this, mainTab);
             ApplicationMenu = new ApplicationMenu(this);
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
@@ -158,6 +158,7 @@ namespace VcEngineAutomation
         {
             return new CommandPanel(this, () => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("CommandPanelViewModelTabItem")));
         }
+        [Obsolete("Retrieve panel through automation id instead")]
         public CommandPanel GetCommandPanel(string startOfTitle)
         {
             return new CommandPanel(this, () => TabRetriever.GetPane("CommandPanelViewModel"));

@@ -1,11 +1,21 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
+using FlaUI.Core.Tools;
+using FlaUI.Core.WindowsAPI;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Panels;
+using Button = FlaUI.Core.AutomationElements.Button;
+using CheckBox = FlaUI.Core.AutomationElements.CheckBox;
+using ComboBox = FlaUI.Core.AutomationElements.ComboBox;
+using Menu = FlaUI.Core.AutomationElements.Menu;
+using MenuItem = FlaUI.Core.AutomationElements.MenuItem;
+using TextBox = FlaUI.Core.AutomationElements.TextBox;
 
 namespace VcEngineAutomation.Ribbons
 {
@@ -69,12 +79,14 @@ namespace VcEngineAutomation.Ribbons
             }
             return cachedRibbonGroups;
         }
+        [Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
         public AutomationElement Group(int groupIndex)
         {
             AutomationElement[] groups = Groups();
             if (groups.Length <= groupIndex) throw new InvalidOperationException("No ribbon ribbonGroup at specified index");
             return groups.ElementAt(groupIndex);
         }
+        [Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
         public AutomationElement Group(string name)
         {
             AutomationElement[] groups = Groups();
@@ -83,6 +95,7 @@ namespace VcEngineAutomation.Ribbons
             if (ribbonGroup == null) throw new InvalidOperationException($"No ribbon group found named '{name}', available choices are '{groupNames}'");
             return ribbonGroup;
         }
+        [Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
         private AutomationElement[] GetGroupItems<T>(AutomationElement ribbonGroup) where T : AutomationElement
         {
             if (typeof(T) == typeof(Button))
@@ -95,6 +108,7 @@ namespace VcEngineAutomation.Ribbons
             }
             throw new InvalidOperationException($"Unknown type '{typeof(T)}'");
         }
+        [Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
         public void ClickButton(string groupName, string buttonName, TimeSpan? waitTimeSpan=null)
         {
             var button = FindButtonByName(groupName, buttonName);
@@ -102,7 +116,7 @@ namespace VcEngineAutomation.Ribbons
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-
+        [Obsolete("Use FindButtonByAutomationId, as it will replace this method in future")]
         public Button FindButtonByName(string groupName, string buttonName)
         {
             vcEngine.CheckForCrash();
@@ -135,6 +149,7 @@ namespace VcEngineAutomation.Ribbons
             }
         }
 
+        [Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
         public void ClickButton(int groupIndex, int buttonIndex, TimeSpan? waitTimeSpan = null)
         {
             vcEngine.CheckForCrash();
@@ -145,6 +160,7 @@ namespace VcEngineAutomation.Ribbons
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
+        [Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
         public void ClickButton(string groupName, int buttonIndex, TimeSpan? waitTimeSpan = null)
         {
             vcEngine.CheckForCrash();
@@ -156,31 +172,19 @@ namespace VcEngineAutomation.Ribbons
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-
+        [Obsolete("Use InvokeCommandPanelButtonByAutomationId, as it will replace this method in future")]
         public CommandPanel ClickCommandPanelButton(string groupName, string buttonName, string startOfTitle=null, TimeSpan? waitTimeSpan = null)
         {
             ClickButton(groupName, buttonName, waitTimeSpan);
-            return GetCommandPanel(startOfTitle);
+            return vcEngine.GetCommandPanel();
         }
 
+        [Obsolete("Use InvokeCommandPanelButtonByAutomationId, as it will replace this method in future")]
         public CommandPanel ClickCommandPanelButton(string groupName, int buttonIndex, string startOfTitle = null, TimeSpan? waitTimeSpan = null)
         {
             ClickButton(groupName, buttonIndex, waitTimeSpan);
-            return GetCommandPanel(startOfTitle);
+            return vcEngine.GetCommandPanel();
         }
-
-        private CommandPanel GetCommandPanel(string startOfTitle)
-        {
-            if (startOfTitle == null)
-            {
-                return vcEngine.GetCommandPanel();
-            }
-            else
-            {
-                return vcEngine.GetCommandPanel(startOfTitle);
-            }
-        }
-
 
         public void SelectBigDropdownItem(string groupName, int index, int menuIndex, TimeSpan? waitTimeSpan=null)
         {
@@ -226,17 +230,20 @@ namespace VcEngineAutomation.Ribbons
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
+        [Obsolete("Use SelectDropdownItemByAutomationId, as it will replace this method in future")]
         public void SelectDropdownItem(string groupName, string itemName, string text, TimeSpan? waitTimeSpan=null)
         {
             GetDropdownMenuItem(FindMenu(groupName, itemName), text).Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
+        [Obsolete("Use SelectDropdownItemByAutomationId, as it will replace this method in future")]
         public void SelectDropdownItem(string groupName, int itemIndex, string text, TimeSpan? waitTimeSpan = null)
         {
             GetDropdownMenuItem(FindMenu(groupName, itemIndex), text).Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-
+        
+        [Obsolete("Use FindDropdownMenuItemByAutomationId, as it will replace this method in future")]
         public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState, TimeSpan? waitTimeSpan = null)
         {
             Menu menu = FindMenu(groupName, itemName);
@@ -282,6 +289,7 @@ namespace VcEngineAutomation.Ribbons
             }
         }
 
+        [Obsolete("Use FindTextBoxByAutomationId, as it will replace this method in future")]
         public TextBox FindTextBox(string groupName, int index)
         {
             AutomationElement element = Group(groupName).FindAllChildren(cf => cf.ByControlType(ControlType.Edit)).ElementAtOrDefault(index);
@@ -290,6 +298,7 @@ namespace VcEngineAutomation.Ribbons
             return element.AsTextBox();
         }
 
+        [Obsolete("Use EnterTextBoxByAutomationId, as it will replace this method in future")]
         public void EnterIntoTexBox(string groupName, int index, string text)
         {
             TextBox textbox = FindTextBox(groupName, index);
@@ -297,6 +306,7 @@ namespace VcEngineAutomation.Ribbons
             Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
             textbox.Text = text;
         }
+        [Obsolete("Use FindComboBoxByAutomationId, as it will replace this method in future")]
         public ComboBox FindComboBox(string groupName, int index)
         {
             AutomationElement element = Group(groupName).FindAllDescendants(cf => cf.ByClassName("ComboBox").And(cf.ByAutomationId("PART_FocusSite"))).ElementAtOrDefault(index);
@@ -306,6 +316,7 @@ namespace VcEngineAutomation.Ribbons
             Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsComboBox();
         }
+        [Obsolete("Use FindCheckBoxByAutomationId, as it will replace this method in future")]
         public CheckBox FindCheckBox(string groupName, int index)
         {
             AutomationElement element = Group(groupName).FindAllChildren(cf => cf.ByClassName("ToggleButtonTool")).ElementAtOrDefault(index);
@@ -313,6 +324,7 @@ namespace VcEngineAutomation.Ribbons
             Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
             return element.AsCheckBox();
         }
+        [Obsolete("Use FindCheckBoxByAutomationId, as it will replace this method in future")]
         public CheckBox FindCheckBox(string groupName, string labelName)
         {
             AutomationElement element = Group(groupName).FindFirstDescendant(cf => cf.ByClassName("ToggleButtonTool").And(cf.ByName(labelName)));
@@ -321,6 +333,7 @@ namespace VcEngineAutomation.Ribbons
             return element.AsCheckBox();
         }
 
+        [Obsolete("Use FindMenuByAutomationId, as it will replace this method in future")]
         public Menu FindMenu(string groupName, string itemName)
         {
             AutomationElement[] menues = Group(groupName).FindAllChildren();
@@ -329,6 +342,7 @@ namespace VcEngineAutomation.Ribbons
             if (menu == null) throw new InvalidOperationException($"No ribbon menu found named '{itemName}', available choices are '{itemNames}'");
             return menu;
         }
+        [Obsolete("Use FindMenuByAutomationId, as it will replace this method in future")]
         public Menu FindMenu(string groupName, int itemIndex)
         {
             var elements = Group(groupName).FindAllChildren();
@@ -336,9 +350,109 @@ namespace VcEngineAutomation.Ribbons
             return elements[itemIndex].AsMenu();
         }
 
+        [Obsolete("Use FindDropdownMenuItemByAutomationId, as it will replace this method in future")]
         public MenuItem FindDropdownMenuItem(string groupName, string itemName, string text)
         {
             return GetDropdownMenuItem(FindMenu(groupName, itemName), text);
+        }
+        
+        public AutomationElement FindAutomationElement(string automationId)
+        {
+            vcEngine.CheckForCrash();
+            if (!Retry.WhileException(() => TabPage.IsSelected, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200)))
+            {
+                Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
+            }
+            var automationElement = TabPage.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
+            if (automationElement != null)
+            {
+                Wait.UntilResponsive(automationElement, TimeSpan.FromSeconds(5));
+            }
+            return automationElement;
+        }
+
+        private AutomationElement FindAutomationElementImpl(string automationId)
+        {
+            var automationElement = FindAutomationElement(automationId);
+            if (automationElement == null) throw new InvalidOperationException($"No control found with AutomationId={automationId}");
+            return automationElement;
+        }
+
+        public TextBox FindTextBoxByAutomationId(string automationId)
+        {
+            return FindAutomationElementImpl(automationId).AsTextBox();
+        }
+        public void EnterIntoTexBoxByAutomationId(string automationId, string text)
+        {
+            TextBox textbox = FindTextBoxByAutomationId(automationId);
+            if (!textbox.IsEnabled) throw new InvalidOperationException($"Text box {automationId} was not enabled");
+            Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
+            textbox.Text = text;
+            Keyboard.Type(VirtualKeyShort.ENTER);
+        }
+
+        public CheckBox FindCheckBoxByAutomationId(string automationId)
+        {
+            return FindAutomationElementImpl(automationId).AsCheckBox();
+        }
+
+        public Button FindButtonByAutomationId(string automationId)
+        {
+            return FindAutomationElementImpl(automationId).AsButton();
+        }
+
+        public ComboBox FindComboBoxByAutomationId(string automationId)
+        {
+            return FindAutomationElementImpl(automationId).AsComboBox();
+        }
+
+        public Menu FindMenuByAutomationId(string automationId)
+        {
+            return FindAutomationElement(automationId).AsMenu();
+        }
+
+        public void InvokeButtonByAutomationId(string automationId, TimeSpan? waitTimeSpan = null)
+        {
+            var button = FindAutomationElementImpl(automationId).AsButton();
+            if (!button.IsEnabled) throw new InvalidOperationException($"Ribbon button with automationId='{automationId}' is not enabled");
+            Invoke(button);
+            vcEngine.WaitWhileBusy(waitTimeSpan);
+        }
+
+        public CommandPanel InvokeCommandPanelButtonByAutomationId(string automationId, TimeSpan? waitTimeSpan = null)
+        {
+            InvokeButtonByAutomationId(automationId, waitTimeSpan);
+            return vcEngine.GetCommandPanel();
+        }
+        
+        public MenuItem FindDropdownMenuItemByAutomationId(string menuAutomationId, string menuItemAutomationId)
+        {
+            var menu = FindAutomationElementImpl(menuAutomationId).AsMenu();
+            return FindDropdownMenuItemByAutomationId(menu, menuItemAutomationId);
+        }
+        private MenuItem FindDropdownMenuItemByAutomationId(Menu menu, string automationId)
+        {
+            Window popup = vcEngine.MainWindow.GetCreatedWindowsForAction(() => menu.AsComboBox().Expand()).First();
+            var menuItem = popup.FindFirstDescendant(cf => cf.ByAutomationId(automationId))?.AsMenuItem();
+            if (menuItem == null) throw new InvalidOperationException($"No ribbon menu item with automationId='{automationId}'");
+            return menuItem;
+        }
+        public void ToggleDropdownItemByAutomationId(string menuAutomationId, string menuItemAutiomationId, ToggleState toggleState, TimeSpan? waitTimeSpan = null)
+        {
+            var menu = FindAutomationElementImpl(menuAutomationId).AsMenu();
+            var togglePattern = FindDropdownMenuItemByAutomationId(menu, menuItemAutiomationId).Patterns.Toggle.Pattern;
+            if (togglePattern.ToggleState != toggleState)
+            {
+                togglePattern.Toggle();
+                vcEngine.WaitWhileBusy(waitTimeSpan);
+            }
+            
+            if (menu.Patterns.ExpandCollapse.Pattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
+            {
+                // Disable as it throws an exception when collapsing
+                Retry.WhileException(() => menu.Patterns.ExpandCollapse.Pattern.Collapse(), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+                //menu.Click();
+            }
         }
     }
 }
