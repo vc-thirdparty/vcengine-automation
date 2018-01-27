@@ -1,13 +1,11 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
 using FlaUI.Core.Input;
 using FlaUI.Core.Tools;
 using FlaUI.Core.WindowsAPI;
+using System;
+using System.Linq;
 using VcEngineAutomation.Extensions;
 using VcEngineAutomation.Panels;
 using Button = FlaUI.Core.AutomationElements.Button;
@@ -356,78 +354,78 @@ namespace VcEngineAutomation.Ribbons
             return GetDropdownMenuItem(FindMenu(groupName, itemName), text);
         }
         
-        public AutomationElement FindAutomationElement(string automationId)
+        public AutomationElement FindAutomationElement(string groupAutomationId, string itemAutomationId)
         {
             vcEngine.CheckForCrash();
             if (!Retry.WhileException(() => TabPage.IsSelected, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200)))
             {
                 Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
             }
-            var automationElement = TabPage.FindFirstDescendant(cf => cf.ByAutomationId(automationId));
+            var automationElement = TabPage.FindFirstDescendant(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));
             if (automationElement != null)
             {
                 Wait.UntilResponsive(automationElement, TimeSpan.FromSeconds(5));
             }
             return automationElement;
         }
-
-        private AutomationElement FindAutomationElementImpl(string automationId)
+        private AutomationElement FindAutomationElementImpl(string groupAutomationId, string automationId)
         {
-            var automationElement = FindAutomationElement(automationId);
+            var automationElement = FindAutomationElement(groupAutomationId, automationId);
             if (automationElement == null) throw new InvalidOperationException($"No control found with AutomationId={automationId}");
             return automationElement;
         }
-
-        public TextBox FindTextBoxByAutomationId(string automationId)
+        
+        public TextBox FindTextBoxByAutomationId(string groupAutomationId, string automationId)
         {
-            return FindAutomationElementImpl(automationId).AsTextBox();
+            return FindAutomationElementImpl(groupAutomationId, automationId).AsTextBox();
         }
-        public void EnterIntoTexBoxByAutomationId(string automationId, string text)
+        
+        public void EnterIntoTexBoxByAutomationId(string groupAutomationId, string automationId, string text)
         {
-            TextBox textbox = FindTextBoxByAutomationId(automationId);
+            TextBox textbox = FindTextBoxByAutomationId(groupAutomationId, automationId);
             if (!textbox.IsEnabled) throw new InvalidOperationException($"Text box {automationId} was not enabled");
             Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
             textbox.Text = text;
             Keyboard.Type(VirtualKeyShort.ENTER);
         }
 
-        public CheckBox FindCheckBoxByAutomationId(string automationId)
+        public CheckBox FindCheckBoxByAutomationId(string groupAutomationId, string automationId)
         {
-            return FindAutomationElementImpl(automationId).AsCheckBox();
+            return FindAutomationElementImpl(groupAutomationId, automationId).AsCheckBox();
         }
 
-        public Button FindButtonByAutomationId(string automationId)
+        public Button FindButtonByAutomationId(string groupAutomationId, string automationId)
         {
-            return FindAutomationElementImpl(automationId).AsButton();
+            return FindAutomationElementImpl(groupAutomationId, automationId).AsButton();
         }
 
-        public ComboBox FindComboBoxByAutomationId(string automationId)
+        public ComboBox FindComboBoxByAutomationId(string groupAutomationId, string automationId)
         {
-            return FindAutomationElementImpl(automationId).AsComboBox();
+            return FindAutomationElementImpl(groupAutomationId, automationId).AsComboBox();
         }
 
-        public Menu FindMenuByAutomationId(string automationId)
+        public Menu FindMenuByAutomationId(string groupAutomationId, string automationId)
         {
-            return FindAutomationElement(automationId).AsMenu();
+            return FindAutomationElement(groupAutomationId, automationId).AsMenu();
         }
 
-        public void InvokeButtonByAutomationId(string automationId, TimeSpan? waitTimeSpan = null)
+        public void InvokeButtonByAutomationId(string groupAutomationId, string automationId, TimeSpan? waitTimeSpan = null)
         {
-            var button = FindAutomationElementImpl(automationId).AsButton();
+            var button = FindAutomationElementImpl(groupAutomationId, automationId).AsButton();
             if (!button.IsEnabled) throw new InvalidOperationException($"Ribbon button with automationId='{automationId}' is not enabled");
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-
-        public CommandPanel InvokeCommandPanelButtonByAutomationId(string automationId, TimeSpan? waitTimeSpan = null)
+        
+        public CommandPanel InvokeCommandPanelButtonByAutomationId(string groupAutomationId, string automationId, TimeSpan? waitTimeSpan = null)
         {
-            InvokeButtonByAutomationId(automationId, waitTimeSpan);
+            InvokeButtonByAutomationId(groupAutomationId, automationId, waitTimeSpan);
             return vcEngine.GetCommandPanel();
         }
-        
-        public MenuItem FindDropdownMenuItemByAutomationId(string menuAutomationId, string menuItemAutomationId)
+
+        public MenuItem FindDropdownMenuItemByAutomationId(string groupAutomationId, string menuAutomationId, string menuItemAutomationId)
         {
-            var menu = FindAutomationElementImpl(menuAutomationId).AsMenu();
+            var menu = FindAutomationElementImpl(groupAutomationId, menuAutomationId).AsMenu();
             return FindDropdownMenuItemByAutomationId(menu, menuItemAutomationId);
         }
         private MenuItem FindDropdownMenuItemByAutomationId(Menu menu, string automationId)
@@ -437,9 +435,9 @@ namespace VcEngineAutomation.Ribbons
             if (menuItem == null) throw new InvalidOperationException($"No ribbon menu item with automationId='{automationId}'");
             return menuItem;
         }
-        public void ToggleDropdownItemByAutomationId(string menuAutomationId, string menuItemAutiomationId, ToggleState toggleState, TimeSpan? waitTimeSpan = null)
+        public void ToggleDropdownItemByAutomationId(string groupAutomationId, string menuAutomationId, string menuItemAutiomationId, ToggleState toggleState, TimeSpan? waitTimeSpan = null)
         {
-            var menu = FindAutomationElementImpl(menuAutomationId).AsMenu();
+            var menu = FindAutomationElementImpl(groupAutomationId, menuAutomationId).AsMenu();
             var togglePattern = FindDropdownMenuItemByAutomationId(menu, menuItemAutiomationId).Patterns.Toggle.Pattern;
             if (togglePattern.ToggleState != toggleState)
             {
