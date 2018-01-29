@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using VcEngineAutomation;
 using VcEngineAutomation.Panels;
 
@@ -18,6 +19,10 @@ namespace VcEngineAutomationTester
             else if (args.Contains("test-camera"))
             {
                 TestCamera();
+            }
+            else if (args.Contains("test-ribbon-performance"))
+            {
+                TestRibbonPerformance();
             }
             else if (args.Contains("test-compproperties"))
             {
@@ -60,6 +65,29 @@ namespace VcEngineAutomationTester
                 eng.ECataloguePanel.DisplayedComponents[0].Load();
                 eng.ECataloguePanel.ClearSearch();
             }
+        }
+
+        private static void TestRibbonPerformance()
+        {
+            var eng = VcEngine.Attach();
+            var watch = new Stopwatch();
+            watch.Start();
+            var count = 200;
+            for (int i = 0; i < count; i++)
+            {
+                eng.Ribbon.HomeTab.FindButtonByName("Clipboard", "Copy");
+                eng.Ribbon.HelpTab.FindButtonByName("Social Media", "Youtube");
+            }
+            watch.Stop();
+            var otherWatch = new Stopwatch();
+            otherWatch.Start();
+            for (int i = 0; i < count; i++)
+            {
+                eng.Ribbon.HomeTab.FindButtonByAutomationId("VcRibbonClipboard", "Delete");
+                eng.Ribbon.HelpTab.FindButtonByAutomationId("VcRibbonSocialMedia", "OpenYoutubePage");
+            }
+            otherWatch.Stop();
+            System.Console.WriteLine($"Old={watch.Elapsed} ({watch.Elapsed.TotalSeconds / count:F2}), New={otherWatch.Elapsed} ({otherWatch.Elapsed.TotalSeconds / count:F2})");
         }
 
         private static void TestMisc()
