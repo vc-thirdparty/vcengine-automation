@@ -77,14 +77,14 @@ namespace VcEngineAutomation.Ribbons
             }
             return cachedRibbonGroups;
         }
-        [Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
+        //[Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
         public AutomationElement Group(int groupIndex)
         {
             AutomationElement[] groups = Groups();
             if (groups.Length <= groupIndex) throw new InvalidOperationException("No ribbon ribbonGroup at specified index");
             return groups.ElementAt(groupIndex);
         }
-        [Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
+        //[Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
         public AutomationElement Group(string name)
         {
             AutomationElement[] groups = Groups();
@@ -93,7 +93,7 @@ namespace VcEngineAutomation.Ribbons
             if (ribbonGroup == null) throw new InvalidOperationException($"No ribbon group found named '{name}', available choices are '{groupNames}'");
             return ribbonGroup;
         }
-        [Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
+        //[Obsolete("Use FindAutomationElement instead, as it will replace this method in future")]
         private AutomationElement[] GetGroupItems<T>(AutomationElement ribbonGroup) where T : AutomationElement
         {
             if (typeof(T) == typeof(Button))
@@ -106,7 +106,7 @@ namespace VcEngineAutomation.Ribbons
             }
             throw new InvalidOperationException($"Unknown type '{typeof(T)}'");
         }
-        [Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
         public void ClickButton(string groupName, string buttonName, TimeSpan? waitTimeSpan=null)
         {
             var button = FindButtonByName(groupName, buttonName);
@@ -114,7 +114,7 @@ namespace VcEngineAutomation.Ribbons
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-        [Obsolete("Use FindButtonByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use FindButtonByAutomationId, as it will replace this method in future")]
         public Button FindButtonByName(string groupName, string buttonName)
         {
             vcEngine.CheckForCrash();
@@ -147,7 +147,7 @@ namespace VcEngineAutomation.Ribbons
             }
         }
 
-        [Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
         public void ClickButton(int groupIndex, int buttonIndex, TimeSpan? waitTimeSpan = null)
         {
             vcEngine.CheckForCrash();
@@ -158,7 +158,7 @@ namespace VcEngineAutomation.Ribbons
             Invoke(button);
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-        [Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use InvokeButtonByAutomationId, as it will replace this method in future")]
         public void ClickButton(string groupName, int buttonIndex, TimeSpan? waitTimeSpan = null)
         {
             vcEngine.CheckForCrash();
@@ -170,14 +170,14 @@ namespace VcEngineAutomation.Ribbons
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        [Obsolete("Use InvokeCommandPanelButtonByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use InvokeCommandPanelButtonByAutomationId, as it will replace this method in future")]
         public CommandPanel ClickCommandPanelButton(string groupName, string buttonName, string startOfTitle=null, TimeSpan? waitTimeSpan = null)
         {
             ClickButton(groupName, buttonName, waitTimeSpan);
             return vcEngine.GetCommandPanel();
         }
 
-        [Obsolete("Use InvokeCommandPanelButtonByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use InvokeCommandPanelButtonByAutomationId, as it will replace this method in future")]
         public CommandPanel ClickCommandPanelButton(string groupName, int buttonIndex, string startOfTitle = null, TimeSpan? waitTimeSpan = null)
         {
             ClickButton(groupName, buttonIndex, waitTimeSpan);
@@ -228,20 +228,20 @@ namespace VcEngineAutomation.Ribbons
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        [Obsolete("Use SelectDropdownItemByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use SelectDropdownItemByAutomationId, as it will replace this method in future")]
         public void SelectDropdownItem(string groupName, string itemName, string text, TimeSpan? waitTimeSpan=null)
         {
             GetDropdownMenuItem(FindMenu(groupName, itemName), text).Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
-        [Obsolete("Use SelectDropdownItemByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use SelectDropdownItemByAutomationId, as it will replace this method in future")]
         public void SelectDropdownItem(string groupName, int itemIndex, string text, TimeSpan? waitTimeSpan = null)
         {
             GetDropdownMenuItem(FindMenu(groupName, itemIndex), text).Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
         
-        [Obsolete("Use FindDropdownMenuItemByAutomationId, as it will replace this method in future")]
+        //[Obsolete("Use FindDropdownMenuItemByAutomationId, as it will replace this method in future")]
         public void ToggleDropdownItem(string groupName, string itemName, string text, ToggleState toggleState, TimeSpan? waitTimeSpan = null)
         {
             Menu menu = FindMenu(groupName, itemName);
@@ -268,7 +268,7 @@ namespace VcEngineAutomation.Ribbons
             return menuItem;
         }
 
-        [Obsolete("Use FindComboBox instead")]
+        //[Obsolete("Use FindComboBox instead")]
         public void SelectComboboxItem(string groupName, int itemIndex, string text)
         {
             AutomationElement item = Group(groupName).FindAllChildren().ElementAtOrDefault(itemIndex);
@@ -357,10 +357,21 @@ namespace VcEngineAutomation.Ribbons
         public AutomationElement FindAutomationElement(string groupAutomationId, string itemAutomationId)
         {
             vcEngine.CheckForCrash();
+            Select();
+            /*Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
             if (!Retry.WhileException(() => TabPage.IsSelected, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200)))
             {
-                Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
-            }
+                Retry.WhileException(() => {
+                    Mouse.LeftClick(TabPage.GetCenter());
+            //        Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                }, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
+
+                //Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
+            }*/
+
+            /*var toolBar = TabPage.FindAllChildren(cf => cf.ByControlType(ControlType.ToolBar))
+                .FirstOrDefault(t => t.FindChildAt(0).AutomationId.StartsWith($"{TabPage.AutomationId}{groupAutomationId}"));
+            var automationElement = toolBar.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));*/
             var automationElement = TabPage.FindFirstDescendant(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));
             if (automationElement != null)
             {
