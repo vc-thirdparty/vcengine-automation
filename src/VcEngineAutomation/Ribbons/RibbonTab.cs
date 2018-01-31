@@ -412,7 +412,11 @@ namespace VcEngineAutomation.Ribbons
 
         public ComboBox FindComboBoxByAutomationId(string groupAutomationId, string automationId)
         {
-            return FindAutomationElementImpl(groupAutomationId, automationId).AsComboBox();
+            var comboBox = FindAutomationElementImpl(groupAutomationId, automationId).AsComboBox();
+            Wait.UntilResponsive(comboBox, TimeSpan.FromSeconds(5));
+            comboBox.Click();
+            Wait.UntilResponsive(comboBox, TimeSpan.FromSeconds(5));
+            return comboBox;
         }
 
         public Menu FindMenuByAutomationId(string groupAutomationId, string automationId)
