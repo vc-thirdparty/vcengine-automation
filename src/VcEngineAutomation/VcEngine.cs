@@ -62,6 +62,17 @@ namespace VcEngineAutomation
         public AutomationElement ViewPort => viewPort.Value;
         public World World { get; }
         public static CultureInfo CultureInfo => LazyAppCultureInfo.Value;
+        public string LayoutFileName
+        {
+            get
+            {
+                var title = MainWindow.Title;
+                var dashPos = title.LastIndexOf('-');
+                if (dashPos < 0) return null;
+                var layoutName = title.Substring(0, dashPos).Trim();
+                return layoutName.StartsWith("<") ? null : layoutName;
+            }
+        }
 
         public VcEngine(Application application, AutomationBase automation)
         {
