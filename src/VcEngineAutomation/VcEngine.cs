@@ -31,9 +31,11 @@ namespace VcEngineAutomation
         private static readonly Lazy<CultureInfo> LazyAppCultureInfo = new Lazy<CultureInfo>(() => CultureInfo.GetCultureInfoByIetfLanguageTag("en-US"));
         private readonly Lazy<Button> lazyUndoButton;
         private readonly Lazy<Button> lazyRedoButton;
+        private readonly Lazy<AutomationElement> lazyDockManager;
 
         public static string DefaultInstallationPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional");
 
+        [Obsolete("Will be removed as panels have automation ID's")]
         public DockedTabRetriever TabRetriever { get; }
         public Application Application { get; }
         public AutomationBase Automation { get; }
@@ -59,9 +61,21 @@ namespace VcEngineAutomation
         public PropertiesPanel DrawingPropertiesPanel => PropertiesPanel;
         public ECataloguePanel ECataloguePanel { get; }
         public OutputPanel OutputPanel { get; }
+        public AutomationElement DockManager => lazyDockManager.Value;
         public AutomationElement ViewPort => viewPort.Value;
         public World World { get; }
         public static CultureInfo CultureInfo => LazyAppCultureInfo.Value;
+        public string LayoutFileName
+        {
+            get
+            {
+                var title = MainWindow.Title;
+                var dashPos = title.LastIndexOf('-');
+                if (dashPos < 0) return null;
+                var layoutName = title.Substring(0, dashPos).Trim();
+                return layoutName.StartsWith("<") ? null : layoutName;
+            }
+        }
 
         public VcEngine(Application application, AutomationBase automation)
         {
@@ -71,11 +85,15 @@ namespace VcEngineAutomation
             var fileVersionInfo = GetVersionInfo(Process.GetProcessById(application.ProcessId));
             Version = fileVersionInfo.FileVersion;
             IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4
-                          && fileVersionInfo.FileMinorPart >= 0
-                          && fileVersionInfo.FileBuildPart >= 4;
+                          && 
+                          (fileVersionInfo.FileMinorPart > 0 
+                           || (fileVersionInfo.FileMinorPart > 0
+                               && fileVersionInfo.FileBuildPart >= 4));
             IsR8OrAbove = fileVersionInfo.FileMajorPart >= 4
-                          && fileVersionInfo.FileMinorPart >= 0
-                          && fileVersionInfo.FileBuildPart >= 5;
+                          &&
+                          (fileVersionInfo.FileMinorPart > 0
+                           || (fileVersionInfo.FileMinorPart > 0
+                               && fileVersionInfo.FileBuildPart >= 5));
             IsR9OrAbove = fileVersionInfo.FileMajorPart >= 4
                           && fileVersionInfo.FileMinorPart >= 1;
             IsR5 = fileVersionInfo.ProductVersion.StartsWith("4.0.2");
@@ -95,6 +113,7 @@ namespace VcEngineAutomation
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
             viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("Viewport")));
+            lazyDockManager = new Lazy<AutomationElement>(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("dockManager")));
             quickAccessToolBar = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByClassName("QuickAccessToolbar")));
             World = new World(this);
             Ribbon = new Ribbon(this, mainTab);
@@ -102,8 +121,8 @@ namespace VcEngineAutomation
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
             Camera = new Camera(this);
-            OutputPanel = new OutputPanel(this, () => TabRetriever.GetPane("VcOutput"));
-            ECataloguePanel = new ECataloguePanel(this, () => TabRetriever.GetPane("VcECatalogue"));
+            OutputPanel = new OutputPanel(this);
+            ECataloguePanel = new ECataloguePanel(this);
             
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.IsEnabled, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));

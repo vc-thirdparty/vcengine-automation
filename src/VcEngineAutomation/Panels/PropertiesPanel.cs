@@ -4,28 +4,24 @@ using FlaUI.Core.Definitions;
 using System;
 using System.Linq;
 using VcEngineAutomation.Extensions;
-using VcEngineAutomation.Utils;
 
 namespace VcEngineAutomation.Panels
 {
     public class PropertiesPanel
     {
+        private readonly Lazy<AutomationElement> lazyPropertiesPane;
         private readonly Lazy<ToggleButton> lockButton;
         private readonly IFormatProvider appCultureInfo;
 
         public PropertiesPanel(VcEngine vcEngine)
         {
-            Pane = new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor");
+            lazyPropertiesPane = new Lazy<AutomationElement>(() => vcEngine.DockManager.FindFirstDescendant("VcPropertyEditorPanel"));
             lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId("Property.LockButton")).AsToggleButton());
             appCultureInfo = VcEngine.CultureInfo;
         }
 
-        public AutomationElement CoordinatePane
-        {
-            get { return Pane.FindFirstDescendant(cf => cf.ByClassName("PropertyEditorView")); }
-        }
-
-        public AutomationElement Pane { get; set; }
+        public AutomationElement CoordinatePane => Pane.FindFirstDescendant(cf => cf.ByClassName("PropertyEditorView")); 
+        public AutomationElement Pane => lazyPropertiesPane.Value;
 
         public void MoveRelative(Position relative)
         {
