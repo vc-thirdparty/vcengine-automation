@@ -4,7 +4,6 @@ using FlaUI.Core.Definitions;
 using System;
 using System.Linq;
 using VcEngineAutomation.Extensions;
-using VcEngineAutomation.Utils;
 
 namespace VcEngineAutomation.Panels
 {
@@ -15,7 +14,7 @@ namespace VcEngineAutomation.Panels
 
         public PropertiesPanel(VcEngine vcEngine)
         {
-            Pane = new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor");
+            Pane = vcEngine.MainWindow.FindFirstChild(cf => cf.ByAutomationId("dockManager")).FindFirstDescendant("VcPropertyEditorPanel");
             lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId("Property.LockButton")).AsToggleButton());
             appCultureInfo = VcEngine.CultureInfo;
         }
