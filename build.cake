@@ -1,6 +1,6 @@
 #addin "Cake.FileHelpers&version=1.0.4"
-#addin "nuget:?package=Cake.Sonar"
-#tool "nuget:?package=MSBuild.SonarQube.Runner.Tool"
+//#addin "nuget:?package=Cake.Sonar"
+//#tool "nuget:?package=MSBuild.SonarQube.Runner.Tool"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -119,6 +119,7 @@ Task("ChocoPack")
 		});
 	});
 
+/*
 Task("SonarInit")
 	.WithCriteria(IsRunningOnWindows())
 	.WithCriteria(() => sonarcloudKey != "")
@@ -139,8 +140,7 @@ Task("SonarAnalyse")
 			Login = sonarcloudKey
 		});
 	});
-  
-
+*/
 
 
 //////////////////////////////////////////////////////////////////////
@@ -149,11 +149,12 @@ Task("SonarAnalyse")
 
 Task("Default")
 	.IsDependentOn("Clean")
-	.IsDependentOn("SonarInit")
+//	.IsDependentOn("SonarInit")
 	.IsDependentOn("Build")
 	.IsDependentOn("NugetPack")
 	.IsDependentOn("ZipPack")
-	.IsDependentOn("SonarAnalyse");
+//	.IsDependentOn("SonarAnalyse")
+	;
 
 	
 //////////////////////////////////////////////////////////////////////
