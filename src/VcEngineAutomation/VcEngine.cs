@@ -82,11 +82,15 @@ namespace VcEngineAutomation
             var fileVersionInfo = GetVersionInfo(Process.GetProcessById(application.ProcessId));
             Version = fileVersionInfo.FileVersion;
             IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4
-                          && fileVersionInfo.FileMinorPart >= 0
-                          && fileVersionInfo.FileBuildPart >= 4;
+                          && 
+                          (fileVersionInfo.FileMinorPart > 0 
+                           || (fileVersionInfo.FileMinorPart > 0
+                               && fileVersionInfo.FileBuildPart >= 4));
             IsR8OrAbove = fileVersionInfo.FileMajorPart >= 4
-                          && fileVersionInfo.FileMinorPart >= 0
-                          && fileVersionInfo.FileBuildPart >= 5;
+                          &&
+                          (fileVersionInfo.FileMinorPart > 0
+                           || (fileVersionInfo.FileMinorPart > 0
+                               && fileVersionInfo.FileBuildPart >= 5));
             IsR9OrAbove = fileVersionInfo.FileMajorPart >= 4
                           && fileVersionInfo.FileMinorPart >= 1;
             IsR5 = fileVersionInfo.ProductVersion.StartsWith("4.0.2");
