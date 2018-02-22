@@ -10,7 +10,6 @@ namespace VcEngineAutomation.Panels
 {
     public class PropertiesPanel
     {
-        private readonly Lazy<AutomationElement> lazyPropertiesPane;
         private readonly Lazy<ToggleButton> lockButton;
         private readonly IFormatProvider appCultureInfo;
 
@@ -21,8 +20,12 @@ namespace VcEngineAutomation.Panels
             appCultureInfo = VcEngine.CultureInfo;
         }
 
-        public AutomationElement CoordinatePane => Pane.FindFirstDescendant(cf => cf.ByClassName("PropertyEditorView")); 
-        public AutomationElement Pane => lazyPropertiesPane.Value;
+        public AutomationElement CoordinatePane
+        {
+            get { return Pane.FindFirstDescendant(cf => cf.ByClassName("PropertyEditorView")); }
+        }
+
+        public AutomationElement Pane { get; set; }
 
         public void MoveRelative(Position relative)
         {
