@@ -9,11 +9,13 @@ namespace VcEngineAutomation.Panels
 {
     public class ECataloguePanel
     {
+        private readonly VcEngine vcEngine;
         private readonly Lazy<AutomationElement> panel;
 
-        public ECataloguePanel(VcEngine vcEngine)
+        public ECataloguePanel(VcEngine vcEngine, Func<AutomationElement> paneRetriever)
         {
-            panel = new Lazy<AutomationElement>(() => vcEngine.DockManager.FindFirstDescendant(cf => cf.ByAutomationId("VcECataloguePanel")));
+            this.vcEngine = vcEngine;
+            panel = new Lazy<AutomationElement>(() => paneRetriever().FindFirstDescendant(cf => cf.ByClassName("ECatalogueView")));
         }
 
         public TextBox SearchTextBox => panel.Value.FindFirstDescendant(cf => cf.ByAutomationId("SearchTextBox")).AsTextBox();

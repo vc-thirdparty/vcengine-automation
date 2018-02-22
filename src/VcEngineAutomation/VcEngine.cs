@@ -31,11 +31,9 @@ namespace VcEngineAutomation
         private static readonly Lazy<CultureInfo> LazyAppCultureInfo = new Lazy<CultureInfo>(() => CultureInfo.GetCultureInfoByIetfLanguageTag("en-US"));
         private readonly Lazy<Button> lazyUndoButton;
         private readonly Lazy<Button> lazyRedoButton;
-        private readonly Lazy<AutomationElement> lazyDockManager;
 
         public static string DefaultInstallationPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Visual Components", "Visual Components Professional");
 
-        [Obsolete("Will be removed as panels have automation ID's")]
         public DockedTabRetriever TabRetriever { get; }
         public Application Application { get; }
         public AutomationBase Automation { get; }
@@ -61,7 +59,6 @@ namespace VcEngineAutomation
         public PropertiesPanel DrawingPropertiesPanel => PropertiesPanel;
         public ECataloguePanel ECataloguePanel { get; }
         public OutputPanel OutputPanel { get; }
-        public AutomationElement DockManager => lazyDockManager.Value;
         public AutomationElement ViewPort => viewPort.Value;
         public World World { get; }
         public static CultureInfo CultureInfo => LazyAppCultureInfo.Value;
@@ -113,7 +110,6 @@ namespace VcEngineAutomation
             Tab mainTab = Retry.WhileException(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("XamRibbonTabs")).AsTab(), TimeSpan.FromMinutes(2));
 
             viewPort = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("Viewport")));
-            lazyDockManager = new Lazy<AutomationElement>(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("dockManager")));
             quickAccessToolBar = new Lazy<AutomationElement>(() => MainWindow.FindFirstDescendant(cf => cf.ByClassName("QuickAccessToolbar")));
             World = new World(this);
             Ribbon = new Ribbon(this, mainTab);
@@ -121,8 +117,8 @@ namespace VcEngineAutomation
             Visual3DToolbar = new Visual3DToolbar(this);
             Options = new Options(ApplicationMenu);
             Camera = new Camera(this);
-            OutputPanel = new OutputPanel(this);
-            ECataloguePanel = new ECataloguePanel(this);
+            OutputPanel = new OutputPanel(this, () => TabRetriever.GetPane("VcOutput"));
+            ECataloguePanel = new ECataloguePanel(this, () => TabRetriever.GetPane("VcECatalogue"));
             
             Console.WriteLine("Waiting for ribbon to become enabled");
             Retry.While(() => Retry.WhileException(() => !Ribbon.HomeTab.TabPage.IsEnabled, TimeSpan.FromMinutes(2)), TimeSpan.FromMinutes(2));

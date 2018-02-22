@@ -12,10 +12,10 @@ namespace VcEngineAutomation.Panels
         private readonly Lazy<AutomationElement> panel;
         private readonly Lazy<TextBox> textBox;
 
-        public OutputPanel(VcEngine vcEngine)
+        public OutputPanel(VcEngine vcEngine, Func<AutomationElement> paneRetriever)
         {
             this.vcEngine = vcEngine;
-            panel = new Lazy<AutomationElement>(() => vcEngine.DockManager.FindFirstDescendant(cf => cf.ByAutomationId("VcOutputPanel")));
+            panel = new Lazy<AutomationElement>(() => paneRetriever().FindFirstDescendant(cf => cf.ByClassName("ConsoleView")));
             textBox = new Lazy<TextBox>(() => panel.Value.FindFirstDescendant(cf => cf.ByAutomationId("ConsoletextBlock")).AsTextBox());
         }
 
