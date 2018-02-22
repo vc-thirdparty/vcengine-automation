@@ -12,6 +12,7 @@ namespace VcEngineAutomation.Utils
     /// <summary>
     /// Class that works with the docked tab parts
     /// </summary>
+    [Obsolete("Will be removed as panels have automation ID's")]
     public class DockedTabRetriever
     {
         private readonly Window mainWindow;
