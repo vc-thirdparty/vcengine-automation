@@ -138,6 +138,10 @@ namespace VcEngineAutomation.Panels
             ShowTab(title);
         }
 
+        public AutomationElement FindProperty(string propertyName)
+        {
+            return FindPropertyControl(propertyName, false);
+        }
         private AutomationElement FindPropertyControl(string propertyName, bool verifyIsEnabled)
         {
             ShowTabForProperty(propertyName);
