@@ -2,6 +2,7 @@
 using System.Linq;
 using VcEngineAutomation;
 using VcEngineAutomation.Panels;
+using VcEngineAutomation.Windows;
 
 namespace VcEngineAutomationTester
 {
@@ -40,6 +41,10 @@ namespace VcEngineAutomationTester
             {
                 TestMisc();
             }
+            else if (args.Contains("test-dialogs"))
+            {
+                TestVariousDialogs();
+            }
             else if (args.Contains("test-ecat"))
             {
                 var eng = VcEngine.Attach();
@@ -65,6 +70,14 @@ namespace VcEngineAutomationTester
                 eng.ECataloguePanel.DisplayedComponents[0].Load();
                 eng.ECataloguePanel.ClearSearch();
             }
+        }
+
+        private static void TestVariousDialogs()
+        {
+            var eng = VcEngine.Attach();
+            var fileDialog = FileDialog.Attach(eng);
+            //var vcMsgBox = VcMessageBox.Attach(eng);
+            //var msgBox = MessageBox.Attach(eng);
         }
 
         private static void TestRibbonPerformance()
