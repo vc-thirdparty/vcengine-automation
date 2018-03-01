@@ -3,7 +3,7 @@ solution: src/VcEngineAutomation.sln
 
 env:
   global:
-    - PKG_VERSION=0.4.6
+    - PKG_VERSION=0.4.7
 
 script:
   - ./build.sh

@@ -4,24 +4,28 @@ using FlaUI.Core.Definitions;
 using System;
 using System.Linq;
 using VcEngineAutomation.Extensions;
+using VcEngineAutomation.Utils;
 
 namespace VcEngineAutomation.Panels
 {
     public class PropertiesPanel
     {
-        private readonly Lazy<AutomationElement> lazyPropertiesPane;
         private readonly Lazy<ToggleButton> lockButton;
         private readonly IFormatProvider appCultureInfo;
 
         public PropertiesPanel(VcEngine vcEngine)
         {
-            lazyPropertiesPane = new Lazy<AutomationElement>(() => vcEngine.DockManager.FindFirstDescendant("VcPropertyEditorPanel"));
+            Pane = new DockedTabRetriever(vcEngine.MainWindow).GetPane("VcPropertyEditor");
             lockButton = new Lazy<ToggleButton>(() => Pane.FindFirstDescendant(cf => cf.ByAutomationId("Property.LockButton")).AsToggleButton());
             appCultureInfo = VcEngine.CultureInfo;
         }
 
-        public AutomationElement CoordinatePane => Pane.FindFirstDescendant(cf => cf.ByClassName("PropertyEditorView")); 
-        public AutomationElement Pane => lazyPropertiesPane.Value;
+        public AutomationElement CoordinatePane
+        {
+            get { return Pane.FindFirstDescendant(cf => cf.ByClassName("PropertyEditorView")); }
+        }
+
+        public AutomationElement Pane { get; set; }
 
         public void MoveRelative(Position relative)
         {
@@ -134,6 +138,10 @@ namespace VcEngineAutomation.Panels
             ShowTab(title);
         }
 
+        public AutomationElement FindProperty(string propertyName)
+        {
+            return FindPropertyControl(propertyName, false);
+        }
         private AutomationElement FindPropertyControl(string propertyName, bool verifyIsEnabled)
         {
             ShowTabForProperty(propertyName);
