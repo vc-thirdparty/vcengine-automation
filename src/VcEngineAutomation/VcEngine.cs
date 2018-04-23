@@ -205,6 +205,8 @@ namespace VcEngineAutomation
             TimeSpan retryInterval = TimeSpan.FromMilliseconds(500);
             Wait.UntilResponsive(MainWindow);
 
+            if (IsShellBusyAction?.Invoke(this) ?? false) return true;
+
             var interactionState = Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval);
             if (interactionState == WindowInteractionState.ReadyForUserInteraction) return false;
 
@@ -216,7 +218,7 @@ namespace VcEngineAutomation
                 return true;
             }
 
-            return IsShellBusyAction?.Invoke(this) ?? false;
+            return false;
         }
 
         public void CheckForCrash()
