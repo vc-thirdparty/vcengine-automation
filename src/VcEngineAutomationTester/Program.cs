@@ -48,7 +48,7 @@ namespace VcEngineAutomationTester
             else if (args.Contains("test-ecat"))
             {
                 var eng = VcEngine.Attach();
-                eng.ECataloguePanel.Search("Adj");
+                eng.ECataloguePanel.Search("Conveyor");
                 eng.ECataloguePanel.DisplayedComponents[0].Load();
                 eng.ECataloguePanel.ClearSearch();
             }
@@ -56,7 +56,8 @@ namespace VcEngineAutomationTester
             {
                 var eng = VcEngine.Attach();
                 eng.World.Clear();
-                eng.World.LoadComponentByVcid("9d111ec4-5c75-4ff0-96fe-03dc3788a632");
+                eng.World.LoadComponentByVcid("01d7764c-45a2-4c15-bc87-3a5853be14e1");
+                eng.PropertiesPanel.FindProperty("Name").AsTextBox().Text = "OtherName";
                 eng.PropertiesPanel.Position = new Position(100,200,300);
                 eng.PropertiesPanel.SetProperty("Name", "new name");
                 eng.MoveFocusTo3DViewPort();
@@ -66,7 +67,7 @@ namespace VcEngineAutomationTester
                 eng.World.CopyAndPasteSelectedComponents();
                 eng.World.DeleteSelectedComponent();
                 eng.World.Clear();
-                eng.ECataloguePanel.Search("Beam");
+                eng.ECataloguePanel.Search("Conveyor");
                 eng.ECataloguePanel.DisplayedComponents[0].Load();
                 eng.ECataloguePanel.ClearSearch();
             }
@@ -118,7 +119,7 @@ namespace VcEngineAutomationTester
         private static void TestLoadComponent()
         {
             var eng = VcEngine.Attach();
-            eng.World.LoadComponentByVcid("9d111ec4-5c75-4ff0-96fe-03dc3788a632");
+            eng.World.LoadComponentByVcid("01d7764c-45a2-4c15-bc87-3a5853be14e1");
         }
 
         private static void TestComponentProperties()

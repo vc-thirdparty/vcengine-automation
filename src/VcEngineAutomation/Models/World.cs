@@ -36,6 +36,7 @@ namespace VcEngineAutomation.Models
             Wait.UntilInputIsProcessed();
             Wait.UntilResponsive(vcEngine.ECataloguePanel.SearchTextBox);
             vcEngine.ECataloguePanel.DisplayedItems.First().DoubleClick();
+            vcEngine.WaitWhileBusy();
         }
 
         public int SelectedItemsCount
