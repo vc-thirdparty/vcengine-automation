@@ -136,6 +136,10 @@ namespace VcEngineAutomation
         /// Action to add custom code to check for crashes, this action should be quick
         /// </summary>
         public Action<VcEngine> CheckForCrashAction { get; set; }
+        /// <summary>
+        /// Function to add custom code to check is shell is busy
+        /// </summary>
+        public Func<VcEngine, bool> IsShellBusyAction { get; set; }
 
         private FileVersionInfo GetVersionInfo(Process process)
         {
@@ -181,30 +185,38 @@ namespace VcEngineAutomation
 
         public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)
         {
+            var timeout = waitTimeSpan ?? TimeSpan.FromMinutes(5);
+
             var aMessageBoxWindow = Retry.WhileException(() =>
                     MainWindow.FindFirstChild(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("#32770")).Or(cf.ByAutomationId("TextboxDialog"))),
                 waitTimeSpan ?? TimeSpan.FromSeconds(5),
                 TimeSpan.FromMilliseconds(50));
             if (aMessageBoxWindow != null) return;
 
-            if (ShellIsBusy())
+            if (ShellIsBusy(timeout))
             {
-                bool shellIsStillBusy = Retry.While(ShellIsBusy, isBusy => isBusy, waitTimeSpan ?? TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(0.5));
+                bool shellIsStillBusy = Retry.While(() => ShellIsBusy(timeout), isBusy => isBusy, waitTimeSpan ?? TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(0.5));
                 if (shellIsStillBusy) throw new TimeoutException("Timeout while waiting for progress bar to disappear");
             }
         }
 
-        private bool ShellIsBusy()
+        private bool ShellIsBusy(TimeSpan timeout)
         {
+            TimeSpan retryInterval = TimeSpan.FromMilliseconds(500);
             Wait.UntilResponsive(MainWindow);
-            if (MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return false;
+
+            var interactionState = Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval);
+            if (interactionState == WindowInteractionState.ReadyForUserInteraction) return false;
+
             CheckForCrash();
-            if (MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")) != null)
+
+            var progressBar = Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")), timeout, retryInterval);
+            if (progressBar != null)
             {
                 return true;
             }
-            var currentPropertyValue = MainWindow.Properties.HelpText;
-            return currentPropertyValue != null && ((string)currentPropertyValue).Contains("Busy");
+
+            return IsShellBusyAction?.Invoke(this) ?? false;
         }
 
         public void CheckForCrash()
