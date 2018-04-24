@@ -212,8 +212,7 @@ namespace VcEngineAutomation
 
             CheckForCrash();
 
-            var progressBar = Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")), timeout, retryInterval);
-            if (progressBar != null)
+            if (FindProgressDialog(timeout, retryInterval) != null)
             {
                 return true;
             }
@@ -312,6 +311,14 @@ namespace VcEngineAutomation
             }
             if (button == null) throw new InvalidOperationException($"Could not find {name} button");
             return button.AsButton();
+        }
+
+        internal Window FindProgressDialog(TimeSpan? timeout = null, TimeSpan? retryInterval = null)
+        {
+            return Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")),
+                timeout ?? TimeSpan.FromSeconds(5),
+                retryInterval ?? TimeSpan.FromMilliseconds(50))?.AsWindow();
+
         }
         public void DoUndo()
         {
