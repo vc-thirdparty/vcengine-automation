@@ -226,6 +226,8 @@ namespace VcEngineAutomation
             if (MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return;
 
             Window[] windows = MainWindow.FindModalWindowsProtected();
+            if (!windows.Any()) return;
+
             // Catch normal VC exception stack trace
             Window window = windows.FirstOrDefault(w => w.Properties.Name.ValueOrDefault == MainWindowName && w.Properties.AutomationId.ValueOrDefault == "_this");
             if (window != null)
