@@ -315,7 +315,7 @@ namespace VcEngineAutomation
             return button.AsButton();
         }
 
-        internal Window FindProgressDialog(TimeSpan? timeout = null, TimeSpan? retryInterval = null)
+        public Window FindProgressDialog(TimeSpan? timeout = null, TimeSpan? retryInterval = null)
         {
             return Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")),
                 timeout ?? TimeSpan.FromSeconds(5),
