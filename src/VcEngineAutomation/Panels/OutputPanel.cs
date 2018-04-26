@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Media;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using VcEngineAutomation.Extensions;
@@ -20,6 +21,7 @@ namespace VcEngineAutomation.Panels
         }
 
         public string Text => TextBox.Text;
+        public string[] Lines => Text.Split('\n').Select(l => l.Trim()).ToArray();
         public TextBox TextBox => textBox.Value;
         public AutomationElement Panel => panel.Value;
 
