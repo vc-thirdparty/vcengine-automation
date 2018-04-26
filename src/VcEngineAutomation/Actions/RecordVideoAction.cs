@@ -21,7 +21,7 @@ namespace VcEngineAutomation.Actions
         {
             StartRecording(filename);
             var simulationPanel = SimulationPanel.Attach(vcEngine);
-            simulationPanel.WaitFor(simulationPanel.ElapsedSimulationTime + duration);
+            simulationPanel.RunFor(duration);
             StopRecording();
         }
 

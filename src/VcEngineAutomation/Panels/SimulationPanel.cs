@@ -1,14 +1,16 @@
-﻿using System;
-using System.Globalization;
-using System.Threading;
-using FlaUI.Core.AutomationElements;
+﻿using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Tools;
+using System;
+using System.Globalization;
+using Button = FlaUI.Core.AutomationElements.Button;
+using Label = FlaUI.Core.AutomationElements.Label;
 
 namespace VcEngineAutomation.Panels
 {
     public class SimulationPanel
     {
+        private readonly Lazy<Button> playButton;
         private readonly Lazy<Label> elapsedSimulationTimeLabel;
         private readonly Lazy<Slider> speedFactorSlider;
 
@@ -17,24 +19,47 @@ namespace VcEngineAutomation.Panels
             Panel = vcEngine.MainWindow.FindFirstDescendant(cf => cf.ByClassName("SimulationControlView"));
             elapsedSimulationTimeLabel = new Lazy<Label>(() => Panel.FindFirstDescendant(cf => cf.ByAutomationId("ElapsedPlayTime")).AsLabel());
             speedFactorSlider = new Lazy<Slider>(() => Panel.FindFirstDescendant(cf => cf.ByAutomationId("SimulationSpeed")).AsSlider());
+            playButton = new Lazy<Button>(() => Panel.FindFirstDescendant(cf => cf.ByAutomationId("SimulationPlayButton")).AsButton());
         }
+
+        /// <summary>
+        /// Function to customize if simulation is running. The default check will take more than 1 second to finish.
+        /// </summary>
+        public Func<bool> IsSimulationRunningFunc;
 
         public AutomationElement Panel { get; }
-
-        public void WaitFor(TimeSpan timeSpan)
+        /// <summary>
+        /// Waits until simulation ends or the specified timespan has run.
+        /// Note that simulation will lag with 1 second as there is no simple way to get if the simulation is running or not
+        /// </summary>
+        /// <param name="timeSpan">the timespan to let the simulation run</param>
+        public void RunFor(TimeSpan timeSpan)
         {
-            Retry.While(() => ElapsedSimulationTime, t => t < timeSpan && IsSimulationRunning, TimeSpan.FromMinutes(30), TimeSpan.FromSeconds(1));
+            RunUntil(ElapsedSimulationTime + timeSpan);
+        }
+        public void RunUntil(TimeSpan timeSpan)
+        {
+            Retry.While(() => ElapsedSimulationTime, t => t < timeSpan && IsSimulationRunning, TimeSpan.FromMinutes(30), TimeSpan.FromMilliseconds(100));
         }
 
+        /// <summary>
+        /// Returns if the simulation is running or not, this property can take up to 1 second to complete
+        /// as there is no real way to check if simulation is currently running
+        /// </summary>
         public bool IsSimulationRunning
         {
             get
             {
-                var startElapsedTime = ElapsedSimulationTime;
-                Thread.Sleep(1001);
-                return ElapsedSimulationTime > startElapsedTime;
+                if (IsSimulationRunningFunc != null)
+                {
+                    return IsSimulationRunningFunc.Invoke();
+                }
+                var previousSimulationTime = ElapsedSimulationTime;
+                Retry.While(() => ElapsedSimulationTime == previousSimulationTime, 
+                    TimeSpan.FromMilliseconds(1005), 
+                    TimeSpan.FromMilliseconds(50));
+                return ElapsedSimulationTime != previousSimulationTime;
             }
-            
         }
 
         public double SpeedFactor
@@ -51,7 +76,7 @@ namespace VcEngineAutomation.Panels
         {
             if (!IsSimulationRunning)
             {
-                Panel.FindFirstDescendant(cf => cf.ByAutomationId("SimulationPlayButton")).AsButton().Invoke();
+                playButton.Value.Invoke();
             }
         }
         public void Stop()

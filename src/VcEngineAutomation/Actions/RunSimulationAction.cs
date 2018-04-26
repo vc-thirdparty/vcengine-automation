@@ -22,7 +22,7 @@ namespace VcEngineAutomation.Actions
         {
             simulationPanel.Reset();
             simulationPanel.Start();
-            simulationPanel.WaitFor(duration);
+            simulationPanel.RunUntil(duration);
             simulationPanel.Stop();
         }
 
@@ -30,7 +30,7 @@ namespace VcEngineAutomation.Actions
         {
             simulationPanel.SpeedFactor = speedFactor;
             simulationPanel.Start();
-            simulationPanel.WaitFor(duration + simulationPanel.ElapsedSimulationTime);
+            simulationPanel.RunFor(duration);
             simulationPanel.Stop();
         }
     }

@@ -20,6 +20,7 @@ namespace VcEngineAutomation.Panels
         }
 
         public string Text => TextBox.Text;
+        public string[] Lines => Text.Split('\n').Select(l => l.Trim()).ToArray();
         public TextBox TextBox => textBox.Value;
         public AutomationElement Panel => panel.Value;
 
