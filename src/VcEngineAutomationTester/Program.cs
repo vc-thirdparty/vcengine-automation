@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using VcEngineAutomation;
 using VcEngineAutomation.Panels;
@@ -45,6 +46,10 @@ namespace VcEngineAutomationTester
             {
                 TestVariousDialogs();
             }
+            else if (args.Contains("test-simulation"))
+            {
+                TestSimulation();
+            }
             else if (args.Contains("test-ecat"))
             {
                 var eng = VcEngine.Attach();
@@ -71,6 +76,18 @@ namespace VcEngineAutomationTester
                 eng.ECataloguePanel.DisplayedComponents[0].Load();
                 eng.ECataloguePanel.ClearSearch();
             }
+        }
+
+        private static void TestSimulation()
+        {
+            var eng = VcEngine.Attach();
+            var simulationPanel = SimulationPanel.Attach(eng);
+            simulationPanel.Start();
+            simulationPanel.RunFor(TimeSpan.FromSeconds(10));
+            simulationPanel.Stop();
+            simulationPanel.Start();
+            simulationPanel.RunUntil(TimeSpan.FromSeconds(15));
+            simulationPanel.Stop();
         }
 
         private static void TestVariousDialogs()
