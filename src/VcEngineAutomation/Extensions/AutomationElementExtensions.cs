@@ -69,7 +69,7 @@ namespace VcEngineAutomation.Extensions
             T value;
             if (property.TryGetValue(out value))
             {
-                return value.ToString();
+                return value != null ? value.ToString() : "[Null]";
             }
             return "[Unavailable]";
         }
