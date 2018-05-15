@@ -105,9 +105,17 @@ namespace VcEngineAutomation.Windows
             mainWindow.WaitWhileBusy();
         }
 
+        private static Window FindWindow(Window mainWindow)
+        {
+            return Retry.While(() => mainWindow.FindFirstDescendant(cf => cf.ByClassName("#32770"))?.AsWindow(),
+                w => w == null,
+                TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+        }
+
         public static FileDialog Attach(Window mainWindow)
         {
-            return new FileDialog(mainWindow, mainWindow.RetryUntilAnyModalWindow().First());
+            var window = Retry.WhileException(() => FindWindow(mainWindow), TimeSpan.FromSeconds(5));
+            return new FileDialog(mainWindow, window);
         }
 
         public static FileDialog Attach(VcEngine vcEngine)

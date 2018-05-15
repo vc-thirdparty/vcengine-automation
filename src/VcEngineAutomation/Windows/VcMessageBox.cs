@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using FlaUI.Core.AutomationElements;
+﻿using FlaUI.Core.AutomationElements;
 using FlaUI.Core.AutomationElements.Infrastructure;
 using FlaUI.Core.Definitions;
+using FlaUI.Core.Tools;
+using System;
 using VcEngineAutomation.Extensions;
 
 namespace VcEngineAutomation.Windows
@@ -56,14 +56,15 @@ namespace VcEngineAutomation.Windows
             ClickCancel();
         }
 
-        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow = null)
+        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow = null, TimeSpan? timeout = null)
         {
             if (messageBoxWindow != null)
             {
                 return new VcMessageBox(mainWindow, messageBoxWindow);
             }
-            var window = mainWindow.FindModalWindowsProtected().FirstOrDefault(ae => ae.Properties.AutomationId.ValueOrDefault == "_this");
 
+            var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
+                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
             if (window == null) throw new InvalidOperationException("VC message box was not found");
             return new VcMessageBox(mainWindow, window);
         }
@@ -76,10 +77,11 @@ namespace VcEngineAutomation.Windows
         {
             return AttachIfShown(vcEngine.MainWindow);
         }
-        public static VcMessageBox AttachIfShown(Window mainWindow)
+        public static VcMessageBox AttachIfShown(Window mainWindow, TimeSpan? timeout = null)
         {
             if (mainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return null;
-            Window window = mainWindow.FindWindowProtected(cf => cf.ByAutomationId("_this"));
+            var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
+                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
             if (window != null)
             {
                 return new VcMessageBox(mainWindow, window);
