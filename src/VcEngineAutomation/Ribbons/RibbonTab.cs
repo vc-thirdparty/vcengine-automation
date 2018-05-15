@@ -372,7 +372,11 @@ namespace VcEngineAutomation.Ribbons
             /*var toolBar = TabPage.FindAllChildren(cf => cf.ByControlType(ControlType.ToolBar))
                 .FirstOrDefault(t => t.FindChildAt(0).AutomationId.StartsWith($"{TabPage.AutomationId}{groupAutomationId}"));
             var automationElement = toolBar.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));*/
-            var automationElement = TabPage.FindFirstDescendant(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));
+
+            var automationElement = vcEngine.IsR9OrAbove
+                ? TabPage.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}"))?.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"))
+                : TabPage.FindFirstDescendant(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));
+
             if (automationElement != null)
             {
                 Wait.UntilResponsive(automationElement, TimeSpan.FromSeconds(5));
