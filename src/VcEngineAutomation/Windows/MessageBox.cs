@@ -69,7 +69,8 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox Attach(Window mainWindow, TimeSpan? timeout = null)
         {
-            var window = Retry.WhileException(() => AttachToWindow(mainWindow), timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+            var window = Retry.WhileException(() => AttachToWindow(mainWindow), 
+                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
             return new MessageBox(mainWindow, window.AsWindow());
         }
 
@@ -90,8 +91,8 @@ namespace VcEngineAutomation.Windows
             var state = parent.Patterns.Window.PatternOrDefault?.WindowInteractionState?.ValueOrDefault;
             if (state == WindowInteractionState.ReadyForUserInteraction || state == null) return null;
 
-            Window window = parent.FindWindowProtected(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("#32770")), timeout);
-            //Window window = mainWindow.ModalWindows.FirstOrDefault(w => w.Properties.ClassName == "#32770");
+            var window = Retry.WhileException(() => parent.FindFirstDescendant(cf => cf.ByClassName("#32770"))?.AsWindow(), 
+                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
             if (window != null)
             {
                 return new MessageBox(parent, window);
