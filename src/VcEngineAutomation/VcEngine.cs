@@ -185,17 +185,17 @@ namespace VcEngineAutomation
 
         public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)
         {
-            var timeout = waitTimeSpan ?? TimeSpan.FromMinutes(5);
-
+            var uiTimeout = waitTimeSpan ?? TimeSpan.FromSeconds(5);
+            var uiRetry = TimeSpan.FromMilliseconds(50);
             var aMessageBoxWindow = Retry.WhileException(() =>
                     MainWindow.FindFirstChild(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("#32770")).Or(cf.ByAutomationId("TextboxDialog"))),
-                waitTimeSpan ?? TimeSpan.FromSeconds(5),
-                TimeSpan.FromMilliseconds(50));
+                uiTimeout, uiRetry);
             if (aMessageBoxWindow != null) return;
 
-            if (ShellIsBusy(timeout))
+            var shellIsBusyTimeout = waitTimeSpan ?? TimeSpan.FromMinutes(5);
+            if (ShellIsBusy(shellIsBusyTimeout))
             {
-                bool shellIsStillBusy = Retry.While(() => ShellIsBusy(timeout), isBusy => isBusy, waitTimeSpan ?? TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(0.5));
+                bool shellIsStillBusy = Retry.While(() => ShellIsBusy(shellIsBusyTimeout), isBusy => isBusy, uiTimeout, TimeSpan.FromSeconds(0.5));
                 if (shellIsStillBusy) throw new TimeoutException("Timeout while waiting for progress bar to disappear");
             }
         }
