@@ -26,7 +26,12 @@ namespace VcEngineAutomation.Actions
             simulationPanel.Stop();
         }
 
-        public void ContinueFor(TimeSpan duration, double speedFactor = 50)
+        public void ContinueFor(TimeSpan duration)
+        {
+            ContinueFor(duration, 50);
+        }
+
+        public void ContinueFor(TimeSpan duration, double speedFactor)
         {
             simulationPanel.SpeedFactor = speedFactor;
             simulationPanel.Start();

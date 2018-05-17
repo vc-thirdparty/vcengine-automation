@@ -57,12 +57,17 @@ namespace VcEngineAutomation.Models
             vcEngine.PropertiesPanel.SetProperty("Name", newComponentName);
         }
 
-        public void CopyAndPasteSelectedComponents(TimeSpan? waitTimeSpan = null)
+        public void CopyAndPasteSelectedComponents()
+        {
+            CopyAndPasteSelectedComponents(null);
+        }
+        public void CopyAndPasteSelectedComponents(TimeSpan? waitTimeSpan)
         {
             vcEngine.MoveFocusTo3DViewPort();
             vcEngine.Ribbon.HomeTab.InvokeButtonByAutomationId("VcRibbonClipboard", "Copy");
             vcEngine.Ribbon.HomeTab.InvokeButtonByAutomationId("VcRibbonClipboard", "Paste");
         }
+
         public void DeleteSelectedComponent()
         {
             vcEngine.MoveFocusTo3DViewPort();

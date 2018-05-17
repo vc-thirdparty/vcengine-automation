@@ -82,7 +82,11 @@ namespace VcEngineAutomation.Panels
             return Pane.GetTextBoxForLabel(label);
         }
 
-        public void Apply(TimeSpan? waitTimeSpan=null)
+        public void Apply()
+        {
+            Apply(null);
+        }
+        public void Apply(TimeSpan? waitTimeSpan)
         {
             vcEngine.WaitWhileBusy();
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
@@ -95,7 +99,11 @@ namespace VcEngineAutomation.Panels
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void Cancel(TimeSpan? waitTimeSpan=null)
+        public void Cancel()
+        {
+            Cancel(null);
+        }
+        public void Cancel(TimeSpan? waitTimeSpan)
         {
             vcEngine.WaitWhileBusy();
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
@@ -108,7 +116,11 @@ namespace VcEngineAutomation.Panels
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void Close(TimeSpan? waitTimeSpan = null)
+        public void Close()
+        {
+            Close(null);
+        }
+        public void Close(TimeSpan? waitTimeSpan)
         {
             Cancel(waitTimeSpan);
         }

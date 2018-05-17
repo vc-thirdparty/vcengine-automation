@@ -91,7 +91,13 @@ namespace VcEngineAutomation.Extensions
         {
             System.Diagnostics.Debug.WriteLine(item.ToDebugString());
         }
-        public static void PrintHiearchy(this AutomationElement item, string indent = "")
+
+        public static void PrintHiearchy(this AutomationElement item)
+        {
+            PrintHiearchy(item, "");
+        }
+
+        public static void PrintHiearchy(this AutomationElement item, string indent)
         {
             if (item == null) return;
             System.Diagnostics.Debug.WriteLine(indent + item.ToDebugString());
@@ -100,7 +106,13 @@ namespace VcEngineAutomation.Extensions
                 PrintHiearchy(childItem, indent + "  ");
             }
         }
-        public static void PrintHiearchy(this IEnumerable<AutomationElement> items, string indent = "")
+
+        public static void PrintHiearchy(this IEnumerable<AutomationElement> items)
+        {
+            PrintHiearchy(items, "");
+        }
+
+        public static void PrintHiearchy(this IEnumerable<AutomationElement> items, string indent)
         {
             foreach (var item in items)
             {
@@ -108,7 +120,12 @@ namespace VcEngineAutomation.Extensions
             }
         }
 
-        public static string ToHiearchyString(this AutomationElement item, string indent = "")
+        public static string ToHiearchyString(this AutomationElement item)
+        {
+            return ToHiearchyString(item, "");
+        }
+
+        public static string ToHiearchyString(this AutomationElement item, string indent)
         {
             if (item == null) return "[null]";
             string output = $"{indent}{item.ToDebugString()}\r\n";

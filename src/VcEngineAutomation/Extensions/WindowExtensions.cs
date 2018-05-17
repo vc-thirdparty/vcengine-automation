@@ -84,7 +84,11 @@ namespace VcEngineAutomation.Extensions
                 TimeSpan.FromMilliseconds(100));
         }
 
-        public static bool CanWindowBeResized(this Window window, TimeSpan? timeout = null)
+        public static bool CanWindowBeResized(this Window window)
+        {
+            return CanWindowBeResized(window, null);
+        }
+        public static bool CanWindowBeResized(this Window window, TimeSpan? timeout)
         {
             return Retry.WhileException(() =>
             {
@@ -93,12 +97,20 @@ namespace VcEngineAutomation.Extensions
             }, timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
 
-        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout = null)
+        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition)
+        {
+            return FindWindowProtected(window, condition, null);
+        }
+        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout)
         {
             return Retry.WhileException(() => window.FindFirstDescendant(condition)?.AsWindow(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
 
-        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout = null)
+        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition)
+        {
+            return FindAllWindowsProtected(window, condition, null);
+        }
+        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout)
         {
             return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
         }
@@ -115,7 +127,11 @@ namespace VcEngineAutomation.Extensions
             return modalWindows;
         }
 
-        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? timeout = null)
+        public static Window[] RetryUntilAnyModalWindow(this Window window)
+        {
+            return RetryUntilAnyModalWindow(window, null);
+        }
+        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? timeout)
         {
             return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
         }

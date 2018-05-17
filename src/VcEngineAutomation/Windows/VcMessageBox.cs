@@ -56,7 +56,15 @@ namespace VcEngineAutomation.Windows
             ClickCancel();
         }
 
-        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow = null, TimeSpan? timeout = null)
+        public static VcMessageBox Attach(Window mainWindow)
+        {
+            return Attach(mainWindow, null, null);
+        }
+        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow)
+        {
+            return Attach(mainWindow, messageBoxWindow, null);
+        }
+        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow, TimeSpan? timeout)
         {
             if (messageBoxWindow != null)
             {
@@ -77,7 +85,12 @@ namespace VcEngineAutomation.Windows
         {
             return AttachIfShown(vcEngine.MainWindow);
         }
-        public static VcMessageBox AttachIfShown(Window mainWindow, TimeSpan? timeout = null)
+
+        public static VcMessageBox AttachIfShown(Window mainWindow)
+        {
+            return AttachIfShown(mainWindow, null);
+        }
+        public static VcMessageBox AttachIfShown(Window mainWindow, TimeSpan? timeout)
         {
             if (mainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return null;
             var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
