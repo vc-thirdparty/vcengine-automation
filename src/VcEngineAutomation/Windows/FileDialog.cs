@@ -39,7 +39,15 @@ namespace VcEngineAutomation.Windows
             }
         }
 
-        public void Save(string filename, bool overwrite=true, bool waitForWriteIsCompleted=true)
+        public void Save(string filename)
+        {
+            Save(filename, true, true);
+        }
+        public void Save(string filename, bool overwrite)
+        {
+            Save(filename, overwrite, true);
+        }
+        public void Save(string filename, bool overwrite, bool waitForWriteIsCompleted)
         {
             if (Path.GetFileName(filename).Intersect(Path.GetInvalidFileNameChars()).Any()) throw new InvalidOperationException($"Filename '{0}' contains invalid filename chars");
             if (Path.GetDirectoryName(filename).Intersect(Path.GetInvalidPathChars()).Any()) throw new InvalidOperationException($"Filename '{0}' contains invalid filename chars");

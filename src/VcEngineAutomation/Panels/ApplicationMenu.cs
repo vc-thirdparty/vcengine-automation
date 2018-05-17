@@ -94,13 +94,21 @@ namespace VcEngineAutomation.Panels
         }
 
 
-        public void ClickCancel(TimeSpan? waitTimeSpan=null)
+        public void ClickCancel()
+        {
+            ClickCancel(null);
+        }
+        public void ClickCancel(TimeSpan? waitTimeSpan)
         {
             vcEngine.MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("cancel")).AsButton().Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);
         }
 
-        public void ClickOk(TimeSpan? waitTimeSpan = null)
+        public void ClickOk()
+        {
+            ClickOk(null);
+        }
+        public void ClickOk(TimeSpan? waitTimeSpan)
         {
             vcEngine.MainWindow.FindFirstDescendant(cf => cf.ByAutomationId("ok")).AsButton().Invoke();
             vcEngine.WaitWhileBusy(waitTimeSpan);

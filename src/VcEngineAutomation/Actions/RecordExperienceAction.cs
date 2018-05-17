@@ -32,7 +32,7 @@ namespace VcEngineAutomation.Actions
             recordPanel = vcEngine.GetCommandPanel();
             Button[] buttons = recordPanel.CustomPane.FindAllDescendants(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
             buttons[0].Invoke();
-            FileDialog.Attach(vcEngine).Save(filename, waitForWriteIsCompleted: false);
+            FileDialog.Attach(vcEngine).Save(filename, true, false);
         }
 
         public void StopRecording()

@@ -30,7 +30,11 @@ namespace VcEngineAutomation.Panels
             return isOffscreenValueOrDefault;
         }
 
-        public void WaitUntilUpdated(TimeSpan? timespan = null)
+        public void WaitUntilUpdated()
+        {
+            WaitUntilUpdated(null);
+        }
+        public void WaitUntilUpdated(TimeSpan? timespan)
         {
             Retry.While(IsUpdating, timespan ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
         }
@@ -41,16 +45,30 @@ namespace VcEngineAutomation.Panels
             Retry.While(() => !label.IsOffscreen, timeSpan, TimeSpan.FromSeconds(1));
         }
 
-        public void Search(string text, TimeSpan? timespan = null)
+        public void Search(string text)
+        {
+            Search(text, null);
+        }
+        public void Search(string text, TimeSpan? timespan)
         {
             SearchTextBox.Text = text;
             WaitUntilUpdated(timespan);
         }
-        public void ClearSearch(TimeSpan? timespan = null)
+
+        public void ClearSearch()
+        {
+            ClearSearch(null);
+        }
+        public void ClearSearch(TimeSpan? timespan)
         {
             Search(string.Empty, timespan);
         }
-        public void WaitWhileSearching(TimeSpan? timespan = null)
+
+        public void WaitWhileSearching()
+        {
+            WaitWhileSearching(null);
+        }
+        public void WaitWhileSearching(TimeSpan? timespan)
         {
             WaitUntilUpdated(timespan);
         }

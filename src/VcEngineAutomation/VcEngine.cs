@@ -183,7 +183,11 @@ namespace VcEngineAutomation
             return new CommandPanel(this, () => TabRetriever.GetPane("CommandPanelViewModel"));
         }
 
-        public void WaitWhileBusy(TimeSpan? waitTimeSpan = null)
+        public void WaitWhileBusy()
+        {
+            WaitWhileBusy(null);
+        }
+        public void WaitWhileBusy(TimeSpan? waitTimeSpan)
         {
             var uiTimeout = waitTimeSpan ?? TimeSpan.FromSeconds(5);
             var uiRetry = TimeSpan.FromMilliseconds(50);
@@ -245,7 +249,12 @@ namespace VcEngineAutomation
             Mouse.Click(MouseButton.Middle);
             WaitWhileBusy();
         }
-        public void MoveMouseTo3DViewPort(Point moveOffset = null)
+
+        public void MoveMouseTo3DViewPort()
+        {
+            MoveMouseTo3DViewPort(null);
+        }
+        public void MoveMouseTo3DViewPort(Point moveOffset)
         {
             Mouse.MoveTo(viewPort.Value.GetCenter());
             if (moveOffset != null)
@@ -253,7 +262,12 @@ namespace VcEngineAutomation
                 Mouse.MoveBy((int)moveOffset.X, (int)moveOffset.Y);
             }
         }
-        public void LoadLayout(string layoutFile, TimeSpan? waitTimeSpan=null)
+
+        public void LoadLayout(string layoutFile)
+        {
+            LoadLayout(layoutFile, null);
+        }
+        public void LoadLayout(string layoutFile, TimeSpan? waitTimeSpan)
         {
             AutomationElement menuBar = ApplicationMenu.FindMenuItem("OpenBackstage", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
@@ -262,7 +276,16 @@ namespace VcEngineAutomation
             FileDialog.Attach(MainWindow).Open(layoutFile);
             WaitWhileBusy(waitTimeSpan ?? TimeSpan.FromMinutes(5));
         }
-        public void SaveLayout(string fileToSave, bool overwrite = false, TimeSpan? waitForTimeSpan=null)
+
+        public void SaveLayout(string fileToSave)
+        {
+            SaveLayout(fileToSave, false, null);
+        }
+        public void SaveLayout(string fileToSave, bool overwrite)
+        {
+            SaveLayout(fileToSave, overwrite, null);
+        }
+        public void SaveLayout(string fileToSave, bool overwrite, TimeSpan? waitForTimeSpan)
         {
             if (!fileToSave.ToLower().EndsWith(".vcmx")) throw new InvalidOperationException($"File extension when saving layout file must be 'vcmx' and not '{Path.GetExtension(fileToSave)}'");
             AutomationElement menuBar = ApplicationMenu.FindMenuItem("SaveAsBackstage", "Computer");
@@ -291,13 +314,22 @@ namespace VcEngineAutomation
             return button.AsButton();
         }
 
-        public Window FindProgressDialog(TimeSpan? timeout = null, TimeSpan? retryInterval = null)
+        public Window FindProgressDialog()
+        {
+            return FindProgressDialog(null, null);
+        }
+        public Window FindProgressDialog(TimeSpan? timeout)
+        {
+            return FindProgressDialog(timeout, null);
+        }
+        public Window FindProgressDialog(TimeSpan? timeout, TimeSpan? retryInterval)
         {
             return Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")),
                 timeout ?? TimeSpan.FromSeconds(5),
                 retryInterval ?? TimeSpan.FromMilliseconds(50))?.AsWindow();
 
         }
+
         public void DoUndo()
         {
             if (!UndoButton.IsEnabled) throw new InvalidOperationException("There is nothing to undo");
