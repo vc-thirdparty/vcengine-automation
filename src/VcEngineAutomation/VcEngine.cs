@@ -269,12 +269,14 @@ namespace VcEngineAutomation
         }
         public void LoadLayout(string layoutFile, TimeSpan? waitTimeSpan)
         {
+            var timeSpan = waitTimeSpan ?? TimeSpan.FromMinutes(5);
             AutomationElement menuBar = ApplicationMenu.FindMenuItem("OpenBackstage", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
             Wait.UntilInputIsProcessed();
             //MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Open(layoutFile);
-            WaitWhileBusy(waitTimeSpan ?? TimeSpan.FromMinutes(5));
+            Retry.While(() => FindProgressDialog() != null, timeSpan);
+            WaitWhileBusy(timeSpan);
         }
 
         public void SaveLayout(string fileToSave)
