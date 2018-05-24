@@ -64,21 +64,21 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox Attach(VcEngine vcEngine)
         {
-            return Attach(vcEngine, null);
+            return Attach(vcEngine, TimeSpan.FromSeconds(5));
         }
-        public static MessageBox Attach(VcEngine vcEngine, TimeSpan? timeout)
+        public static MessageBox Attach(VcEngine vcEngine, TimeSpan timeout)
         {
             return Attach(vcEngine.MainWindow, timeout);
         }
 
         public static MessageBox Attach(Window mainWindow)
         {
-            return Attach(mainWindow, null);
+            return Attach(mainWindow, TimeSpan.FromSeconds(5));
         }
-        public static MessageBox Attach(Window mainWindow, TimeSpan? timeout)
+        public static MessageBox Attach(Window mainWindow, TimeSpan timeout)
         {
             var window = Retry.WhileException(() => AttachToWindow(mainWindow), 
-                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+                timeout, TimeSpan.FromMilliseconds(250));
             return new MessageBox(mainWindow, window.AsWindow());
         }
 
@@ -91,24 +91,24 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox AttachIfShown(VcEngine vcEngine)
         {
-            return AttachIfShown(vcEngine, null);
+            return AttachIfShown(vcEngine, TimeSpan.FromSeconds(5));
         }
-        public static MessageBox AttachIfShown(VcEngine vcEngine, TimeSpan? timeout)
+        public static MessageBox AttachIfShown(VcEngine vcEngine, TimeSpan timeout)
         {
             return AttachIfShown(vcEngine.MainWindow, timeout);
         }
 
         public static MessageBox AttachIfShown(Window parent)
         {
-            return AttachIfShown(parent, null);
+            return AttachIfShown(parent, TimeSpan.FromSeconds(5));
         }
-        public static MessageBox AttachIfShown(Window parent, TimeSpan? timeout)
+        public static MessageBox AttachIfShown(Window parent, TimeSpan timeout)
         {
             var state = parent.Patterns.Window.PatternOrDefault?.WindowInteractionState?.ValueOrDefault;
             if (state == WindowInteractionState.ReadyForUserInteraction || state == null) return null;
 
             var window = Retry.WhileException(() => parent.FindFirstDescendant(cf => cf.ByClassName("#32770"))?.AsWindow(), 
-                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+                timeout, TimeSpan.FromMilliseconds(250));
             if (window != null)
             {
                 return new MessageBox(parent, window);
@@ -118,17 +118,17 @@ namespace VcEngineAutomation.Windows
 
         public static string GetTextAndClose(VcEngine vcEngine)
         {
-            return GetTextAndClose(vcEngine, null, null);
+            return GetTextAndClose(vcEngine.MainWindow, null, TimeSpan.FromSeconds(5));
         }
         public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress)
         {
-            return GetTextAndClose(vcEngine, buttonToPress, null);
+            return GetTextAndClose(vcEngine.MainWindow, buttonToPress, TimeSpan.FromSeconds(5));
         }
-        public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress, TimeSpan? timeout)
+        public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress, TimeSpan timeout)
         {
             return GetTextAndClose(vcEngine.MainWindow, buttonToPress, timeout);
         }
-        public static string GetTextAndClose(Window mainWindow, string buttonToPress, TimeSpan? timeout)
+        public static string GetTextAndClose(Window mainWindow, string buttonToPress, TimeSpan timeout)
         {
             using (MessageBox messageBox = Attach(mainWindow, timeout))
             {
@@ -144,18 +144,18 @@ namespace VcEngineAutomation.Windows
 
         public static string GetTextAndCloseIfShown(VcEngine vcEngine)
         {
-            return GetTextAndCloseIfShown(vcEngine, null);
+            return GetTextAndCloseIfShown(vcEngine, TimeSpan.FromSeconds(5));
         }
-        public static string GetTextAndCloseIfShown(VcEngine vcEngine, TimeSpan? timeout)
+        public static string GetTextAndCloseIfShown(VcEngine vcEngine, TimeSpan timeout)
         {
             return GetTextAndCloseIfShown(vcEngine.MainWindow, timeout);
         }
 
         public static string GetTextAndCloseIfShown(Window mainWindow)
         {
-            return GetTextAndCloseIfShown(mainWindow, null);
+            return GetTextAndCloseIfShown(mainWindow, TimeSpan.FromSeconds(5));
         }
-        public static string GetTextAndCloseIfShown(Window mainWindow, TimeSpan? timeout)
+        public static string GetTextAndCloseIfShown(Window mainWindow, TimeSpan timeout)
         {
             using (MessageBox messageBox = AttachIfShown(mainWindow, timeout))
             {

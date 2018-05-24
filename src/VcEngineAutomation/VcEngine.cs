@@ -147,7 +147,7 @@ namespace VcEngineAutomation
             {
                 return process.MainModule.FileVersionInfo;
             }
-            catch (Win32Exception)
+            catch (Exception)
             {
                 // This fixes a problem on a test laptop where it could not retrieve the Process.MainModule for some
                 // reason. This hack has been copied from https://stackoverflow.com/a/5497319/28553
@@ -265,18 +265,17 @@ namespace VcEngineAutomation
 
         public void LoadLayout(string layoutFile)
         {
-            LoadLayout(layoutFile, null);
+            LoadLayout(layoutFile, TimeSpan.FromMinutes(5));
         }
-        public void LoadLayout(string layoutFile, TimeSpan? waitTimeSpan)
+        public void LoadLayout(string layoutFile, TimeSpan waitTimeSpan)
         {
-            var timeSpan = waitTimeSpan ?? TimeSpan.FromMinutes(5);
             AutomationElement menuBar = ApplicationMenu.FindMenuItem("OpenBackstage", "Computer");
             menuBar.FindFirstDescendant(cf => cf.ByAutomationId("OpenFile")).AsButton().Invoke();
             Wait.UntilInputIsProcessed();
             //MainWindow.WaitWhileBusy();
             FileDialog.Attach(MainWindow).Open(layoutFile);
-            Retry.While(() => FindProgressDialog() != null, timeSpan);
-            WaitWhileBusy(timeSpan);
+            Retry.While(() => FindProgressDialog() != null, waitTimeSpan);
+            WaitWhileBusy(waitTimeSpan);
         }
 
         public void SaveLayout(string fileToSave)
@@ -318,17 +317,17 @@ namespace VcEngineAutomation
 
         public Window FindProgressDialog()
         {
-            return FindProgressDialog(null, null);
+            return FindProgressDialog(TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(50));
         }
-        public Window FindProgressDialog(TimeSpan? timeout)
+        public Window FindProgressDialog(TimeSpan timeout)
         {
-            return FindProgressDialog(timeout, null);
+            return FindProgressDialog(timeout, TimeSpan.FromMilliseconds(50));
         }
-        public Window FindProgressDialog(TimeSpan? timeout, TimeSpan? retryInterval)
+        public Window FindProgressDialog(TimeSpan timeout, TimeSpan retryInterval)
         {
             return Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")),
-                timeout ?? TimeSpan.FromSeconds(5),
-                retryInterval ?? TimeSpan.FromMilliseconds(50))?.AsWindow();
+                timeout,
+                retryInterval)?.AsWindow();
 
         }
 

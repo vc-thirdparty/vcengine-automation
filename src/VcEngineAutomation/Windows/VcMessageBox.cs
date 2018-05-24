@@ -58,13 +58,13 @@ namespace VcEngineAutomation.Windows
 
         public static VcMessageBox Attach(Window mainWindow)
         {
-            return Attach(mainWindow, null, null);
+            return Attach(mainWindow, null, TimeSpan.FromSeconds(5));
         }
         public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow)
         {
-            return Attach(mainWindow, messageBoxWindow, null);
+            return Attach(mainWindow, messageBoxWindow, TimeSpan.FromSeconds(5));
         }
-        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow, TimeSpan? timeout)
+        public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow, TimeSpan timeout)
         {
             if (messageBoxWindow != null)
             {
@@ -72,7 +72,7 @@ namespace VcEngineAutomation.Windows
             }
 
             var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
-                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+                timeout, TimeSpan.FromMilliseconds(250));
             if (window == null) throw new InvalidOperationException("VC message box was not found");
             return new VcMessageBox(mainWindow, window);
         }
@@ -88,13 +88,13 @@ namespace VcEngineAutomation.Windows
 
         public static VcMessageBox AttachIfShown(Window mainWindow)
         {
-            return AttachIfShown(mainWindow, null);
+            return AttachIfShown(mainWindow, TimeSpan.FromSeconds(5));
         }
-        public static VcMessageBox AttachIfShown(Window mainWindow, TimeSpan? timeout)
+        public static VcMessageBox AttachIfShown(Window mainWindow, TimeSpan timeout)
         {
             if (mainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return null;
             var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
-                timeout ?? TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(250));
+                timeout, TimeSpan.FromMilliseconds(250));
             if (window != null)
             {
                 return new VcMessageBox(mainWindow, window);
