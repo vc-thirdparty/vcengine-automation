@@ -147,7 +147,7 @@ namespace VcEngineAutomation
             {
                 return process.MainModule.FileVersionInfo;
             }
-            catch (Win32Exception)
+            catch (Exception)
             {
                 // This fixes a problem on a test laptop where it could not retrieve the Process.MainModule for some
                 // reason. This hack has been copied from https://stackoverflow.com/a/5497319/28553
