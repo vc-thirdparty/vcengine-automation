@@ -86,33 +86,33 @@ namespace VcEngineAutomation.Extensions
 
         public static bool CanWindowBeResized(this Window window)
         {
-            return CanWindowBeResized(window, null);
+            return CanWindowBeResized(window, TimeSpan.FromSeconds(10));
         }
-        public static bool CanWindowBeResized(this Window window, TimeSpan? timeout)
+        public static bool CanWindowBeResized(this Window window, TimeSpan timeout)
         {
             return Retry.WhileException(() =>
             {
                 if (!window.Patterns.Window.IsSupported) return false;
                 return window.Patterns.Window.Pattern.CanMaximize.ValueOrDefault && window.Patterns.Window.Pattern.CanMinimize.ValueOrDefault;
-            }, timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
+            }, timeout, TimeSpan.FromMilliseconds(200));
         }
 
         public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition)
         {
-            return FindWindowProtected(window, condition, null);
+            return FindWindowProtected(window, condition, TimeSpan.FromSeconds(10));
         }
-        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout)
+        public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan timeout)
         {
-            return Retry.WhileException(() => window.FindFirstDescendant(condition)?.AsWindow(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
+            return Retry.WhileException(() => window.FindFirstDescendant(condition)?.AsWindow(), timeout, TimeSpan.FromMilliseconds(200));
         }
 
         public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition)
         {
-            return FindAllWindowsProtected(window, condition, null);
+            return FindAllWindowsProtected(window, condition, TimeSpan.FromSeconds(10));
         }
-        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan? timeout)
+        public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan timeout)
         {
-            return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
+            return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout, TimeSpan.FromMilliseconds(200));
         }
         
         private static Window[] FindModelWindowsImpl(Window window)
@@ -129,11 +129,11 @@ namespace VcEngineAutomation.Extensions
 
         public static Window[] RetryUntilAnyModalWindow(this Window window)
         {
-            return RetryUntilAnyModalWindow(window, null);
+            return RetryUntilAnyModalWindow(window, TimeSpan.FromSeconds(10));
         }
-        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan? timeout)
+        public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan timeout)
         {
-            return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+            return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout, TimeSpan.FromMilliseconds(500));
         }
         public static Window[] FindModalWindowsProtected(this Window window)
         {

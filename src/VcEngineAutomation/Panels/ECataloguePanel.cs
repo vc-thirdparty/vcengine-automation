@@ -32,11 +32,11 @@ namespace VcEngineAutomation.Panels
 
         public void WaitUntilUpdated()
         {
-            WaitUntilUpdated(null);
+            WaitUntilUpdated(TimeSpan.FromSeconds(10));
         }
-        public void WaitUntilUpdated(TimeSpan? timespan)
+        public void WaitUntilUpdated(TimeSpan timespan)
         {
-            Retry.While(IsUpdating, timespan ?? TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(500));
+            Retry.While(IsUpdating, timespan, TimeSpan.FromMilliseconds(500));
         }
 
         public void WaitUntilPopulated(TimeSpan timeSpan)
@@ -47,9 +47,9 @@ namespace VcEngineAutomation.Panels
 
         public void Search(string text)
         {
-            Search(text, null);
+            Search(text, TimeSpan.FromSeconds(10));
         }
-        public void Search(string text, TimeSpan? timespan)
+        public void Search(string text, TimeSpan timespan)
         {
             SearchTextBox.Text = text;
             WaitUntilUpdated(timespan);
@@ -57,18 +57,18 @@ namespace VcEngineAutomation.Panels
 
         public void ClearSearch()
         {
-            ClearSearch(null);
+            ClearSearch(TimeSpan.FromSeconds(10));
         }
-        public void ClearSearch(TimeSpan? timespan)
+        public void ClearSearch(TimeSpan timespan)
         {
             Search(string.Empty, timespan);
         }
 
         public void WaitWhileSearching()
         {
-            WaitWhileSearching(null);
+            WaitWhileSearching(TimeSpan.FromSeconds(10));
         }
-        public void WaitWhileSearching(TimeSpan? timespan)
+        public void WaitWhileSearching(TimeSpan timespan)
         {
             WaitUntilUpdated(timespan);
         }
