@@ -318,12 +318,28 @@ namespace VcEngineAutomation.Ribbons
             return menuItem;
         }
 
-        //[Obsolete("Use FindComboBox instead")]
+        [Obsolete("Use SelectComboboxTextByAutomationId instead")]
         public void SelectComboboxItem(string groupName, int itemIndex, string text)
         {
             AutomationElement item = Group(groupName).FindAllChildren().ElementAtOrDefault(itemIndex);
             if (item == null) throw new InvalidOperationException($"No ribbon combobox found at specified index {itemIndex}");
 
+            ComboBox combobox = item.FindFirstDescendant(cf => cf.ByControlType(ControlType.ComboBox)).AsComboBox();
+            var comboboxItems = combobox?.Items.Select(i => Tuple.Create(i, i.FindFirstChild().AsLabel().Text)).ToArray();
+            var comboboxItem = comboboxItems?.FirstOrDefault(t => t.Item2.Equals(text, StringComparison.OrdinalIgnoreCase));
+
+            string itemNames = string.Join("', '", comboboxItems.Select(t => t.Item2).ToArray());
+            if (comboboxItem == null) throw new InvalidOperationException($"No list item found named '{text}', available choices are '{itemNames}'");
+            if (!comboboxItem.Item1.IsSelected)
+            {
+                comboboxItem.Item1.Select();
+                vcEngine.WaitWhileBusy();
+            }
+        }
+
+        public void SelectComboboxTextByAutomationId(string groupAutomationId, string automationId, string text)
+        {
+            var item = FindAutomationElementImpl(groupAutomationId, automationId);
             ComboBox combobox = item.FindFirstDescendant(cf => cf.ByControlType(ControlType.ComboBox)).AsComboBox();
             var comboboxItems = combobox?.Items.Select(i => Tuple.Create(i, i.FindFirstChild().AsLabel().Text)).ToArray();
             var comboboxItem = comboboxItems?.FirstOrDefault(t => t.Item2.Equals(text, StringComparison.OrdinalIgnoreCase));
