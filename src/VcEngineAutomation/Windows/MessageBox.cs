@@ -124,6 +124,10 @@ namespace VcEngineAutomation.Windows
         {
             return GetTextAndClose(vcEngine.MainWindow, buttonToPress, TimeSpan.FromSeconds(5));
         }
+        public static string GetTextAndClose(VcEngine vcEngine, TimeSpan timeout)
+        {
+            return GetTextAndClose(vcEngine.MainWindow, null, timeout);
+        }
         public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress, TimeSpan timeout)
         {
             return GetTextAndClose(vcEngine.MainWindow, buttonToPress, timeout);
