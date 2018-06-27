@@ -72,16 +72,25 @@ namespace VcEngineAutomation.Extensions
             return item.Properties.ProcessId == 0;
         }
 
-        public static void WaitWhileBusy(this Window item)
+        public static void WaitUntilClosed(this Window item)
+        {
+            Retry.While(() => !item.IsClosed(), VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
+        }
+
+        public static void WaitWhileBusy(this Window item, TimeSpan timeout, TimeSpan retryInterval)
         {
             Retry.While(
                 () => item.Patterns.Window.PatternOrDefault?.WindowInteractionState?.ValueOrDefault,
                 v => v != null &&
-                    v != WindowInteractionState.Running &&
-                    v != WindowInteractionState.BlockedByModalWindow &&
-                    v != WindowInteractionState.ReadyForUserInteraction,
-                TimeSpan.FromSeconds(10),
-                TimeSpan.FromMilliseconds(100));
+                     v != WindowInteractionState.Running &&
+                     v != WindowInteractionState.BlockedByModalWindow &&
+                     v != WindowInteractionState.ReadyForUserInteraction,
+                timeout,
+                retryInterval);
+        }
+        public static void WaitWhileBusy(this Window item)
+        {
+            WaitWhileBusy(item, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
         }
 
         public static bool CanWindowBeResized(this Window window)
@@ -114,7 +123,7 @@ namespace VcEngineAutomation.Extensions
         {
             return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout, TimeSpan.FromMilliseconds(200));
         }
-        
+
         private static Window[] FindModelWindowsImpl(Window window)
         {
             Window[] modalWindows = window.ModalWindows;

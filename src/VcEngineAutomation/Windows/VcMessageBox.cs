@@ -27,7 +27,7 @@ namespace VcEngineAutomation.Windows
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_yes"));
             if (element == null) throw new InvalidOperationException("'Yes' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void ClickOk()
         {
@@ -35,21 +35,21 @@ namespace VcEngineAutomation.Windows
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_ok"));
             if (element == null) throw new InvalidOperationException("'Ok' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void ClickNo()
         {
             AutomationElement element = window.FindFirstDescendant(cf => cf.ByAutomationId("_no"));
             if (element == null) throw new InvalidOperationException("'No' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void ClickCancel()
         {
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_cancel"));
             if (element == null) throw new InvalidOperationException("'Cancel' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void Cancel()
         {
@@ -113,6 +113,14 @@ namespace VcEngineAutomation.Windows
         public static string GetTextAndClose(VcEngine vcEngine)
         {
             using (VcMessageBox messageBox = Attach(vcEngine))
+            {
+                return messageBox.Text;
+            }
+        }
+
+        public static string GetTextAndClose(Window window)
+        {
+            using (VcMessageBox messageBox = Attach(window))
             {
                 return messageBox.Text;
             }

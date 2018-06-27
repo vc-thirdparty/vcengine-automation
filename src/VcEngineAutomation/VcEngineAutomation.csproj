@@ -85,6 +85,7 @@
     <Compile Include="Ribbons\Ribbon.cs" />
     <Compile Include="Ribbons\RibbonTab.cs" />
     <Compile Include="Utils\DockedTabRetriever.cs" />
+    <Compile Include="Utils\TextboxWindow.cs" />
     <Compile Include="VcEngine.cs" />
     <Compile Include="Windows\FileDialog.cs" />
     <Compile Include="Windows\MessageBox.cs" />

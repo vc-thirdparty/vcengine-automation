@@ -33,24 +33,24 @@ namespace VcEngineAutomation.Windows
             AutomationElement element = window.FindFirstDescendant(cf => cf.ByAutomationId("6"));
             if (element == null) throw new InvalidOperationException("Yes button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
             IsClosed = true;
+            window.WaitUntilClosed();
         }
         public void ClickNo()
         {
             AutomationElement element = window.FindFirstDescendant(cf => cf.ByAutomationId("7"));
             if (element == null) throw new InvalidOperationException("No button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
             IsClosed = true;
+            window.WaitUntilClosed();
         }
         public void ClickOk()
         {
             AutomationElement element = window.FindFirstDescendant(cf => cf.ByAutomationId("2"));
             if (element == null) throw new InvalidOperationException("Ok button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
             IsClosed = true;
+            window.WaitUntilClosed();
         }
 
         public void ForceClose()
