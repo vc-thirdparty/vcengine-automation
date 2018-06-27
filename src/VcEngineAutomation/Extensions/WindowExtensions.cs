@@ -95,7 +95,7 @@ namespace VcEngineAutomation.Extensions
 
         public static bool CanWindowBeResized(this Window window)
         {
-            return CanWindowBeResized(window, TimeSpan.FromSeconds(10));
+            return CanWindowBeResized(window, VcEngine.DefaultTimeout);
         }
         public static bool CanWindowBeResized(this Window window, TimeSpan timeout)
         {
@@ -103,25 +103,25 @@ namespace VcEngineAutomation.Extensions
             {
                 if (!window.Patterns.Window.IsSupported) return false;
                 return window.Patterns.Window.Pattern.CanMaximize.ValueOrDefault && window.Patterns.Window.Pattern.CanMinimize.ValueOrDefault;
-            }, timeout, TimeSpan.FromMilliseconds(200));
+            }, timeout, VcEngine.DefaultRetryInternal);
         }
 
         public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition)
         {
-            return FindWindowProtected(window, condition, TimeSpan.FromSeconds(10));
+            return FindWindowProtected(window, condition, VcEngine.DefaultTimeout);
         }
         public static Window FindWindowProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan timeout)
         {
-            return Retry.WhileException(() => window.FindFirstDescendant(condition)?.AsWindow(), timeout, TimeSpan.FromMilliseconds(200));
+            return Retry.WhileException(() => window.FindFirstDescendant(condition)?.AsWindow(), timeout, VcEngine.DefaultRetryInternal);
         }
 
         public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition)
         {
-            return FindAllWindowsProtected(window, condition, TimeSpan.FromSeconds(10));
+            return FindAllWindowsProtected(window, condition, VcEngine.DefaultTimeout);
         }
         public static Window[] FindAllWindowsProtected(this Window window, Func<ConditionFactory, ConditionBase> condition, TimeSpan timeout)
         {
-            return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout, TimeSpan.FromMilliseconds(200));
+            return Retry.WhileException(() => window.FindAllDescendants(condition).Select(ae => ae.AsWindow()).ToArray(), timeout, VcEngine.DefaultRetryInternal);
         }
 
         private static Window[] FindModelWindowsImpl(Window window)
@@ -138,11 +138,11 @@ namespace VcEngineAutomation.Extensions
 
         public static Window[] RetryUntilAnyModalWindow(this Window window)
         {
-            return RetryUntilAnyModalWindow(window, TimeSpan.FromSeconds(10));
+            return RetryUntilAnyModalWindow(window, VcEngine.DefaultTimeout);
         }
         public static Window[] RetryUntilAnyModalWindow(this Window window, TimeSpan timeout)
         {
-            return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout, TimeSpan.FromMilliseconds(500));
+            return Retry.While(() => FindModelWindowsImpl(window), windows => !windows.Any(), timeout, VcEngine.DefaultRetryInternal);
         }
         public static Window[] FindModalWindowsProtected(this Window window)
         {
@@ -188,7 +188,7 @@ namespace VcEngineAutomation.Extensions
             {
                 comboBox.Expand();
                 return comboBox.SelectedItem?.FindFirstChild().AsLabel().Text;
-            }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            }, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
         }
 
         public static ComboBoxItem GetSelectedItem(this ComboBox comboBox)
@@ -197,7 +197,7 @@ namespace VcEngineAutomation.Extensions
             {
                 comboBox.Expand();
                 return comboBox.SelectedItem;
-            }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            }, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
         }
 
         /*   public static void ClickItem(this ComboBox comboBox, string name)

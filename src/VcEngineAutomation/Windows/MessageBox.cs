@@ -64,7 +64,7 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox Attach(VcEngine vcEngine)
         {
-            return Attach(vcEngine, TimeSpan.FromSeconds(5));
+            return Attach(vcEngine, VcEngine.DefaultTimeout);
         }
         public static MessageBox Attach(VcEngine vcEngine, TimeSpan timeout)
         {
@@ -73,12 +73,12 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox Attach(Window mainWindow)
         {
-            return Attach(mainWindow, TimeSpan.FromSeconds(5));
+            return Attach(mainWindow, VcEngine.DefaultTimeout);
         }
         public static MessageBox Attach(Window mainWindow, TimeSpan timeout)
         {
             var window = Retry.WhileException(() => AttachToWindow(mainWindow), 
-                timeout, TimeSpan.FromMilliseconds(250));
+                timeout, VcEngine.DefaultRetryInternal);
             return new MessageBox(mainWindow, window.AsWindow());
         }
 
@@ -91,7 +91,7 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox AttachIfShown(VcEngine vcEngine)
         {
-            return AttachIfShown(vcEngine, TimeSpan.FromSeconds(5));
+            return AttachIfShown(vcEngine, VcEngine.DefaultTimeout);
         }
         public static MessageBox AttachIfShown(VcEngine vcEngine, TimeSpan timeout)
         {
@@ -100,7 +100,7 @@ namespace VcEngineAutomation.Windows
 
         public static MessageBox AttachIfShown(Window parent)
         {
-            return AttachIfShown(parent, TimeSpan.FromSeconds(5));
+            return AttachIfShown(parent, VcEngine.DefaultTimeout);
         }
         public static MessageBox AttachIfShown(Window parent, TimeSpan timeout)
         {
@@ -108,7 +108,7 @@ namespace VcEngineAutomation.Windows
             if (state == WindowInteractionState.ReadyForUserInteraction || state == null) return null;
 
             var window = Retry.WhileException(() => parent.FindFirstDescendant(cf => cf.ByClassName("#32770"))?.AsWindow(), 
-                timeout, TimeSpan.FromMilliseconds(250));
+                timeout, VcEngine.DefaultRetryInternal);
             if (window != null)
             {
                 return new MessageBox(parent, window);
@@ -118,11 +118,11 @@ namespace VcEngineAutomation.Windows
 
         public static string GetTextAndClose(VcEngine vcEngine)
         {
-            return GetTextAndClose(vcEngine.MainWindow, null, TimeSpan.FromSeconds(5));
+            return GetTextAndClose(vcEngine.MainWindow, null, VcEngine.DefaultTimeout);
         }
         public static string GetTextAndClose(VcEngine vcEngine, string buttonToPress)
         {
-            return GetTextAndClose(vcEngine.MainWindow, buttonToPress, TimeSpan.FromSeconds(5));
+            return GetTextAndClose(vcEngine.MainWindow, buttonToPress, VcEngine.DefaultTimeout);
         }
         public static string GetTextAndClose(VcEngine vcEngine, TimeSpan timeout)
         {
@@ -148,7 +148,7 @@ namespace VcEngineAutomation.Windows
 
         public static string GetTextAndCloseIfShown(VcEngine vcEngine)
         {
-            return GetTextAndCloseIfShown(vcEngine, TimeSpan.FromSeconds(5));
+            return GetTextAndCloseIfShown(vcEngine, VcEngine.DefaultTimeout);
         }
         public static string GetTextAndCloseIfShown(VcEngine vcEngine, TimeSpan timeout)
         {
@@ -157,7 +157,7 @@ namespace VcEngineAutomation.Windows
 
         public static string GetTextAndCloseIfShown(Window mainWindow)
         {
-            return GetTextAndCloseIfShown(mainWindow, TimeSpan.FromSeconds(5));
+            return GetTextAndCloseIfShown(mainWindow, VcEngine.DefaultTimeout);
         }
         public static string GetTextAndCloseIfShown(Window mainWindow, TimeSpan timeout)
         {
@@ -172,7 +172,7 @@ namespace VcEngineAutomation.Windows
             if (!IsClosed && !window.IsClosed())
             {
                 window.Close();
-                Wait.UntilResponsive(mainWindow, TimeSpan.FromSeconds(5));
+                Wait.UntilResponsive(mainWindow, VcEngine.DefaultTimeout);
             }
         }
     }

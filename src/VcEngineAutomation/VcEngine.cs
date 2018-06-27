@@ -340,11 +340,11 @@ namespace VcEngineAutomation
 
         public Window FindProgressDialog()
         {
-            return FindProgressDialog(TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(50));
+            return FindProgressDialog(DefaultTimeout, DefaultRetryInternal);
         }
         public Window FindProgressDialog(TimeSpan timeout)
         {
-            return FindProgressDialog(timeout, TimeSpan.FromMilliseconds(50));
+            return FindProgressDialog(timeout, DefaultRetryInternal);
         }
         public Window FindProgressDialog(TimeSpan timeout, TimeSpan retryInterval)
         {
