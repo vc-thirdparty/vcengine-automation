@@ -14,7 +14,7 @@ namespace VcEngineAutomation.Extensions
             {
                 textbox.Enter(value.ToString("F3", VcEngine.CultureInfo));
                 Keyboard.Type(VirtualKeyShort.ENTER);
-            }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            }, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
         }
 
         public static void EnterWithReturn(this TextBox textbox, object value)
@@ -23,7 +23,7 @@ namespace VcEngineAutomation.Extensions
             {
                 textbox.Enter(value.ToString());
                 Keyboard.Type(VirtualKeyShort.ENTER);
-            }, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            }, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
         }
     }
 }

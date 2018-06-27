@@ -33,40 +33,29 @@ namespace VcEngineAutomation.Ribbons
         public string AutomationId { get; set; }
 
         public bool IsSelected => TabPage.IsSelected;
+
         public void Select()
         {
-            /*if (vcEngine.IsR7)
+            Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
+            if (!TabPage.IsSelected)
             {
+                Mouse.LeftClick(TabPage.GetCenter());
+                Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
                 if (!TabPage.IsSelected)
                 {
-                    Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(100));
-                    Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                    if (this != vcEngine.Ribbon.HomeTab)
+                    {
+                        vcEngine.Ribbon.HomeTab.Select();
+                        Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
+                    }
+
+                    Mouse.LeftClick(TabPage.GetCenter());
+                    Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
                     if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
                 }
             }
-            else*/
-            {
-                Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-                //Mouse.MoveTo(TabPage.GetCenter());
-                if (!TabPage.IsSelected)
-                {
-                    Mouse.LeftClick(TabPage.GetCenter());
-                    Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-                    if (!TabPage.IsSelected)
-                    {
-                        if (this != vcEngine.Ribbon.HomeTab)
-                        {
-                            vcEngine.Ribbon.HomeTab.Select();
-                            Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-                        }
-                        Mouse.LeftClick(TabPage.GetCenter());
-                        Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-                        if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
-                    }
-                }
-            }
         }
-        
+
         public AutomationElement[] Groups()
         {
             Select();
@@ -135,11 +124,11 @@ namespace VcEngineAutomation.Ribbons
             var className = button.Properties.ClassName.Value;
             if (className == "ToggleButtonTool")
             {
-                Wait.UntilResponsive(button, TimeSpan.FromSeconds(5));
+                Wait.UntilResponsive(button, VcEngine.DefaultTimeout);
                 if (button.Patterns.Toggle.Pattern.ToggleState.Value != ToggleState.On)
                 {
                     button.Click(true);
-                    Wait.UntilResponsive(button, TimeSpan.FromSeconds(5));
+                    Wait.UntilResponsive(button, VcEngine.DefaultTimeout);
                 }
             }
             else if (className == "ButtonTool")
@@ -358,7 +347,7 @@ namespace VcEngineAutomation.Ribbons
         {
             AutomationElement element = Group(groupName).FindAllChildren(cf => cf.ByControlType(ControlType.Edit)).ElementAtOrDefault(index);
             if (element == null) throw new InvalidOperationException($"No text box found in group '{groupName}' at index {index}");
-            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, VcEngine.DefaultTimeout);
             return element.AsTextBox();
         }
 
@@ -367,7 +356,7 @@ namespace VcEngineAutomation.Ribbons
         {
             TextBox textbox = FindTextBox(groupName, index);
             if (!textbox.IsEnabled) throw new InvalidOperationException($"Text box {groupName} at index {index} was not enabled");
-            Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(textbox, VcEngine.DefaultTimeout);
             textbox.Text = text;
         }
         [Obsolete("Use FindComboBoxByAutomationId, as it will replace this method in future")]
@@ -375,9 +364,9 @@ namespace VcEngineAutomation.Ribbons
         {
             AutomationElement element = Group(groupName).FindAllDescendants(cf => cf.ByClassName("ComboBox").And(cf.ByAutomationId("PART_FocusSite"))).ElementAtOrDefault(index);
             if (element == null) throw new InvalidOperationException($"No text combo box found in group '{groupName}' at index {index}");
-            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, VcEngine.DefaultTimeout);
             element.Click();
-            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, VcEngine.DefaultTimeout);
             return element.AsComboBox();
         }
         [Obsolete("Use FindCheckBoxByAutomationId, as it will replace this method in future")]
@@ -385,7 +374,7 @@ namespace VcEngineAutomation.Ribbons
         {
             AutomationElement element = Group(groupName).FindAllChildren(cf => cf.ByClassName("ToggleButtonTool")).ElementAtOrDefault(index);
             if (element == null) throw new InvalidOperationException($"No check box found in group '{groupName}' at index {index}");
-            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, VcEngine.DefaultTimeout);
             return element.AsCheckBox();
         }
         [Obsolete("Use FindCheckBoxByAutomationId, as it will replace this method in future")]
@@ -393,7 +382,7 @@ namespace VcEngineAutomation.Ribbons
         {
             AutomationElement element = Group(groupName).FindFirstDescendant(cf => cf.ByClassName("ToggleButtonTool").And(cf.ByName(labelName)));
             if (element == null) throw new InvalidOperationException($"No check box found in group '{groupName}' with name {labelName}");
-            Wait.UntilResponsive(element, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(element, VcEngine.DefaultTimeout);
             return element.AsCheckBox();
         }
 
@@ -424,28 +413,13 @@ namespace VcEngineAutomation.Ribbons
         {
             vcEngine.CheckForCrash();
             Select();
-            /*Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-            if (!Retry.WhileException(() => TabPage.IsSelected, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200)))
-            {
-                Retry.WhileException(() => {
-                    Mouse.LeftClick(TabPage.GetCenter());
-            //        Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-                }, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
-
-                //Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
-            }*/
-
-            /*var toolBar = TabPage.FindAllChildren(cf => cf.ByControlType(ControlType.ToolBar))
-                .FirstOrDefault(t => t.FindChildAt(0).AutomationId.StartsWith($"{TabPage.AutomationId}{groupAutomationId}"));
-            var automationElement = toolBar.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));*/
-
             var automationElement = vcEngine.IsR9OrAbove
                 ? TabPage.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}"))?.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"))
                 : TabPage.FindFirstDescendant(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));
 
             if (automationElement != null)
             {
-                Wait.UntilResponsive(automationElement, TimeSpan.FromSeconds(5));
+                Wait.UntilResponsive(automationElement, VcEngine.DefaultTimeout);
             }
             return automationElement;
         }
@@ -465,7 +439,7 @@ namespace VcEngineAutomation.Ribbons
         {
             TextBox textbox = FindTextBoxByAutomationId(groupAutomationId, automationId);
             if (!textbox.IsEnabled) throw new InvalidOperationException($"Text box {automationId} was not enabled");
-            Wait.UntilResponsive(textbox, TimeSpan.FromSeconds(5));
+            Wait.UntilResponsive(textbox, VcEngine.DefaultTimeout);
             textbox.Text = text;
             Keyboard.Type(VirtualKeyShort.ENTER);
         }
@@ -542,7 +516,7 @@ namespace VcEngineAutomation.Ribbons
             if (menu.Patterns.ExpandCollapse.Pattern.ExpandCollapseState.Value == ExpandCollapseState.Expanded)
             {
                 // Disable as it throws an exception when collapsing
-                Retry.WhileException(() => menu.Patterns.ExpandCollapse.Pattern.Collapse(), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+                Retry.WhileException(() => menu.Patterns.ExpandCollapse.Pattern.Collapse(), VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
                 //menu.Click();
             }
         }

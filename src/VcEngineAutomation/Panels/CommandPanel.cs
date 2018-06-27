@@ -92,7 +92,7 @@ namespace VcEngineAutomation.Panels
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
             if (buttons.Length != 2) throw new InvalidOperationException("Cancel and Apply buttons were not found in command panel");
             Button button = buttons[0];
-            Retry.While(() => !button.IsEnabled, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            Retry.While(() => !button.IsEnabled, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
             if (button.IsOffscreen) throw new InvalidOperationException("Apply button was not visible");
             if (!button.IsEnabled) throw new InvalidOperationException("Apply button was not enabled");
             button.Invoke();
@@ -109,7 +109,7 @@ namespace VcEngineAutomation.Panels
             Button[] buttons = Pane.FindAllChildren(cf => cf.ByControlType(ControlType.Button)).Select(ae => ae.AsButton()).ToArray();
             if (buttons.Length != 2) throw new InvalidOperationException("Cancel and Apply buttons were not found in command panel");
             Button button = buttons[1];
-            Retry.While(() => !button.IsEnabled, TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+            Retry.While(() => !button.IsEnabled, VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
             if (button.IsOffscreen) throw new InvalidOperationException("Cancel button was not visible");
             if (!button.IsEnabled) throw new InvalidOperationException("Cancel button was not enabled");
             button.Invoke();

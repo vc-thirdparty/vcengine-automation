@@ -27,7 +27,7 @@ namespace VcEngineAutomation.Windows
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_yes"));
             if (element == null) throw new InvalidOperationException("'Yes' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void ClickOk()
         {
@@ -35,21 +35,21 @@ namespace VcEngineAutomation.Windows
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_ok"));
             if (element == null) throw new InvalidOperationException("'Ok' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void ClickNo()
         {
             AutomationElement element = window.FindFirstDescendant(cf => cf.ByAutomationId("_no"));
             if (element == null) throw new InvalidOperationException("'No' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void ClickCancel()
         {
             var element = window.FindFirstDescendant(cf => cf.ByAutomationId("_cancel"));
             if (element == null) throw new InvalidOperationException("'Cancel' button could not be found in message box");
             element.AsButton().Invoke();
-            mainWindow.WaitWhileBusy();
+            window.WaitUntilClosed();
         }
         public void Cancel()
         {
@@ -58,11 +58,11 @@ namespace VcEngineAutomation.Windows
 
         public static VcMessageBox Attach(Window mainWindow)
         {
-            return Attach(mainWindow, null, TimeSpan.FromSeconds(5));
+            return Attach(mainWindow, null, VcEngine.DefaultTimeout);
         }
         public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow)
         {
-            return Attach(mainWindow, messageBoxWindow, TimeSpan.FromSeconds(5));
+            return Attach(mainWindow, messageBoxWindow, VcEngine.DefaultTimeout);
         }
         public static VcMessageBox Attach(Window mainWindow, Window messageBoxWindow, TimeSpan timeout)
         {
@@ -72,7 +72,7 @@ namespace VcEngineAutomation.Windows
             }
 
             var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
-                timeout, TimeSpan.FromMilliseconds(250));
+                timeout, VcEngine.DefaultRetryInternal);
             if (window == null) throw new InvalidOperationException("VC message box was not found");
             return new VcMessageBox(mainWindow, window);
         }
@@ -88,13 +88,13 @@ namespace VcEngineAutomation.Windows
 
         public static VcMessageBox AttachIfShown(Window mainWindow)
         {
-            return AttachIfShown(mainWindow, TimeSpan.FromSeconds(5));
+            return AttachIfShown(mainWindow, VcEngine.DefaultTimeout);
         }
         public static VcMessageBox AttachIfShown(Window mainWindow, TimeSpan timeout)
         {
             if (mainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return null;
             var window = Retry.WhileException(() => mainWindow.FindFirstDescendant(cf => cf.ByAutomationId("_this"))?.AsWindow(), 
-                timeout, TimeSpan.FromMilliseconds(250));
+                timeout, VcEngine.DefaultRetryInternal);
             if (window != null)
             {
                 return new VcMessageBox(mainWindow, window);
@@ -113,6 +113,14 @@ namespace VcEngineAutomation.Windows
         public static string GetTextAndClose(VcEngine vcEngine)
         {
             using (VcMessageBox messageBox = Attach(vcEngine))
+            {
+                return messageBox.Text;
+            }
+        }
+
+        public static string GetTextAndClose(Window window)
+        {
+            using (VcMessageBox messageBox = Attach(window))
             {
                 return messageBox.Text;
             }

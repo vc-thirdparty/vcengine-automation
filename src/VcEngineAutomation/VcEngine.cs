@@ -7,7 +7,6 @@ using FlaUI.Core.Shapes;
 using FlaUI.Core.Tools;
 using FlaUI.UIA3;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -25,6 +24,9 @@ namespace VcEngineAutomation
 {
     public class VcEngine
     {
+        public static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(10);
+        public static TimeSpan DefaultRetryInternal = TimeSpan.FromMilliseconds(500);
+
         private readonly Lazy<AutomationElement> viewPort;
         private readonly Lazy<AutomationElement> quickAccessToolBar;
         // Hardcoded for now until other ways to get locale for application
@@ -185,36 +187,49 @@ namespace VcEngineAutomation
 
         public void WaitWhileBusy()
         {
-            WaitWhileBusy(null);
+            WaitWhileBusy(DefaultTimeout, DefaultRetryInternal);
         }
-        public void WaitWhileBusy(TimeSpan? waitTimeSpan)
+        public void WaitWhileBusy(TimeSpan timeout, TimeSpan uiRetry)
         {
-            var uiTimeout = waitTimeSpan ?? TimeSpan.FromSeconds(5);
-            var uiRetry = TimeSpan.FromMilliseconds(50);
             var aMessageBoxWindow = Retry.WhileException(() =>
                     MainWindow.FindFirstChild(cf => cf.ByControlType(ControlType.Window).And(cf.ByClassName("#32770")).Or(cf.ByAutomationId("TextboxDialog"))),
-                uiTimeout, uiRetry);
+                timeout, uiRetry);
             if (aMessageBoxWindow != null) return;
 
-            var shellIsBusyTimeout = waitTimeSpan ?? TimeSpan.FromMinutes(5);
-            if (ShellIsBusy(shellIsBusyTimeout))
+            if (ShellIsBusy(timeout))
             {
-                bool shellIsStillBusy = Retry.While(() => ShellIsBusy(shellIsBusyTimeout), isBusy => isBusy, uiTimeout, TimeSpan.FromSeconds(0.5));
+                bool shellIsStillBusy = Retry.While(() => ShellIsBusy(timeout), isBusy => isBusy, timeout, DefaultRetryInternal);
                 if (shellIsStillBusy) throw new TimeoutException("Timeout while waiting for progress bar to disappear");
             }
+        }
+        public void WaitWhileBusy(TimeSpan? timeout)
+        {
+            if (timeout.HasValue)
+            {
+                WaitWhileBusy(timeout.Value, DefaultRetryInternal);
+            }
+            else
+            {
+                WaitWhileBusy();
+            }
+        }
+        public void WaitWhileBusy(TimeSpan timeout)
+        {
+            WaitWhileBusy(timeout, DefaultRetryInternal);
         }
 
         private bool ShellIsBusy(TimeSpan timeout)
         {
-            TimeSpan retryInterval = TimeSpan.FromMilliseconds(500);
-            Wait.UntilResponsive(MainWindow);
+            TimeSpan retryInterval = DefaultRetryInternal;
+            Wait.UntilResponsive(MainWindow, timeout);
 
             if (IsShellBusyAction?.Invoke(this) ?? false) return true;
 
+            /* When the progress dialog is showing in 4.1, the window may be reported as ready for user interaction
             var interactionState = Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval);
-            if (interactionState == WindowInteractionState.ReadyForUserInteraction) return false;
+            if (interactionState == WindowInteractionState.ReadyForUserInteraction) return false;*/
 
-            CheckForCrash();
+            CheckForCrash(timeout, retryInterval);
 
             if (FindProgressDialog(timeout, retryInterval) != null)
             {
@@ -224,23 +239,31 @@ namespace VcEngineAutomation
             return false;
         }
 
-        public void CheckForCrash()
+        public void CheckForCrash(TimeSpan timeout, TimeSpan retryInterval)
         {
-            MainWindow.WaitWhileBusy();
-            if (MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value == WindowInteractionState.ReadyForUserInteraction) return;
+            MainWindow.WaitWhileBusy(timeout, retryInterval);
+            if (Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval) == WindowInteractionState.ReadyForUserInteraction) return;
 
-            Window[] windows = MainWindow.FindModalWindowsProtected();
+            Window[] windows = Retry.WhileException(() => MainWindow.ModalWindows, timeout, retryInterval);
             if (!windows.Any()) return;
 
             // Catch normal VC exception stack trace
             Window window = windows.FirstOrDefault(w => w.Properties.Name.ValueOrDefault == MainWindowName && w.Properties.AutomationId.ValueOrDefault == "_this");
             if (window != null)
             {
-                var text = VcMessageBox.GetTextAndClose(this);
+                var text = VcMessageBox.GetTextAndClose(window);
                 if (text.ToLower().Contains("unhandled exception")) throw new InvalidOperationException(text);
             }
 
             CheckForCrashAction?.Invoke(this);
+        }
+        public void CheckForCrash()
+        {
+            CheckForCrash(DefaultTimeout, DefaultRetryInternal);
+        }
+        public void CheckForCrash(TimeSpan timeout)
+        {
+            CheckForCrash(timeout, DefaultRetryInternal);
         }
 
         public void MoveFocusTo3DViewPort()
@@ -317,18 +340,17 @@ namespace VcEngineAutomation
 
         public Window FindProgressDialog()
         {
-            return FindProgressDialog(TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(50));
+            return FindProgressDialog(DefaultTimeout, DefaultRetryInternal);
         }
         public Window FindProgressDialog(TimeSpan timeout)
         {
-            return FindProgressDialog(timeout, TimeSpan.FromMilliseconds(50));
+            return FindProgressDialog(timeout, DefaultRetryInternal);
         }
         public Window FindProgressDialog(TimeSpan timeout, TimeSpan retryInterval)
         {
             return Retry.WhileException(() => MainWindow.FindFirstChild(cf => cf.ByAutomationId("ProgressBarDialog")),
                 timeout,
                 retryInterval)?.AsWindow();
-
         }
 
         public void DoUndo()

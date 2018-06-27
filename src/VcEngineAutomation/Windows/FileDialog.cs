@@ -117,12 +117,12 @@ namespace VcEngineAutomation.Windows
         {
             return Retry.While(() => mainWindow.FindFirstDescendant(cf => cf.ByClassName("#32770"))?.AsWindow(),
                 w => w == null,
-                TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(200));
+                VcEngine.DefaultTimeout, VcEngine.DefaultRetryInternal);
         }
 
         public static FileDialog Attach(Window mainWindow)
         {
-            var window = Retry.WhileException(() => FindWindow(mainWindow), TimeSpan.FromSeconds(5));
+            var window = Retry.WhileException(() => FindWindow(mainWindow), VcEngine.DefaultTimeout);
             return new FileDialog(mainWindow, window);
         }
 
