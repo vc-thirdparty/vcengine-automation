@@ -33,40 +33,29 @@ namespace VcEngineAutomation.Ribbons
         public string AutomationId { get; set; }
 
         public bool IsSelected => TabPage.IsSelected;
+
         public void Select()
         {
-            /*if (vcEngine.IsR7)
+            Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
+            if (!TabPage.IsSelected)
             {
+                Mouse.LeftClick(TabPage.GetCenter());
+                Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
                 if (!TabPage.IsSelected)
                 {
-                    Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(5), TimeSpan.FromMilliseconds(100));
-                    Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
+                    if (this != vcEngine.Ribbon.HomeTab)
+                    {
+                        vcEngine.Ribbon.HomeTab.Select();
+                        Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
+                    }
+
+                    Mouse.LeftClick(TabPage.GetCenter());
+                    Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
                     if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
                 }
             }
-            else*/
-            {
-                Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
-                //Mouse.MoveTo(TabPage.GetCenter());
-                if (!TabPage.IsSelected)
-                {
-                    Mouse.LeftClick(TabPage.GetCenter());
-                    Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
-                    if (!TabPage.IsSelected)
-                    {
-                        if (this != vcEngine.Ribbon.HomeTab)
-                        {
-                            vcEngine.Ribbon.HomeTab.Select();
-                            Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
-                        }
-                        Mouse.LeftClick(TabPage.GetCenter());
-                        Wait.UntilResponsive(TabPage, VcEngine.DefaultTimeout);
-                        if (!TabPage.IsSelected) throw new InvalidOperationException($"Ribbon tab ({AutomationId}) was not selected");
-                    }
-                }
-            }
         }
-        
+
         public AutomationElement[] Groups()
         {
             Select();
@@ -424,21 +413,6 @@ namespace VcEngineAutomation.Ribbons
         {
             vcEngine.CheckForCrash();
             Select();
-            /*Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-            if (!Retry.WhileException(() => TabPage.IsSelected, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200)))
-            {
-                Retry.WhileException(() => {
-                    Mouse.LeftClick(TabPage.GetCenter());
-            //        Wait.UntilResponsive(TabPage, TimeSpan.FromSeconds(5));
-                }, TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
-
-                //Retry.WhileException(() => TabPage.Select(), TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(200));
-            }*/
-
-            /*var toolBar = TabPage.FindAllChildren(cf => cf.ByControlType(ControlType.ToolBar))
-                .FirstOrDefault(t => t.FindChildAt(0).AutomationId.StartsWith($"{TabPage.AutomationId}{groupAutomationId}"));
-            var automationElement = toolBar.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));*/
-
             var automationElement = vcEngine.IsR9OrAbove
                 ? TabPage.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}"))?.FindFirstChild(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"))
                 : TabPage.FindFirstDescendant(cf => cf.ByAutomationId($"{TabPage.AutomationId}{groupAutomationId}{itemAutomationId}"));
