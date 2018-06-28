@@ -141,7 +141,7 @@ namespace VcEngineAutomation
         /// <summary>
         /// Function to add custom code to check is shell is busy
         /// </summary>
-        public Func<VcEngine, bool> IsShellBusyAction { get; set; }
+        public Func<VcEngine, TimeSpan, TimeSpan, bool> IsShellBusyAction { get; set; }
 
         private FileVersionInfo GetVersionInfo(Process process)
         {
@@ -223,7 +223,7 @@ namespace VcEngineAutomation
             TimeSpan retryInterval = DefaultRetryInternal;
             Retry.WhileException(() => Wait.UntilResponsive(MainWindow), timeout, retryInterval);
 
-            if (IsShellBusyAction?.Invoke(this) ?? false) return true;
+            if (IsShellBusyAction?.Invoke(this, timeout, retryInterval) ?? false) return true;
 
             /* When the progress dialog is showing in 4.1, the window may be reported as ready for user interaction
             var interactionState = Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval);
