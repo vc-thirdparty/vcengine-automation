@@ -221,7 +221,7 @@ namespace VcEngineAutomation
         private bool ShellIsBusy(TimeSpan timeout)
         {
             TimeSpan retryInterval = DefaultRetryInternal;
-            Wait.UntilResponsive(MainWindow, timeout);
+            Retry.WhileException(() => Wait.UntilResponsive(MainWindow), timeout, retryInterval);
 
             if (IsShellBusyAction?.Invoke(this) ?? false) return true;
 
