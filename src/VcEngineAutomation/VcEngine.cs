@@ -40,6 +40,7 @@ namespace VcEngineAutomation
         public Application Application { get; }
         public AutomationBase Automation { get; }
 
+        public string ExecutablePath { get; }
         public bool IsR9 { get; }
         public bool IsR9OrAbove { get; }
         public bool IsR8 { get; }
@@ -81,7 +82,9 @@ namespace VcEngineAutomation
             Application = application;
             Automation = automation;
 
-            var fileVersionInfo = GetVersionInfo(Process.GetProcessById(application.ProcessId));
+            var tuple = GetProcesInfo(Process.GetProcessById(application.ProcessId));
+            ExecutablePath = tuple.Item2;
+            var fileVersionInfo = tuple.Item1;
             Version = fileVersionInfo.FileVersion;
             IsR7OrAbove = fileVersionInfo.FileMajorPart >= 4
                           && 
@@ -143,11 +146,11 @@ namespace VcEngineAutomation
         /// </summary>
         public Func<VcEngine, TimeSpan, TimeSpan, bool> IsShellBusyAction { get; set; }
 
-        private FileVersionInfo GetVersionInfo(Process process)
+        private Tuple<FileVersionInfo, string> GetProcesInfo(Process process)
         {
             try
             {
-                return process.MainModule.FileVersionInfo;
+                return Tuple.Create(process.MainModule.FileVersionInfo, process.MainModule.FileName);
             }
             catch (Exception)
             {
@@ -166,11 +169,13 @@ namespace VcEngineAutomation
                             Path = (string)mo["ExecutablePath"],
                             Id = (int)(uint)mo["ProcessId"],
                             CommandLine = (string)mo["CommandLine"],
+                            ExecutablePath = (string)mo["ExecutablePath"],
                         };
                     var processObject = query.First(q => process.Id == q.Id);
-                    return FileVersionInfo.GetVersionInfo(string.IsNullOrEmpty(processObject.Path) 
+                    var fileVersionInfo = FileVersionInfo.GetVersionInfo(string.IsNullOrEmpty(processObject.Path) 
                         ? Regex.Match(processObject.CommandLine, "\"(.*)\"").Groups[1].Value : 
                         processObject.Path);
+                    return Tuple.Create(fileVersionInfo, processObject.ExecutablePath);
                 }
             }
         }
