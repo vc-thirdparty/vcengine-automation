@@ -76,6 +76,7 @@ namespace VcEngineAutomation
                 return layoutName.StartsWith("<") ? null : layoutName;
             }
         }
+        public bool IsProgressDialogModal { get; set; }
 
         public VcEngine(Application application, AutomationBase automation)
         {
@@ -230,9 +231,12 @@ namespace VcEngineAutomation
 
             if (IsShellBusyAction?.Invoke(this, timeout, retryInterval) ?? false) return true;
 
-            /* When the progress dialog is showing in 4.1, the window may be reported as ready for user interaction
-            var interactionState = Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval);
-            if (interactionState == WindowInteractionState.ReadyForUserInteraction) return false;*/
+            if (IsProgressDialogModal)
+            {
+                // When the progress dialog is showing in 4.1, the window may be reported as ready for user interaction
+                var interactionState = Retry.WhileException(() => MainWindow.Patterns.Window.Pattern.WindowInteractionState.Value, timeout, retryInterval);
+                if (interactionState == WindowInteractionState.ReadyForUserInteraction) return false;
+            }
 
             CheckForCrash(timeout, retryInterval);
 
