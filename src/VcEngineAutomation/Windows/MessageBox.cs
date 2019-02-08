@@ -35,6 +35,7 @@ namespace VcEngineAutomation.Windows
             element.AsButton().Invoke();
             IsClosed = true;
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
         public void ClickNo()
         {
@@ -43,6 +44,7 @@ namespace VcEngineAutomation.Windows
             element.AsButton().Invoke();
             IsClosed = true;
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
         public void ClickOk()
         {
@@ -51,6 +53,7 @@ namespace VcEngineAutomation.Windows
             element.AsButton().Invoke();
             IsClosed = true;
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
 
         public void ForceClose()

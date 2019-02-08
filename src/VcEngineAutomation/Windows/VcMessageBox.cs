@@ -28,6 +28,7 @@ namespace VcEngineAutomation.Windows
             if (element == null) throw new InvalidOperationException("'Yes' button could not be found in message box");
             element.AsButton().Invoke();
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
         public void ClickOk()
         {
@@ -36,6 +37,7 @@ namespace VcEngineAutomation.Windows
             if (element == null) throw new InvalidOperationException("'Ok' button could not be found in message box");
             element.AsButton().Invoke();
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
         public void ClickNo()
         {
@@ -43,6 +45,7 @@ namespace VcEngineAutomation.Windows
             if (element == null) throw new InvalidOperationException("'No' button could not be found in message box");
             element.AsButton().Invoke();
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
         public void ClickCancel()
         {
@@ -50,6 +53,7 @@ namespace VcEngineAutomation.Windows
             if (element == null) throw new InvalidOperationException("'Cancel' button could not be found in message box");
             element.AsButton().Invoke();
             window.WaitUntilClosed();
+            mainWindow.WaitWhileBusy();
         }
         public void Cancel()
         {
